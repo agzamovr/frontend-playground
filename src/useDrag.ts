@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 
-const shouldListenMouse = (event: MouseEvent) =>
+const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.defaultPrevented &&
   event.button === 0 &&
   !event.ctrlKey &&
@@ -8,47 +8,48 @@ const shouldListenMouse = (event: MouseEvent) =>
   !event.shiftKey &&
   !event.altKey;
 
+const setStyles = (el: HTMLElement | null) => {
+  if (!el) return;
+  requestAnimationFrame(() => {
+    const rect = el.getBoundingClientRect();
+    const style = el.style;
+    style.boxSizing = "border-box";
+    style.position = "fixed";
+    style.width = rect.width + "px";
+    style.height = rect.height + "px";
+    style.top = rect.y + "px";
+    style.left = rect.x + "px";
+    style.pointerEvents = "none";
+  });
+};
+
+const resetStyles = (el: HTMLElement | null) => {
+  if (!el) return;
+  requestAnimationFrame(() => {
+    const style = el.style;
+    style.boxSizing = "";
+    style.position = "";
+    style.width = "";
+    style.height = "";
+    style.top = "";
+    style.left = "";
+    style.transform = "";
+    style.pointerEvents = "";
+  });
+};
+
 export const useDrag = () => {
   const [isGrabbed, setIsGrabbed] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>();
   const [diffX, setDiffX] = useState(0);
   const [diffY, setDiffY] = useState(0);
-  const startDrag = useCallback((clientX: number, clientY: number) => {
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      const style = ref.current.style;
-      style.boxSizing = "border-box";
-      style.position = "fixed";
-      style.width = rect.width + "px";
-      style.height = rect.height + "px";
-      style.top = rect.y + "px";
-      style.left = rect.x + "px";
-      style.pointerEvents = "none";
-    }
+  const startDrag = (clientX: number, clientY: number) => {
+    setStyles(ref.current);
     setDiffX(clientX);
     setDiffY(clientY);
     setIsGrabbed(true);
-  }, []);
-
-  const handleRelease = useCallback(() => {
-    setIsGrabbed(false);
-    setDiffX(0);
-    setDiffY(0);
-    if (ref.current) {
-      const style = ref.current.style;
-      requestAnimationFrame(() => {
-        style.boxSizing = "";
-        style.position = "";
-        style.width = "";
-        style.height = "";
-        style.top = "";
-        style.left = "";
-        style.transform = "";
-        style.pointerEvents = "";
-      });
-    }
-  }, []);
+  };
 
   const handleMove = (
     clientX: number,
@@ -56,24 +57,23 @@ export const useDrag = () => {
     diffX: number,
     diffY: number
   ) => {
-    if (ref.current) {
-      const style = ref.current.style;
-      const x = clientX - diffX;
-      const y = clientY - diffY;
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-      requestRef.current = requestAnimationFrame(
-        () => (style.transform = `translate(${x}px,${y}px)`)
-      );
-    }
+    if (!ref.current) return;
+    const style = ref.current.style;
+    const x = clientX - diffX;
+    const y = clientY - diffY;
+    if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    requestRef.current = requestAnimationFrame(
+      () => (style.transform = `translate(${x}px,${y}px)`)
+    );
   };
 
-  const releaseListener = useCallback(
-    (event: Event) => {
-      event.preventDefault();
-      handleRelease();
-    },
-    [handleRelease]
-  );
+  const releaseListener = useCallback((event: Event) => {
+    event.preventDefault();
+    setIsGrabbed(false);
+    setDiffX(0);
+    setDiffY(0);
+    resetStyles(ref.current);
+  }, []);
 
   const mouseMoveListener = useCallback(
     (event: MouseEvent) => {
@@ -101,6 +101,9 @@ export const useDrag = () => {
       window.removeEventListener("touchmove", touchMoveListener, options);
       window.removeEventListener("touchend", releaseListener);
       window.removeEventListener("touchcancel", releaseListener);
+      window.removeEventListener("scroll", releaseListener);
+      window.removeEventListener("resize", releaseListener);
+      window.removeEventListener("orientationchange", releaseListener);
     };
     if (isGrabbed) {
       window.addEventListener("mousemove", mouseMoveListener, options);
@@ -108,6 +111,9 @@ export const useDrag = () => {
       window.addEventListener("touchmove", touchMoveListener, options);
       window.addEventListener("touchend", releaseListener);
       window.addEventListener("touchcancel", releaseListener);
+      window.addEventListener("scroll", releaseListener);
+      window.addEventListener("resize", releaseListener);
+      window.addEventListener("orientationchange", releaseListener);
     } else {
       removeEventListeners();
     }
@@ -119,7 +125,7 @@ export const useDrag = () => {
       const draggable = ref.current;
       draggable.draggable = false;
       draggable.addEventListener("mousedown", (event: MouseEvent) => {
-        if (!shouldListenMouse(event)) return;
+        if (!shouldListenMouseEvent(event)) return;
         startDrag(event.clientX, event.clientY);
       });
       draggable.addEventListener("touchstart", (event: TouchEvent) => {
@@ -127,7 +133,7 @@ export const useDrag = () => {
         startDrag(touch.clientX, touch.clientY);
       });
     }
-  }, [startDrag, handleRelease]);
+  }, []);
 
   return {
     ref,
