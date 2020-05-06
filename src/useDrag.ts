@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect, RefCallback } from "react";
 
 const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.defaultPrevented &&
@@ -40,7 +40,10 @@ const resetStyles = (el: HTMLElement | null) => {
 
 export const useDrag = () => {
   const [isGrabbed, setIsGrabbed] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement | null>(null);
+  const setRef: RefCallback<HTMLElement> = useCallback((element) => {
+    ref.current = element;
+  }, []);
   const requestRef = useRef<number>();
   const [diffX, setDiffX] = useState(0);
   const [diffY, setDiffY] = useState(0);
@@ -136,6 +139,6 @@ export const useDrag = () => {
   }, []);
 
   return {
-    ref,
+    ref: setRef,
   };
 };
