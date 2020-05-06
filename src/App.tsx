@@ -7,9 +7,6 @@ const StyledCard = styled.div`
   width: 100%;
   min-height: 50px;
   border-radius: 4px;
-  cursor: grab;
-  user-select: none;
-  overflow-anchor: none;
 `;
 
 const App: FunctionComponent = () => {

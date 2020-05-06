@@ -1,4 +1,4 @@
-import React, { FunctionComponent, RefCallback } from "react";
+import React, { forwardRef } from "react";
 import styled, { CSSProperties } from "styled-components";
 
 const StyledDropPlaceholder = styled.div`
@@ -6,9 +6,7 @@ const StyledDropPlaceholder = styled.div`
 `;
 interface DropPlaceHolderProps {
   style?: CSSProperties;
-  ref: RefCallback<HTMLDivElement>;
 }
-export const DropPlaceHolder: FunctionComponent<DropPlaceHolderProps> = ({
-  style,
-  ref,
-}) => <StyledDropPlaceholder ref={ref} style={style} />;
+export const DropPlaceHolder = forwardRef<HTMLDivElement, DropPlaceHolderProps>(
+  (props, ref) => <StyledDropPlaceholder ref={ref} style={props.style} />
+);

@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect, RefCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 
 const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.defaultPrevented &&
@@ -8,51 +8,81 @@ const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.shiftKey &&
   !event.altKey;
 
-const setStyles = (el: HTMLElement | null) => {
-  if (!el) return;
-  requestAnimationFrame(() => {
-    const rect = el.getBoundingClientRect();
-    const style = el.style;
-    style.boxSizing = "border-box";
-    style.position = "fixed";
-    style.width = rect.width + "px";
-    style.height = rect.height + "px";
-    style.top = rect.y + "px";
-    style.left = rect.x + "px";
-    style.pointerEvents = "none";
-  });
-};
-
-const resetStyles = (el: HTMLElement | null) => {
-  if (!el) return;
-  requestAnimationFrame(() => {
-    const style = el.style;
-    style.boxSizing = "";
-    style.position = "";
-    style.width = "";
-    style.height = "";
-    style.top = "";
-    style.left = "";
-    style.transform = "";
-    style.pointerEvents = "";
-  });
-};
-
-export const useDrag = () => {
+export const useDrag = (
+  order: number,
+  getPlaceholder: () => HTMLElement | null
+) => {
   const [isGrabbed, setIsGrabbed] = useState(false);
   const ref = useRef<HTMLElement | null>(null);
-  const setRef: RefCallback<HTMLElement> = useCallback((element) => {
+  const setRef = useCallback((element) => {
     ref.current = element;
   }, []);
+  const getRef = useCallback(() => {
+    return ref.current;
+  }, []);
+
+  const setStyles = useCallback(() => {
+    const el = getRef();
+    const placeholderEl = getPlaceholder();
+    if (!el || !placeholderEl) return;
+    requestAnimationFrame(() => {
+      const rect = el.getBoundingClientRect();
+      const style = el.style;
+      style.boxSizing = "border-box";
+      style.position = "fixed";
+      style.width = rect.width + "px";
+      style.height = rect.height + "px";
+      style.top = rect.y + "px";
+      style.left = rect.x + "px";
+      style.pointerEvents = "none";
+      style.order = "";
+      style.zIndex = "5000";
+
+      const placeholderStyle = placeholderEl.style;
+      placeholderStyle.width = rect.width + "px";
+      placeholderStyle.height = rect.height + "px";
+      placeholderStyle.display = "block";
+      placeholderStyle.order = `${order}`;
+    });
+  }, [getRef, getPlaceholder, order]);
+
+  const resetStyles = useCallback(() => {
+    const el = getRef();
+    const placeholderEl = getPlaceholder();
+    if (!el || !placeholderEl) return;
+    requestAnimationFrame(() => {
+      const style = el.style;
+      style.boxSizing = "";
+      style.position = "";
+      style.width = "";
+      style.height = "";
+      style.top = "";
+      style.left = "";
+      style.transform = "";
+      style.pointerEvents = "";
+      style.order = `${order}`;
+      style.zIndex = "";
+
+      const placeholderStyle = placeholderEl.style;
+      placeholderStyle.width = "";
+      placeholderStyle.height = "";
+      placeholderStyle.display = "none";
+      placeholderStyle.order = "";
+    });
+  }, [getRef, getPlaceholder, order]);
+
   const requestRef = useRef<number>();
   const [diffX, setDiffX] = useState(0);
   const [diffY, setDiffY] = useState(0);
-  const startDrag = (clientX: number, clientY: number) => {
-    setStyles(ref.current);
-    setDiffX(clientX);
-    setDiffY(clientY);
-    setIsGrabbed(true);
-  };
+  const startDrag = useCallback(
+    (clientX: number, clientY: number) => {
+      setStyles();
+      setDiffX(clientX);
+      setDiffY(clientY);
+      setIsGrabbed(true);
+    },
+    [setStyles]
+  );
 
   const handleMove = (
     clientX: number,
@@ -70,13 +100,16 @@ export const useDrag = () => {
     );
   };
 
-  const releaseListener = useCallback((event: Event) => {
-    event.preventDefault();
-    setIsGrabbed(false);
-    setDiffX(0);
-    setDiffY(0);
-    resetStyles(ref.current);
-  }, []);
+  const releaseListener = useCallback(
+    (event: Event) => {
+      event.preventDefault();
+      setIsGrabbed(false);
+      setDiffX(0);
+      setDiffY(0);
+      resetStyles();
+    },
+    [resetStyles]
+  );
 
   const mouseMoveListener = useCallback(
     (event: MouseEvent) => {
@@ -136,7 +169,7 @@ export const useDrag = () => {
         startDrag(touch.clientX, touch.clientY);
       });
     }
-  }, []);
+  }, [startDrag]);
 
   return {
     ref: setRef,

@@ -1,40 +1,53 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useRef, useCallback } from "react";
 import styled from "styled-components";
 import { useDrag } from "./useDrag";
+import { DropPlaceHolder } from "./DropPlaceholder";
 
 const StyledBoard = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-gap: 5px;
   max-height: 50vh;
-  overflow: auto;
-  /* flex-wrap: wrap; */
+  overflow: scroll;
+`;
+
+const StyledDraggable = styled.div`
+  cursor: grab;
+  user-select: none;
+  overflow-anchor: none;
 `;
 interface BoardProps {
   children: React.ReactElement<HTMLElement>[];
 }
 interface DraggableProps {
   order: number;
+  placeholder: () => HTMLElement | null;
 }
 const Draggable: FunctionComponent<DraggableProps> = (props) => {
-  const { ref } = useDrag();
-  const { order, children } = props;
+  const { order, placeholder: placeholderRef, children } = props;
+  const { ref } = useDrag(order, placeholderRef);
   return (
-    <div ref={ref} style={{ order }}>
+    <StyledDraggable ref={ref} style={{ order }}>
       {children}
-    </div>
+    </StyledDraggable>
   );
 };
 
 export const GridBoard: FunctionComponent<BoardProps> = (props) => {
   const { children } = props;
+  const placeholderRef = useRef<HTMLDivElement | null>(null);
+  const setPlaceholderRef = useCallback((value: HTMLDivElement) => {
+    placeholderRef.current = value;
+  }, []);
+  const getPlaceholderRef = useCallback(() => placeholderRef.current, []);
   return (
     <StyledBoard>
       {children.map((element, index) => (
-        <Draggable key={index} order={index}>
+        <Draggable key={index} order={index} placeholder={getPlaceholderRef}>
           {element}
         </Draggable>
       ))}
+      <DropPlaceHolder ref={setPlaceholderRef} style={{ display: "none" }} />
     </StyledBoard>
   );
 };
