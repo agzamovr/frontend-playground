@@ -27,7 +27,7 @@ interface DraggableProps {
 }
 const Draggable: FunctionComponent<DraggableProps> = (props) => {
   const { order, placeholder, children } = props;
-  const { ref } = useDrag(order, placeholder);
+  const { ref } = useDrag(order.toString(), placeholder);
   return (
     <StyledDraggable ref={ref} style={{ order }}>
       {children}

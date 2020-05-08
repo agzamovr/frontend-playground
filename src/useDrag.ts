@@ -1,4 +1,11 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import {
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useLayoutEffect,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { dndActions, Rect, RectsRecord } from "./redux/dndReducer";
 import { Store } from "./redux/store";
@@ -11,8 +18,68 @@ const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.shiftKey &&
   !event.altKey;
 
+const copyRect = (rect: DOMRect): Rect =>
+  rect && {
+    height: rect.height,
+    width: rect.width,
+    x: rect.x,
+    y: rect.y,
+    bottom: rect.bottom,
+    left: rect.left,
+    right: rect.right,
+    top: rect.top,
+  };
+
+const getIntersectionAreaRatio = (first: Rect, second: Rect) => {
+  const instersects =
+    first.left < second.right &&
+    first.right > second.left &&
+    first.top < second.bottom &&
+    first.bottom > second.top;
+  if (!instersects) return 0;
+  const left = Math.max(first.left, second.left);
+  const right = Math.min(first.right, second.right);
+  const top = Math.max(first.top, second.top);
+  const bottom = Math.min(first.bottom, second.bottom);
+  const width = right - left;
+  const height = bottom - top;
+  return width * height;
+};
+
+const getIntersections = (
+  currentOrder: string,
+  x: number,
+  y: number,
+  rects: RectsRecord
+) => {
+  let first = rects[currentOrder];
+  first = {
+    ...first,
+    x,
+    y,
+    left: x,
+    top: y,
+    right: x + first.width,
+    bottom: y + first.height,
+  };
+  for (const key in rects) {
+    if (currentOrder !== key && rects.hasOwnProperty(key) && rects[key]) {
+      const second = rects[key];
+      const intersectionArea =
+        first && second && getIntersectionAreaRatio(first, second);
+      if (intersectionArea)
+        console.log(
+          currentOrder,
+          key,
+          intersectionArea,
+          second.width * second.height
+        );
+    }
+  }
+};
+
 export const useDrag = (
-  order: number,
+  order: string,
   getPlaceholder: () => HTMLElement | null
 ) => {
   const dispatch = useDispatch();
@@ -22,14 +89,14 @@ export const useDrag = (
     (element) => {
       ref.current = element;
       const rect = copyRect(element.getBoundingClientRect());
-      dispatch(dndActions.setRect({ order: order.toString(), rect }));
+      dispatch(dndActions.setRect({ order, rect }));
     },
     [dispatch, order]
   );
   const getRef = useCallback(() => {
     return ref.current;
   }, []);
-
+  const rects = useSelector(({ dndReducer }: Store) => dndReducer.rects);
   const setStyles = useCallback(() => {
     const el = getRef();
     const placeholderEl = getPlaceholder();
@@ -51,7 +118,7 @@ export const useDrag = (
       placeholderStyle.width = rect.width + "px";
       placeholderStyle.height = rect.height + "px";
       placeholderStyle.display = "block";
-      placeholderStyle.order = `${order}`;
+      placeholderStyle.order = order;
     });
   }, [getRef, getPlaceholder, order]);
 
@@ -80,7 +147,8 @@ export const useDrag = (
     });
   }, [getRef, getPlaceholder, order]);
 
-  const requestRef = useRef<number>();
+  const requestFrameRef = useRef<number>();
+  const requestCalsRef = useRef<number>();
   const [diffX, setDiffX] = useState(0);
   const [diffY, setDiffY] = useState(0);
   const startDrag = useCallback(
@@ -93,21 +161,25 @@ export const useDrag = (
     [setStyles]
   );
 
-  const handleMove = (
-    clientX: number,
-    clientY: number,
-    diffX: number,
-    diffY: number
-  ) => {
-    if (!ref.current) return;
-    const style = ref.current.style;
-    const x = clientX - diffX;
-    const y = clientY - diffY;
-    if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    requestRef.current = requestAnimationFrame(
-      () => (style.transform = `translate(${x}px,${y}px)`)
-    );
-  };
+  const handleMove = useCallback(
+    (clientX: number, clientY: number, diffX: number, diffY: number) => {
+      if (!ref.current) return;
+      const style = ref.current.style;
+      const x = clientX - diffX;
+      const y = clientY - diffY;
+      if (requestFrameRef.current)
+        cancelAnimationFrame(requestFrameRef.current);
+      if (requestCalsRef.current) cancelAnimationFrame(requestCalsRef.current);
+      requestFrameRef.current = requestAnimationFrame(
+        () => (style.transform = `translate(${x}px,${y}px)`)
+      );
+
+      requestCalsRef.current = requestAnimationFrame(() =>
+        getIntersections(order, x, y, rects)
+      );
+    },
+    [order, rects]
+  );
 
   const releaseListener = useCallback(
     (event: Event) => {
@@ -126,7 +198,7 @@ export const useDrag = (
       event.preventDefault();
       handleMove(event.clientX, event.clientY, diffX, diffY);
     },
-    [diffX, diffY]
+    [diffX, diffY, handleMove]
   );
 
   const touchMoveListener = useCallback(
@@ -135,7 +207,7 @@ export const useDrag = (
       const touch = event.touches[0];
       handleMove(touch.clientX, touch.clientY, diffX, diffY);
     },
-    [diffX, diffY]
+    [diffX, diffY, handleMove]
   );
 
   useEffect(() => {
