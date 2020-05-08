@@ -2,6 +2,8 @@ import React, { FunctionComponent, useRef, useCallback } from "react";
 import styled from "styled-components";
 import { useDrag } from "./useDrag";
 import { DropPlaceHolder } from "./DropPlaceholder";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 const StyledBoard = styled.div`
   display: grid;
@@ -24,8 +26,8 @@ interface DraggableProps {
   placeholder: () => HTMLElement | null;
 }
 const Draggable: FunctionComponent<DraggableProps> = (props) => {
-  const { order, placeholder: placeholderRef, children } = props;
-  const { ref } = useDrag(order, placeholderRef);
+  const { order, placeholder, children } = props;
+  const { ref } = useDrag(order, placeholder);
   return (
     <StyledDraggable ref={ref} style={{ order }}>
       {children}
@@ -41,13 +43,15 @@ export const GridBoard: FunctionComponent<BoardProps> = (props) => {
   }, []);
   const getPlaceholderRef = useCallback(() => placeholderRef.current, []);
   return (
-    <StyledBoard>
-      {children.map((element, index) => (
-        <Draggable key={index} order={index} placeholder={getPlaceholderRef}>
-          {element}
-        </Draggable>
-      ))}
-      <DropPlaceHolder ref={setPlaceholderRef} style={{ display: "none" }} />
-    </StyledBoard>
+    <Provider store={store}>
+      <StyledBoard>
+        {children.map((element, index) => (
+          <Draggable key={index} order={index} placeholder={getPlaceholderRef}>
+            {element}
+          </Draggable>
+        ))}
+        <DropPlaceHolder ref={setPlaceholderRef} style={{ display: "none" }} />
+      </StyledBoard>
+    </Provider>
   );
 };

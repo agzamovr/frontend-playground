@@ -1,4 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { dndActions, Rect, RectsRecord } from "./redux/dndReducer";
+import { Store } from "./redux/store";
 
 const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.defaultPrevented &&
@@ -12,11 +15,17 @@ export const useDrag = (
   order: number,
   getPlaceholder: () => HTMLElement | null
 ) => {
+  const dispatch = useDispatch();
   const [isGrabbed, setIsGrabbed] = useState(false);
   const ref = useRef<HTMLElement | null>(null);
-  const setRef = useCallback((element) => {
-    ref.current = element;
-  }, []);
+  const setRef = useCallback(
+    (element) => {
+      ref.current = element;
+      const rect = copyRect(element.getBoundingClientRect());
+      dispatch(dndActions.setRect({ order: order.toString(), rect }));
+    },
+    [dispatch, order]
+  );
   const getRef = useCallback(() => {
     return ref.current;
   }, []);
