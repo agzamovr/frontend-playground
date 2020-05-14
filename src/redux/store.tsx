@@ -1,12 +1,12 @@
 import { getDefaultMiddleware, configureStore } from "@reduxjs/toolkit";
-import dndReducer, { Draggables } from "./dndReducer";
+import draggables, { Draggables } from "./dndReducer";
 
 export interface Store {
-  dndReducer: Draggables;
+  draggables: Draggables;
 }
 
 const rootCombinedReducers = {
-  dndReducer,
+  draggables,
 };
 
 const middleware = [...getDefaultMiddleware()];

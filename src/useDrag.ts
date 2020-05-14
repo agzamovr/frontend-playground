@@ -3,12 +3,26 @@ import {
   useState,
   useCallback,
   useEffect,
-  useMemo,
   useLayoutEffect,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { dndActions, Rect, RectsRecord } from "./redux/dndReducer";
 import { Store } from "./redux/store";
+
+interface IntersectionArea {
+  order: number;
+  intersectionArea: number;
+  areaRatio: number;
+}
+
+const compareIntersections = (a: IntersectionArea, b: IntersectionArea) =>
+  a.areaRatio > b.areaRatio
+    ? -1
+    : a.areaRatio < b.areaRatio
+    ? 1
+    : a.order > b.order
+    ? -1
+    : 0;
 
 const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.defaultPrevented &&
@@ -30,13 +44,13 @@ const copyRect = (rect: DOMRect): Rect =>
     top: rect.top,
   };
 
-const getIntersectionAreaRatio = (first: Rect, second: Rect) => {
-  const instersects =
+const getIntersectionArea = (first: Rect, second: Rect) => {
+  const intersects =
     first.left < second.right &&
     first.right > second.left &&
     first.top < second.bottom &&
     first.bottom > second.top;
-  if (!instersects) return 0;
+  if (!intersects) return 0;
   const left = Math.max(first.left, second.left);
   const right = Math.min(first.right, second.right);
   const top = Math.max(first.top, second.top);
@@ -47,108 +61,134 @@ const getIntersectionAreaRatio = (first: Rect, second: Rect) => {
 };
 
 const getIntersections = (
-  currentOrder: string,
-  x: number,
-  y: number,
+  currentOrder: number,
+  shiftX: number,
+  shiftY: number,
   rects: RectsRecord
 ) => {
   let first = rects[currentOrder];
   first = {
     ...first,
-    x,
-    y,
-    left: x,
-    top: y,
-    right: x + first.width,
-    bottom: y + first.height,
+    x: first.x + shiftX,
+    y: first.y + shiftY,
+    left: first.left + shiftX,
+    top: first.top + shiftY,
+    right: first.right + shiftX,
+    bottom: first.bottom + shiftY,
   };
+
+  const intersections: IntersectionArea[] = [];
   for (const key in rects) {
-    if (currentOrder !== key && rects.hasOwnProperty(key) && rects[key]) {
+    if (
+      currentOrder.toString() !== key &&
+      rects.hasOwnProperty(key) &&
+      rects[key]
+    ) {
       const second = rects[key];
       const intersectionArea =
-        first && second && getIntersectionAreaRatio(first, second);
-      if (intersectionArea)
-        console.log(
-          currentOrder,
-          key,
+        first && second && getIntersectionArea(first, second);
+      if (intersectionArea) {
+        const areaRatio = intersectionArea / (second.width * second.height);
+        intersections.push({
+          order: parseInt(key),
           intersectionArea,
-          second.width * second.height
-        );
+          areaRatio,
+        });
+      }
     }
   }
+  if (intersections) {
+    intersections.sort(compareIntersections);
+    return intersections[0];
+  }
 };
-
+const setPlaceholder = (
+  el: HTMLElement | null,
+  placeholderEl: HTMLElement | null,
+  placeholderOrder: number | null
+) => {
+  if (!el || !placeholderEl) return;
+  const rect = el.getBoundingClientRect();
+  const placeholderStyle = placeholderEl.style;
+  if (placeholderOrder !== null) {
+    placeholderStyle.width = rect.width + "px";
+    placeholderStyle.height = rect.height + "px";
+    placeholderStyle.display = "block";
+    placeholderStyle.order = placeholderOrder.toString();
+  } else {
+    placeholderStyle.width = "";
+    placeholderStyle.height = "";
+    placeholderStyle.display = "none";
+    placeholderStyle.order = "";
+  }
+};
 export const useDrag = (
-  order: string,
+  index: number,
   getPlaceholder: () => HTMLElement | null
 ) => {
   const dispatch = useDispatch();
   const [isGrabbed, setIsGrabbed] = useState(false);
+  const [isIntersected, setIsIntersected] = useState(false);
+  const { placeholderOrder, elementsOrder, rects } = useSelector(
+    ({ draggables }: Store) => draggables
+  );
+  const order = elementsOrder[index];
+  // console.log("order", order, "index", index);
   const ref = useRef<HTMLElement | null>(null);
+  const setRect = useCallback(() => {
+    if (ref.current) {
+      const rect = copyRect(ref.current.getBoundingClientRect());
+      dispatch(dndActions.setRect({ order, rect }));
+    }
+  }, [dispatch, order]);
+
   const setRef = useCallback(
     (element) => {
       ref.current = element;
-      const rect = copyRect(element.getBoundingClientRect());
-      dispatch(dndActions.setRect({ order, rect }));
+      setRect();
     },
-    [dispatch, order]
+    [setRect]
   );
-  const getRef = useCallback(() => {
-    return ref.current;
-  }, []);
-  const rects = useSelector(({ dndReducer }: Store) => dndReducer.rects);
+  useLayoutEffect(() => {
+    setRect();
+  }, [setRect, elementsOrder, index]);
   const setStyles = useCallback(() => {
-    const el = getRef();
+    const el = ref.current;
     const placeholderEl = getPlaceholder();
-    if (!el || !placeholderEl) return;
-    requestAnimationFrame(() => {
-      const rect = el.getBoundingClientRect();
-      const style = el.style;
-      style.boxSizing = "border-box";
-      style.position = "fixed";
-      style.width = rect.width + "px";
-      style.height = rect.height + "px";
-      style.top = rect.y + "px";
-      style.left = rect.x + "px";
-      style.pointerEvents = "none";
-      style.order = "";
-      style.zIndex = "5000";
+    if (!el) return;
 
-      const placeholderStyle = placeholderEl.style;
-      placeholderStyle.width = rect.width + "px";
-      placeholderStyle.height = rect.height + "px";
-      placeholderStyle.display = "block";
-      placeholderStyle.order = order;
-    });
-  }, [getRef, getPlaceholder, order]);
+    const rect = el.getBoundingClientRect();
+    const style = el.style;
+    style.boxSizing = "border-box";
+    style.position = "fixed";
+    style.width = rect.width + "px";
+    style.height = rect.height + "px";
+    style.top = rect.y + "px";
+    style.left = rect.x + "px";
+    style.pointerEvents = "none";
+    style.order = "";
+    style.zIndex = "5000";
+    setPlaceholder(el, placeholderEl, order);
+  }, [getPlaceholder, order]);
 
   const resetStyles = useCallback(() => {
-    const el = getRef();
+    const el = ref.current;
     const placeholderEl = getPlaceholder();
-    if (!el || !placeholderEl) return;
-    requestAnimationFrame(() => {
-      const style = el.style;
-      style.boxSizing = "";
-      style.position = "";
-      style.width = "";
-      style.height = "";
-      style.top = "";
-      style.left = "";
-      style.transform = "";
-      style.pointerEvents = "";
-      style.order = `${order}`;
-      style.zIndex = "";
-
-      const placeholderStyle = placeholderEl.style;
-      placeholderStyle.width = "";
-      placeholderStyle.height = "";
-      placeholderStyle.display = "none";
-      placeholderStyle.order = "";
-    });
-  }, [getRef, getPlaceholder, order]);
-
-  const requestFrameRef = useRef<number>();
-  const requestCalsRef = useRef<number>();
+    if (!el) return;
+    const style = el.style;
+    style.boxSizing = "";
+    style.position = "";
+    style.width = "";
+    style.height = "";
+    style.top = "";
+    style.left = "";
+    style.transform = "";
+    style.pointerEvents = "";
+    style.order = `${index}`;
+    style.zIndex = "";
+    setPlaceholder(el, placeholderEl, null);
+    setRect();
+  }, [index, setRect, getPlaceholder]);
   const [diffX, setDiffX] = useState(0);
   const [diffY, setDiffY] = useState(0);
   const startDrag = useCallback(
@@ -157,8 +197,9 @@ export const useDrag = (
       setDiffX(clientX);
       setDiffY(clientY);
       setIsGrabbed(true);
+      dispatch(dndActions.setPlaceholderOrder(index));
     },
-    [setStyles]
+    [dispatch, setStyles, index]
   );
 
   const handleMove = useCallback(
@@ -167,18 +208,29 @@ export const useDrag = (
       const style = ref.current.style;
       const x = clientX - diffX;
       const y = clientY - diffY;
-      if (requestFrameRef.current)
-        cancelAnimationFrame(requestFrameRef.current);
-      if (requestCalsRef.current) cancelAnimationFrame(requestCalsRef.current);
-      requestFrameRef.current = requestAnimationFrame(
-        () => (style.transform = `translate(${x}px,${y}px)`)
-      );
 
-      requestCalsRef.current = requestAnimationFrame(() =>
-        getIntersections(order, x, y, rects)
-      );
+      style.transform = `translate(${x}px,${y}px)`;
+
+      const intersection = getIntersections(order, x, y, rects);
+      if (isIntersected && (!intersection || intersection.areaRatio < 0.5))
+        setIsIntersected(false);
+      if (!isIntersected && intersection && intersection.areaRatio >= 0.5) {
+        setIsIntersected(true);
+        const { order: secondOrder } = intersection;
+        const secondIndex = elementsOrder.findIndex((e) => e === secondOrder);
+        const newElementsOrder = [...elementsOrder];
+        newElementsOrder[index] = elementsOrder[secondIndex];
+        newElementsOrder[secondIndex] = elementsOrder[index];
+        console.log(elementsOrder, newElementsOrder);
+        dispatch(
+          dndActions.setElementsOrder({
+            placeholderOrder: secondIndex,
+            elementsOrder: newElementsOrder,
+          })
+        );
+      }
     },
-    [order, rects]
+    [dispatch, isIntersected, elementsOrder, index, order, rects]
   );
 
   const releaseListener = useCallback(
@@ -188,8 +240,9 @@ export const useDrag = (
       setDiffX(0);
       setDiffY(0);
       resetStyles();
+      dispatch(dndActions.setPlaceholderOrder(null));
     },
-    [resetStyles]
+    [resetStyles, dispatch]
   );
 
   const mouseMoveListener = useCallback(
@@ -238,20 +291,34 @@ export const useDrag = (
   }, [isGrabbed, mouseMoveListener, touchMoveListener, releaseListener]);
 
   useEffect(() => {
+    const handleMouseDown = (event: MouseEvent) => {
+      if (!shouldListenMouseEvent(event)) return;
+      startDrag(event.clientX, event.clientY);
+    };
+    const handleTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      startDrag(touch.clientX, touch.clientY);
+    };
     if (ref.current) {
       const draggable = ref.current;
       draggable.draggable = false;
-      draggable.addEventListener("mousedown", (event: MouseEvent) => {
-        if (!shouldListenMouseEvent(event)) return;
-        startDrag(event.clientX, event.clientY);
-      });
-      draggable.addEventListener("touchstart", (event: TouchEvent) => {
-        const touch = event.touches[0];
-        startDrag(touch.clientX, touch.clientY);
-      });
+      draggable.addEventListener("mousedown", handleMouseDown);
+      draggable.addEventListener("touchstart", handleTouchStart);
     }
+    return () => {
+      if (ref.current) {
+        const draggable = ref.current;
+        draggable.removeEventListener("mousedown", handleMouseDown);
+        draggable.removeEventListener("touchstart", handleTouchStart);
+      }
+    };
   }, [startDrag]);
 
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const placeholderEl = getPlaceholder();
+    setPlaceholder(el, placeholderEl, placeholderOrder);
+  }, [getPlaceholder, placeholderOrder]);
   return {
     ref: setRef,
   };

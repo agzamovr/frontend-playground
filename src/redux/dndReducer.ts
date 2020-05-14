@@ -11,25 +11,52 @@ export interface Rect {
   top: number;
 }
 
-export type RectsRecord = Record<string, Rect>;
-
+export type RectsRecord = Record<number, Rect>;
+export interface Rects {}
+export interface Draggable {
+  order: number;
+  rect: Rect;
+}
 export interface Draggables {
+  placeholderOrder: number | null;
+  elementsOrder: number[];
   rects: RectsRecord;
 }
 
-const initialState: Draggables = { rects: {} };
+const initialState: Draggables = {
+  placeholderOrder: null,
+  elementsOrder: [],
+  rects: {},
+};
 
 export const { actions: dndActions, reducer: dndReducer } = createSlice({
   initialState,
   name: "grid-board",
   reducers: {
     cleanState: () => initialState,
-    setRect: (
+    setPlaceholderOrder: (
       state,
-      { payload }: PayloadAction<{ order: string; rect: Rect }>
+      { payload }: PayloadAction<number | null>
     ) => ({
       ...state,
+      placeholderOrder: payload,
+    }),
+    setRect: (state, { payload }: PayloadAction<Draggable>) => ({
+      ...state,
       rects: { ...state.rects, [payload.order]: payload.rect },
+    }),
+    setElementsOrder: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        placeholderOrder: number | null;
+        elementsOrder: number[];
+      }>
+    ) => ({
+      ...state,
+      placeholderOrder: payload.placeholderOrder,
+      elementsOrder: [...payload.elementsOrder],
     }),
   },
 });

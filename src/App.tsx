@@ -1,6 +1,8 @@
 import React, { FunctionComponent } from "react";
 import styled from "styled-components";
 import { GridBoard } from "./GridBoard";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 const StyledCard = styled.div`
   background: gray;
@@ -11,11 +13,13 @@ const StyledCard = styled.div`
 
 const App: FunctionComponent = () => {
   return (
-    <GridBoard>
-      {Array.from({ length: 10 }, (v, i) => (
-        <StyledCard key={i}>Draggable {i}</StyledCard>
-      ))}
-    </GridBoard>
+    <Provider store={store}>
+      <GridBoard>
+        {Array.from({ length: 5 }, (v, i) => (
+          <StyledCard key={i}>Draggable {i}</StyledCard>
+        ))}
+      </GridBoard>
+    </Provider>
   );
 };
 
