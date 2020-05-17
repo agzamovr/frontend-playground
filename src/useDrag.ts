@@ -62,19 +62,20 @@ const getIntersectionArea = (first: Rect, second: Rect) => {
 
 const getIntersections = (
   currentOrder: number,
+  currentRect: Rect | null,
   shiftX: number,
   shiftY: number,
   rects: RectsRecord
 ) => {
-  let first = rects[currentOrder];
-  first = {
-    ...first,
-    x: first.x + shiftX,
-    y: first.y + shiftY,
-    left: first.left + shiftX,
-    top: first.top + shiftY,
-    right: first.right + shiftX,
-    bottom: first.bottom + shiftY,
+  if (!currentRect) return;
+  const first = {
+    ...currentRect,
+    x: currentRect.x + shiftX,
+    y: currentRect.y + shiftY,
+    left: currentRect.left + shiftX,
+    top: currentRect.top + shiftY,
+    right: currentRect.right + shiftX,
+    bottom: currentRect.bottom + shiftY,
   };
 
   const intersections: IntersectionArea[] = [];
@@ -133,8 +134,8 @@ export const useDrag = (
     ({ draggables }: Store) => draggables
   );
   const order = elementsOrder[index];
-  // console.log("order", order, "index", index);
   const ref = useRef<HTMLElement | null>(null);
+  const dragStartRectRef = useRef<Rect | null>(null);
   const setRect = useCallback(() => {
     if (ref.current) {
       const rect = copyRect(ref.current.getBoundingClientRect());
@@ -149,9 +150,7 @@ export const useDrag = (
     },
     [setRect]
   );
-  useLayoutEffect(() => {
-    setRect();
-  }, [setRect, elementsOrder, index]);
+
   const setStyles = useCallback(() => {
     const el = ref.current;
     const placeholderEl = getPlaceholder();
@@ -197,9 +196,10 @@ export const useDrag = (
       setDiffX(clientX);
       setDiffY(clientY);
       setIsGrabbed(true);
+      dragStartRectRef.current = rects[order];
       dispatch(dndActions.setPlaceholderOrder(index));
     },
-    [dispatch, setStyles, index]
+    [dispatch, setStyles, order, rects, index]
   );
 
   const handleMove = useCallback(
@@ -211,7 +211,13 @@ export const useDrag = (
 
       style.transform = `translate(${x}px,${y}px)`;
 
-      const intersection = getIntersections(order, x, y, rects);
+      const intersection = getIntersections(
+        order,
+        dragStartRectRef.current,
+        x,
+        y,
+        rects
+      );
       if (isIntersected && (!intersection || intersection.areaRatio < 0.5))
         setIsIntersected(false);
       if (!isIntersected && intersection && intersection.areaRatio >= 0.5) {
@@ -221,7 +227,6 @@ export const useDrag = (
         const newElementsOrder = [...elementsOrder];
         newElementsOrder[index] = elementsOrder[secondIndex];
         newElementsOrder[secondIndex] = elementsOrder[index];
-        console.log(elementsOrder, newElementsOrder);
         dispatch(
           dndActions.setElementsOrder({
             placeholderOrder: secondIndex,
@@ -239,6 +244,7 @@ export const useDrag = (
       setIsGrabbed(false);
       setDiffX(0);
       setDiffY(0);
+      dragStartRectRef.current = null;
       resetStyles();
       dispatch(dndActions.setPlaceholderOrder(null));
     },
@@ -313,6 +319,10 @@ export const useDrag = (
       }
     };
   }, [startDrag]);
+
+  useLayoutEffect(() => {
+    setRect();
+  }, [setRect, elementsOrder, index]);
 
   useLayoutEffect(() => {
     const el = ref.current;
