@@ -320,6 +320,12 @@ export const useDrag = (
     removeEventListeners,
   ]);
 
+  useLayoutEffect(() => {
+    const handler = () => setRect();
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, [setRect]);
+
   useEffect(() => {
     if (ref.current) {
       const draggable = ref.current;
