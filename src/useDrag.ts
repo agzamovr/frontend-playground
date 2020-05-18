@@ -14,7 +14,15 @@ interface IntersectionArea {
   intersectionArea: number;
   areaRatio: number;
 }
-
+const releaseEvents = [
+  "mouseup",
+  "touchend",
+  "touchcancel",
+  "scroll",
+  "resize",
+  "orientationchange",
+];
+const options = { capture: false, passive: false };
 const compareIntersections = (a: IntersectionArea, b: IntersectionArea) =>
   a.areaRatio > b.areaRatio
     ? -1
@@ -104,12 +112,12 @@ const getIntersections = (
   }
 };
 const setPlaceholder = (
-  el: HTMLElement | null,
+  draggableEl: HTMLElement | null,
   placeholderEl: HTMLElement | null,
   placeholderOrder: number | null
 ) => {
-  if (!el || !placeholderEl) return;
-  const rect = el.getBoundingClientRect();
+  if (!draggableEl || !placeholderEl) return;
+  const rect = draggableEl.getBoundingClientRect();
   const placeholderStyle = placeholderEl.style;
   if (placeholderOrder !== null) {
     placeholderStyle.width = rect.width + "px";
@@ -145,13 +153,9 @@ export const useDrag = (
     }
   }, [dispatch, order]);
 
-  const setRef = useCallback(
-    (element) => {
-      ref.current = element;
-      setRect();
-    },
-    [setRect]
-  );
+  const setRef = useCallback((element) => {
+    ref.current = element;
+  }, []);
 
   const setStyles = useCallback(() => {
     const el = ref.current;
@@ -274,42 +278,49 @@ export const useDrag = (
     [handleMove]
   );
 
+  const handleMouseDown = useCallback(
+    (event: MouseEvent) => {
+      if (!shouldListenMouseEvent(event)) return;
+      startDrag(event.clientX, event.clientY);
+    },
+    [startDrag]
+  );
+  const handleTouchStart = useCallback(
+    (event: TouchEvent) => {
+      const touch = event.touches[0];
+      startDrag(touch.clientX, touch.clientY);
+    },
+    [startDrag]
+  );
+
+  const removeEventListeners = useCallback(() => {
+    window.removeEventListener("mousemove", mouseMoveListener, options);
+    window.removeEventListener("touchmove", touchMoveListener, options);
+    releaseEvents.forEach((event) =>
+      window.removeEventListener(event, releaseListener)
+    );
+  }, [mouseMoveListener, touchMoveListener, releaseListener]);
+
   useEffect(() => {
-    const options = { capture: false, passive: false };
-    const removeEventListeners = () => {
-      window.removeEventListener("mousemove", mouseMoveListener, options);
-      window.removeEventListener("mouseup", releaseListener);
-      window.removeEventListener("touchmove", touchMoveListener, options);
-      window.removeEventListener("touchend", releaseListener);
-      window.removeEventListener("touchcancel", releaseListener);
-      window.removeEventListener("scroll", releaseListener);
-      window.removeEventListener("resize", releaseListener);
-      window.removeEventListener("orientationchange", releaseListener);
-    };
     if (isGrabbed) {
       window.addEventListener("mousemove", mouseMoveListener, options);
-      window.addEventListener("mouseup", releaseListener);
       window.addEventListener("touchmove", touchMoveListener, options);
-      window.addEventListener("touchend", releaseListener);
-      window.addEventListener("touchcancel", releaseListener);
-      window.addEventListener("scroll", releaseListener);
-      window.addEventListener("resize", releaseListener);
-      window.addEventListener("orientationchange", releaseListener);
+      releaseEvents.forEach((event) =>
+        window.addEventListener(event, releaseListener)
+      );
     } else {
       removeEventListeners();
     }
     return removeEventListeners;
-  }, [isGrabbed, mouseMoveListener, touchMoveListener, releaseListener]);
+  }, [
+    isGrabbed,
+    mouseMoveListener,
+    touchMoveListener,
+    releaseListener,
+    removeEventListeners,
+  ]);
 
   useEffect(() => {
-    const handleMouseDown = (event: MouseEvent) => {
-      if (!shouldListenMouseEvent(event)) return;
-      startDrag(event.clientX, event.clientY);
-    };
-    const handleTouchStart = (event: TouchEvent) => {
-      const touch = event.touches[0];
-      startDrag(touch.clientX, touch.clientY);
-    };
     if (ref.current) {
       const draggable = ref.current;
       draggable.draggable = false;
@@ -323,7 +334,7 @@ export const useDrag = (
         draggable.removeEventListener("touchstart", handleTouchStart);
       }
     };
-  }, [startDrag]);
+  }, [handleMouseDown, handleTouchStart]);
 
   useLayoutEffect(() => {
     setRect();
