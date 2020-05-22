@@ -1,5 +1,7 @@
-import React, { forwardRef } from "react";
+import React, { FunctionComponent } from "react";
 import styled, { CSSProperties } from "styled-components";
+import { useSelector } from "react-redux";
+import { Store } from "./redux/store";
 
 const StyledDropPlaceholder = styled.div`
   box-sizing: border-box;
@@ -7,6 +9,20 @@ const StyledDropPlaceholder = styled.div`
 interface DropPlaceHolderProps {
   style?: CSSProperties;
 }
-export const DropPlaceHolder = forwardRef<HTMLDivElement, DropPlaceHolderProps>(
-  (props, ref) => <StyledDropPlaceholder ref={ref} style={props.style} />
-);
+export const DropPlaceHolder: FunctionComponent = () => {
+  const { placeholderOrder, rects } = useSelector(
+    ({ draggables }: Store) => draggables
+  );
+  const shown = placeholderOrder !== null;
+  const rect = placeholderOrder !== null ? rects[placeholderOrder] : null;
+  return (
+    <StyledDropPlaceholder
+      style={{
+        width: shown ? rect?.width + "px" : "",
+        height: shown ? rect?.height + "px" : "",
+        display: shown ? "block" : "none",
+        order: placeholderOrder || undefined,
+      }}
+    />
+  );
+};

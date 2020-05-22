@@ -111,33 +111,11 @@ const getIntersections = (
     return intersections[0];
   }
 };
-const setPlaceholder = (
-  draggableEl: HTMLElement | null,
-  placeholderEl: HTMLElement | null,
-  placeholderOrder: number | null
-) => {
-  if (!draggableEl || !placeholderEl) return;
-  const rect = draggableEl.getBoundingClientRect();
-  const placeholderStyle = placeholderEl.style;
-  if (placeholderOrder !== null) {
-    placeholderStyle.width = rect.width + "px";
-    placeholderStyle.height = rect.height + "px";
-    placeholderStyle.display = "block";
-    placeholderStyle.order = placeholderOrder.toString();
-  } else {
-    placeholderStyle.width = "";
-    placeholderStyle.height = "";
-    placeholderStyle.display = "none";
-    placeholderStyle.order = "";
-  }
-};
-export const useDrag = (
-  index: number,
-  getPlaceholder: () => HTMLElement | null
-) => {
+
+export const useDrag = (index: number) => {
   const dispatch = useDispatch();
   const [isGrabbed, setIsGrabbed] = useState(false);
-  const { placeholderOrder, elementsOrder, rects } = useSelector(
+  const { elementsOrder, rects } = useSelector(
     ({ draggables }: Store) => draggables
   );
   const order = elementsOrder[index];
@@ -159,7 +137,6 @@ export const useDrag = (
 
   const setStyles = useCallback(() => {
     const el = ref.current;
-    const placeholderEl = getPlaceholder();
     if (!el) return;
 
     const rect = el.getBoundingClientRect();
@@ -173,12 +150,10 @@ export const useDrag = (
     style.pointerEvents = "none";
     style.order = "";
     style.zIndex = "5000";
-    setPlaceholder(el, placeholderEl, order);
-  }, [getPlaceholder, order]);
+  }, []);
 
   const resetStyles = useCallback(() => {
     const el = ref.current;
-    const placeholderEl = getPlaceholder();
     if (!el) return;
     const style = el.style;
     style.boxSizing = "";
@@ -191,9 +166,8 @@ export const useDrag = (
     style.pointerEvents = "";
     style.order = `${index}`;
     style.zIndex = "";
-    setPlaceholder(el, placeholderEl, null);
     setRect();
-  }, [index, setRect, getPlaceholder]);
+  }, [index, setRect]);
 
   const startDrag = useCallback(
     (clientX: number, clientY: number) => {
@@ -346,11 +320,6 @@ export const useDrag = (
     setRect();
   }, [setRect, elementsOrder, index]);
 
-  useLayoutEffect(() => {
-    const el = ref.current;
-    const placeholderEl = getPlaceholder();
-    setPlaceholder(el, placeholderEl, placeholderOrder);
-  }, [getPlaceholder, placeholderOrder]);
   return {
     ref: setRef,
   };
