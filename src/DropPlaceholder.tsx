@@ -10,11 +10,12 @@ interface DropPlaceHolderProps {
   style?: CSSProperties;
 }
 export const DropPlaceHolder: FunctionComponent = () => {
-  const { placeholderOrder, rects } = useSelector(
+  const { placeholderOrder, rects, elementsOrder } = useSelector(
     ({ draggables }: Store) => draggables
   );
   const shown = placeholderOrder !== null;
-  const rect = placeholderOrder !== null ? rects[placeholderOrder] : null;
+  const rect =
+    placeholderOrder !== null ? rects[elementsOrder[placeholderOrder]] : null;
   return (
     <StyledDropPlaceholder
       style={{
@@ -22,6 +23,12 @@ export const DropPlaceHolder: FunctionComponent = () => {
         height: shown ? rect?.height + "px" : "",
         display: shown ? "block" : "none",
         order: placeholderOrder || undefined,
+        gridColumnStart: shown ? rect?.gridColumnStart : "",
+        gridColumn: shown ? rect?.gridColumn : "",
+        gridColumnEnd: shown ? rect?.gridColumnEnd : "",
+        gridRow: shown ? rect?.gridRow : "",
+        gridRowStart: shown ? rect?.gridRowStart : "",
+        gridRowEnd: shown ? rect?.gridRowEnd : "",
       }}
     />
   );

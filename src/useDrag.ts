@@ -40,8 +40,9 @@ const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.shiftKey &&
   !event.altKey;
 
-const copyRect = (rect: DOMRect): Rect =>
-  rect && {
+const copyRect = (el: HTMLElement): Rect => {
+  const rect = el.getBoundingClientRect();
+  return {
     height: rect.height,
     width: rect.width,
     x: rect.x,
@@ -50,7 +51,15 @@ const copyRect = (rect: DOMRect): Rect =>
     left: rect.left,
     right: rect.right,
     top: rect.top,
+    area: rect.width * rect.height,
+    gridColumnStart: el.style.gridColumnStart,
+    gridColumn: el.style.gridColumn,
+    gridColumnEnd: el.style.gridColumnEnd,
+    gridRow: el.style.gridRow,
+    gridRowStart: el.style.gridRowStart,
+    gridRowEnd: el.style.gridRowEnd,
   };
+};
 
 const getIntersectionArea = (first: Rect, second: Rect) => {
   const intersects =
@@ -85,7 +94,6 @@ const getIntersections = (
     right: currentRect.right + shiftX,
     bottom: currentRect.bottom + shiftY,
   };
-
   const intersections: IntersectionArea[] = [];
   for (const key in rects) {
     if (
@@ -97,7 +105,8 @@ const getIntersections = (
       const intersectionArea =
         first && second && getIntersectionArea(first, second);
       if (intersectionArea) {
-        const areaRatio = intersectionArea / (second.width * second.height);
+        const minArea = Math.min(first.area, second.area);
+        const areaRatio = intersectionArea / minArea;
         intersections.push({
           order: parseInt(key),
           intersectionArea,
@@ -126,7 +135,7 @@ export const useDrag = (index: number) => {
 
   const setRect = useCallback(() => {
     if (ref.current) {
-      const rect = copyRect(ref.current.getBoundingClientRect());
+      const rect = copyRect(ref.current);
       dispatch(dndActions.setRect({ order, rect }));
     }
   }, [dispatch, order]);

@@ -9,10 +9,16 @@ export interface Rect {
   left: number;
   right: number;
   top: number;
+  area: number;
+  gridColumnStart: string;
+  gridColumn: string;
+  gridColumnEnd: string;
+  gridRow: string;
+  gridRowStart: string;
+  gridRowEnd: string;
 }
 
 export type RectsRecord = Record<number, Rect>;
-export interface Rects {}
 export interface Draggable {
   order: number;
   rect: Rect;
