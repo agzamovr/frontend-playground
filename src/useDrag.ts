@@ -304,12 +304,11 @@ export const useDrag = (index: number) => {
   ]);
 
   useLayoutEffect(() => {
-    const handler = () => setRect();
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
+    window.addEventListener("resize", setRect);
+    return () => window.removeEventListener("resize", setRect);
   }, [setRect]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (ref.current) {
       const draggable = ref.current;
       draggable.draggable = false;
