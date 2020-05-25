@@ -9,8 +9,8 @@ import { dndActions } from "./redux/dndReducer";
 const StyledBoard = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-rows: minmax(50px, auto);
   grid-gap: 5px;
-  max-height: 50vh;
   overflow: auto;
 `;
 
