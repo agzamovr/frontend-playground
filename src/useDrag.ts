@@ -6,7 +6,12 @@ import {
   useLayoutEffect,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { dndActions, Rect, RectsRecord } from "./redux/dndReducer";
+import {
+  dndActions,
+  GridCellRect,
+  RectsRecord,
+  Rect,
+} from "./redux/dndReducer";
 import { Store } from "./redux/store";
 
 interface IntersectionArea {
@@ -18,7 +23,7 @@ const releaseEvents = [
   "mouseup",
   "touchend",
   "touchcancel",
-  "scroll",
+  // "scroll",
   "resize",
   "orientationchange",
 ];
@@ -40,7 +45,7 @@ const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.shiftKey &&
   !event.altKey;
 
-const copyRect = (el: HTMLElement): Rect => {
+const copyRect = (el: HTMLElement): GridCellRect => {
   const rect = el.getBoundingClientRect();
   return {
     height: rect.height,
@@ -79,7 +84,7 @@ const getIntersectionArea = (first: Rect, second: Rect) => {
 
 const getIntersections = (
   currentOrder: number,
-  currentRect: Rect | null,
+  currentRect: GridCellRect | null,
   shiftX: number,
   shiftY: number,
   rects: RectsRecord
@@ -130,7 +135,7 @@ export const useDrag = (index: number) => {
   const order = elementsOrder[index];
   const ref = useRef<HTMLElement | null>(null);
   const isIntersectedRef = useRef(false);
-  const dragOriginRectRef = useRef<Rect | null>(null);
+  const dragOriginRectRef = useRef<GridCellRect | null>(null);
   const pointerOrigin = useRef({ x: 0, y: 0 });
 
   const setRect = useCallback(() => {

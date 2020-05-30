@@ -9,7 +9,8 @@ export interface Rect {
   left: number;
   right: number;
   top: number;
-  area: number;
+}
+export interface GridCell {
   gridColumnStart: string;
   gridColumn: string;
   gridColumnEnd: string;
@@ -17,11 +18,15 @@ export interface Rect {
   gridRowStart: string;
   gridRowEnd: string;
 }
+export type GridCellRect = Rect &
+  GridCell & {
+    area: number;
+  };
 
-export type RectsRecord = Record<number, Rect>;
+export type RectsRecord = Record<number, GridCellRect>;
 export interface Draggable {
   order: number;
-  rect: Rect;
+  rect: GridCellRect;
 }
 export interface Draggables {
   placeholderOrder: number | null;
