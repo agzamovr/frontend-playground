@@ -22,7 +22,7 @@ export const DropPlaceHolder: FunctionComponent = () => {
         width: shown ? rect?.width + "px" : "",
         height: shown ? rect?.height + "px" : "",
         display: shown ? "block" : "none",
-        order: placeholderOrder || undefined,
+        order: placeholderOrder ? parseInt(placeholderOrder) : undefined,
         gridColumnStart: shown ? rect?.gridColumnStart : "",
         gridColumn: shown ? rect?.gridColumn : "",
         gridColumnEnd: shown ? rect?.gridColumnEnd : "",

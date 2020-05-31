@@ -9,6 +9,7 @@ export interface Rect {
   left: number;
   right: number;
   top: number;
+  area: number;
 }
 export interface GridCell {
   gridColumnStart: string;
@@ -18,26 +19,40 @@ export interface GridCell {
   gridRowStart: string;
   gridRowEnd: string;
 }
-export type GridCellRect = Rect &
-  GridCell & {
-    area: number;
-  };
+export type GridCellRect = Rect & GridCell;
 
-export type RectsRecord = Record<number, GridCellRect>;
+export type RectsRecord = Record<string, GridCellRect>;
+export type OrderRecord = Record<string, string>;
 export interface Draggable {
-  order: number;
+  order: string;
   rect: GridCellRect;
 }
 export interface Draggables {
-  placeholderOrder: number | null;
-  elementsOrder: number[];
+  placeholderOrder: string | null;
+  elementsOrder: OrderRecord;
   rects: RectsRecord;
 }
 
 const initialState: Draggables = {
   placeholderOrder: null,
-  elementsOrder: [],
+  elementsOrder: {},
   rects: {},
+};
+
+export const findKeyByValue = (elementsOrder: OrderRecord, value: string) =>
+  Object.keys(elementsOrder).find((key) => elementsOrder[key] === value) || "";
+
+const switchIndexes = (
+  elementsOrder: OrderRecord,
+  index: string,
+  order: string
+): OrderRecord => {
+  const destinationIndex = findKeyByValue(elementsOrder, order);
+  return {
+    ...elementsOrder,
+    [index]: elementsOrder[destinationIndex],
+    [destinationIndex]: elementsOrder[index],
+  };
 };
 
 export const { actions: dndActions, reducer: dndReducer } = createSlice({
@@ -47,7 +62,7 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
     cleanState: () => initialState,
     setPlaceholderOrder: (
       state,
-      { payload }: PayloadAction<number | null>
+      { payload }: PayloadAction<string | null>
     ) => ({
       ...state,
       placeholderOrder: payload,
@@ -61,13 +76,30 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
       {
         payload,
       }: PayloadAction<{
-        placeholderOrder: number | null;
-        elementsOrder: number[];
+        placeholderOrder: string | null;
+        elementsOrder: OrderRecord;
       }>
     ) => ({
       ...state,
       placeholderOrder: payload.placeholderOrder,
-      elementsOrder: [...payload.elementsOrder],
+      elementsOrder: { ...payload.elementsOrder },
+    }),
+    switchElementsOrder: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        index: string;
+        order: string;
+      }>
+    ) => ({
+      ...state,
+      placeholderOrder: findKeyByValue(state.elementsOrder, payload.order),
+      elementsOrder: switchIndexes(
+        state.elementsOrder,
+        payload.index,
+        payload.order
+      ),
     }),
   },
 });

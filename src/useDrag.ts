@@ -5,7 +5,7 @@ import {
   useEffect,
   useLayoutEffect,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import {
   dndActions,
   GridCellRect,
@@ -15,7 +15,7 @@ import {
 import { Store } from "./redux/store";
 
 interface IntersectionArea {
-  order: number;
+  order: string;
   intersectionArea: number;
   areaRatio: number;
 }
@@ -83,7 +83,7 @@ const getIntersectionArea = (first: Rect, second: Rect) => {
 };
 
 const getIntersections = (
-  currentOrder: number,
+  currentOrder: string,
   currentRect: GridCellRect | null,
   shiftX: number,
   shiftY: number,
@@ -101,11 +101,7 @@ const getIntersections = (
   };
   const intersections: IntersectionArea[] = [];
   for (const key in rects) {
-    if (
-      currentOrder.toString() !== key &&
-      rects.hasOwnProperty(key) &&
-      rects[key]
-    ) {
+    if (currentOrder !== key && rects.hasOwnProperty(key) && rects[key]) {
       const second = rects[key];
       const intersectionArea =
         first && second && getIntersectionArea(first, second);
@@ -113,7 +109,7 @@ const getIntersections = (
         const minArea = Math.min(first.area, second.area);
         const areaRatio = intersectionArea / minArea;
         intersections.push({
-          order: parseInt(key),
+          order: key,
           intersectionArea,
           areaRatio,
         });
@@ -126,13 +122,13 @@ const getIntersections = (
   }
 };
 
-export const useDrag = (index: number) => {
+export const useDrag = (index: string, order: string) => {
   const dispatch = useDispatch();
   const [isGrabbed, setIsGrabbed] = useState(false);
-  const { elementsOrder, rects } = useSelector(
-    ({ draggables }: Store) => draggables
+  const rects = useSelector(
+    ({ draggables: { rects } }: Store) => rects,
+    shallowEqual
   );
-  const order = elementsOrder[index];
   const ref = useRef<HTMLElement | null>(null);
   const isIntersectedRef = useRef(false);
   const dragOriginRectRef = useRef<GridCellRect | null>(null);
@@ -142,6 +138,7 @@ export const useDrag = (index: number) => {
     if (ref.current) {
       const rect = copyRect(ref.current);
       dispatch(dndActions.setRect({ order, rect }));
+      console.log("set rect", order, rect);
     }
   }, [dispatch, order]);
 
@@ -152,8 +149,8 @@ export const useDrag = (index: number) => {
   const setStyles = useCallback(() => {
     const el = ref.current;
     if (!el) return;
-
-    const rect = el.getBoundingClientRect();
+    const rect = copyRect(el);
+    dragOriginRectRef.current = rect;
     const style = el.style;
     style.boxSizing = "border-box";
     style.position = "fixed";
@@ -178,7 +175,7 @@ export const useDrag = (index: number) => {
     style.left = "";
     style.transform = "";
     style.pointerEvents = "";
-    style.order = `${index}`;
+    style.order = index;
     style.zIndex = "";
     setRect();
   }, [index, setRect]);
@@ -189,10 +186,9 @@ export const useDrag = (index: number) => {
       pointerOrigin.current.x = clientX;
       pointerOrigin.current.y = clientY;
       setIsGrabbed(true);
-      dragOriginRectRef.current = rects[order];
       dispatch(dndActions.setPlaceholderOrder(index));
     },
-    [dispatch, setStyles, order, rects, index]
+    [dispatch, setStyles, index]
   );
 
   const handleMove = useCallback(
@@ -220,19 +216,15 @@ export const useDrag = (index: number) => {
       ) {
         isIntersectedRef.current = true;
         const { order: secondOrder } = intersection;
-        const secondIndex = elementsOrder.findIndex((e) => e === secondOrder);
-        const newElementsOrder = [...elementsOrder];
-        newElementsOrder[index] = elementsOrder[secondIndex];
-        newElementsOrder[secondIndex] = elementsOrder[index];
         dispatch(
-          dndActions.setElementsOrder({
-            placeholderOrder: secondIndex,
-            elementsOrder: newElementsOrder,
+          dndActions.switchElementsOrder({
+            index: index,
+            order: secondOrder,
           })
         );
       }
     },
-    [dispatch, elementsOrder, index, order, rects]
+    [dispatch, index, order, rects]
   );
 
   const releaseListener = useCallback(
@@ -308,12 +300,12 @@ export const useDrag = (index: number) => {
     removeEventListeners,
   ]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     window.addEventListener("resize", setRect);
     return () => window.removeEventListener("resize", setRect);
   }, [setRect]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!ref.current) return;
     const draggable = ref.current;
     draggable.draggable = false;
@@ -327,7 +319,7 @@ export const useDrag = (index: number) => {
 
   useLayoutEffect(() => {
     setRect();
-  }, [setRect, elementsOrder, index]);
+  }, [setRect, index]);
 
   return {
     ref: setRef,

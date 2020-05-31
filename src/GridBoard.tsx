@@ -2,9 +2,9 @@ import React, { FunctionComponent, useEffect } from "react";
 import styled from "styled-components";
 import { useDrag } from "./useDrag";
 import { DropPlaceHolder } from "./DropPlaceholder";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { Store } from "./redux/store";
-import { dndActions } from "./redux/dndReducer";
+import { dndActions, OrderRecord, findKeyByValue } from "./redux/dndReducer";
 
 const StyledBoard = styled.div`
   display: grid;
@@ -24,13 +24,22 @@ interface BoardProps {
   children: React.ReactElement<HTMLElement>[];
 }
 interface DraggableProps {
-  order: number;
+  originalOrder: string;
 }
 const Draggable: FunctionComponent<DraggableProps> = (props) => {
-  const { order, children } = props;
-  const { ref } = useDrag(order);
+  const { originalOrder, children } = props;
+  const order = useSelector(
+    ({ draggables: { elementsOrder } }: Store) =>
+      findKeyByValue(elementsOrder, originalOrder),
+    shallowEqual
+  );
+
+  const { ref } = useDrag(order, originalOrder);
   return (
-    <StyledDraggable ref={ref} style={{ order }}>
+    <StyledDraggable
+      ref={ref}
+      style={{ order: order ? parseInt(order) : undefined }}
+    >
       {children}
     </StyledDraggable>
   );
@@ -41,7 +50,8 @@ export const GridBoard: FunctionComponent<BoardProps> = (props) => {
   const { children } = props;
   const elementsCount = children.length;
   useEffect(() => {
-    const elementsOrder = Array.from({ length: elementsCount }, (v, i) => i);
+    const elementsOrder: OrderRecord = {};
+    for (let i = 0; i < elementsCount; i++) elementsOrder[i] = i.toString();
     dispatch(
       dndActions.setElementsOrder({
         placeholderOrder: null,
@@ -49,14 +59,12 @@ export const GridBoard: FunctionComponent<BoardProps> = (props) => {
       })
     );
   }, [dispatch, elementsCount]);
-  const elementsOrder = useSelector(
-    ({ draggables: { elementsOrder } }: Store) => elementsOrder
-  );
+  console.log("render grid board");
   return (
     <StyledBoard>
-      {elementsOrder.map((originalOrder, index) => (
-        <Draggable key={originalOrder} order={index}>
-          {children[originalOrder]}
+      {children.map((element, index) => (
+        <Draggable key={index} originalOrder={index.toString()}>
+          {element}
         </Draggable>
       ))}
       <DropPlaceHolder />
