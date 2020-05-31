@@ -122,7 +122,7 @@ const getIntersections = (
   }
 };
 
-export const useDrag = (index: string, order: string) => {
+export const useDrag = (order: string, originalOrder: string) => {
   const dispatch = useDispatch();
   const [isGrabbed, setIsGrabbed] = useState(false);
   const rects = useSelector(
@@ -137,10 +137,9 @@ export const useDrag = (index: string, order: string) => {
   const setRect = useCallback(() => {
     if (ref.current) {
       const rect = copyRect(ref.current);
-      dispatch(dndActions.setRect({ order, rect }));
-      console.log("set rect", order, rect);
+      dispatch(dndActions.setRect({ order: originalOrder, rect }));
     }
-  }, [dispatch, order]);
+  }, [dispatch, originalOrder]);
 
   const setRef = useCallback((element) => {
     ref.current = element;
@@ -175,10 +174,10 @@ export const useDrag = (index: string, order: string) => {
     style.left = "";
     style.transform = "";
     style.pointerEvents = "";
-    style.order = index;
+    style.order = order;
     style.zIndex = "";
     setRect();
-  }, [index, setRect]);
+  }, [order, setRect]);
 
   const startDrag = useCallback(
     (clientX: number, clientY: number) => {
@@ -186,9 +185,9 @@ export const useDrag = (index: string, order: string) => {
       pointerOrigin.current.x = clientX;
       pointerOrigin.current.y = clientY;
       setIsGrabbed(true);
-      dispatch(dndActions.setPlaceholderOrder(index));
+      dispatch(dndActions.setPlaceholderOrder(order));
     },
-    [dispatch, setStyles, index]
+    [dispatch, setStyles, order]
   );
 
   const handleMove = useCallback(
@@ -201,7 +200,7 @@ export const useDrag = (index: string, order: string) => {
       style.transform = `translate(${x}px,${y}px)`;
 
       const intersection = getIntersections(
-        order,
+        originalOrder,
         dragOriginRectRef.current,
         x,
         y,
@@ -218,13 +217,13 @@ export const useDrag = (index: string, order: string) => {
         const { order: secondOrder } = intersection;
         dispatch(
           dndActions.switchElementsOrder({
-            index: index,
-            order: secondOrder,
+            sourceOrder: order,
+            destinationOrder: secondOrder,
           })
         );
       }
     },
-    [dispatch, index, order, rects]
+    [dispatch, order, originalOrder, rects]
   );
 
   const releaseListener = useCallback(
@@ -319,7 +318,7 @@ export const useDrag = (index: string, order: string) => {
 
   useLayoutEffect(() => {
     setRect();
-  }, [setRect, index]);
+  }, [setRect, order]);
 
   return {
     ref: setRef,

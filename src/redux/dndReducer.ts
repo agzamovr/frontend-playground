@@ -44,14 +44,14 @@ export const findKeyByValue = (elementsOrder: OrderRecord, value: string) =>
 
 const switchIndexes = (
   elementsOrder: OrderRecord,
-  index: string,
-  order: string
+  source: string,
+  destination: string
 ): OrderRecord => {
-  const destinationIndex = findKeyByValue(elementsOrder, order);
+  const destinationIndex = findKeyByValue(elementsOrder, destination);
   return {
     ...elementsOrder,
-    [index]: elementsOrder[destinationIndex],
-    [destinationIndex]: elementsOrder[index],
+    [source]: elementsOrder[destinationIndex],
+    [destinationIndex]: elementsOrder[source],
   };
 };
 
@@ -89,16 +89,19 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
       {
         payload,
       }: PayloadAction<{
-        index: string;
-        order: string;
+        sourceOrder: string;
+        destinationOrder: string;
       }>
     ) => ({
       ...state,
-      placeholderOrder: findKeyByValue(state.elementsOrder, payload.order),
+      placeholderOrder: findKeyByValue(
+        state.elementsOrder,
+        payload.destinationOrder
+      ),
       elementsOrder: switchIndexes(
         state.elementsOrder,
-        payload.index,
-        payload.order
+        payload.sourceOrder,
+        payload.destinationOrder
       ),
     }),
   },

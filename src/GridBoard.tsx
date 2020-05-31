@@ -59,7 +59,6 @@ export const GridBoard: FunctionComponent<BoardProps> = (props) => {
       })
     );
   }, [dispatch, elementsCount]);
-  console.log("render grid board");
   return (
     <StyledBoard>
       {children.map((element, index) => (
