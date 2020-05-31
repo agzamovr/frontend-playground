@@ -314,18 +314,14 @@ export const useDrag = (index: number) => {
   }, [setRect]);
 
   useLayoutEffect(() => {
-    if (ref.current) {
-      const draggable = ref.current;
-      draggable.draggable = false;
-      draggable.addEventListener("mousedown", handleMouseDown);
-      draggable.addEventListener("touchstart", handleTouchStart);
-    }
+    if (!ref.current) return;
+    const draggable = ref.current;
+    draggable.draggable = false;
+    draggable.addEventListener("mousedown", handleMouseDown);
+    draggable.addEventListener("touchstart", handleTouchStart);
     return () => {
-      if (ref.current) {
-        const draggable = ref.current;
-        draggable.removeEventListener("mousedown", handleMouseDown);
-        draggable.removeEventListener("touchstart", handleTouchStart);
-      }
+      draggable.removeEventListener("mousedown", handleMouseDown);
+      draggable.removeEventListener("touchstart", handleTouchStart);
     };
   }, [handleMouseDown, handleTouchStart]);
 
