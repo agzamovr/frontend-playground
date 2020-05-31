@@ -8,13 +8,19 @@ import { dndActions, OrderRecord, findKeyByValue } from "./redux/dndReducer";
 
 const StyledBoard = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   grid-auto-rows: minmax(50px, auto);
   grid-gap: 5px;
   overflow: auto;
 `;
 
-const StyledDraggable = styled.div`
+interface DraggableAttributes {
+  order: string;
+}
+
+const StyledDraggable = styled.div.attrs((props: DraggableAttributes) => ({
+  "data-draggable": props.order,
+}))<DraggableAttributes>`
   cursor: grab;
   user-select: none;
   overflow-anchor: none;
@@ -38,6 +44,7 @@ const Draggable: FunctionComponent<DraggableProps> = (props) => {
   return (
     <StyledDraggable
       ref={ref}
+      order={order}
       style={{ order: order ? parseInt(order) : undefined }}
     >
       {children}

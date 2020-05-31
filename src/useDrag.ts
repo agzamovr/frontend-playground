@@ -5,14 +5,13 @@ import {
   useEffect,
   useLayoutEffect,
 } from "react";
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   dndActions,
   GridCellRect,
   RectsRecord,
   Rect,
 } from "./redux/dndReducer";
-import { Store } from "./redux/store";
 
 interface IntersectionArea {
   order: string;
@@ -64,6 +63,19 @@ const copyRect = (el: HTMLElement): GridCellRect => {
     gridRowStart: el.style.gridRowStart,
     gridRowEnd: el.style.gridRowEnd,
   };
+};
+
+const calcRects = (el: HTMLElement | null) => {
+  if (!el || !el.parentElement) return null;
+  const nodeList = Array.from(
+    el.parentElement.querySelectorAll("div[data-draggable]")
+  );
+  return nodeList
+    .map((elem) => copyRect(elem as HTMLElement))
+    .reduce((acc: RectsRecord, current, index) => {
+      acc[`${index}`] = current;
+      return acc;
+    }, {});
 };
 
 const getIntersectionArea = (first: Rect, second: Rect) => {
@@ -125,10 +137,7 @@ const getIntersections = (
 export const useDrag = (order: string, originalOrder: string) => {
   const dispatch = useDispatch();
   const [isGrabbed, setIsGrabbed] = useState(false);
-  const rects = useSelector(
-    ({ draggables: { rects } }: Store) => rects,
-    shallowEqual
-  );
+  const rects = useRef<RectsRecord | null>(null);
   const ref = useRef<HTMLElement | null>(null);
   const isIntersectedRef = useRef(false);
   const dragOriginRectRef = useRef<GridCellRect | null>(null);
@@ -181,6 +190,7 @@ export const useDrag = (order: string, originalOrder: string) => {
 
   const startDrag = useCallback(
     (clientX: number, clientY: number) => {
+      rects.current = calcRects(ref.current);
       setStyles();
       pointerOrigin.current.x = clientX;
       pointerOrigin.current.y = clientY;
@@ -199,12 +209,13 @@ export const useDrag = (order: string, originalOrder: string) => {
 
       style.transform = `translate(${x}px,${y}px)`;
 
+      if (!rects.current) return;
       const intersection = getIntersections(
         originalOrder,
         dragOriginRectRef.current,
         x,
         y,
-        rects
+        rects.current
       );
       if (!intersection || intersection.areaRatio < 0.5)
         isIntersectedRef.current = false;
@@ -221,9 +232,10 @@ export const useDrag = (order: string, originalOrder: string) => {
             destinationOrder: secondOrder,
           })
         );
+        rects.current = calcRects(ref.current);
       }
     },
-    [dispatch, order, originalOrder, rects]
+    [dispatch, order, originalOrder]
   );
 
   const releaseListener = useCallback(
@@ -235,6 +247,7 @@ export const useDrag = (order: string, originalOrder: string) => {
       dragOriginRectRef.current = null;
       resetStyles();
       dispatch(dndActions.setPlaceholderOrder(null));
+      rects.current = null;
     },
     [resetStyles, dispatch]
   );
