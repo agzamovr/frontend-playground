@@ -1,10 +1,4 @@
-import {
-  useRef,
-  useState,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-} from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   dndActions,
@@ -143,13 +137,6 @@ export const useDrag = (order: string, originalOrder: string) => {
   const dragOriginRectRef = useRef<GridCellRect | null>(null);
   const pointerOrigin = useRef({ x: 0, y: 0 });
 
-  const setRect = useCallback(() => {
-    if (ref.current) {
-      const rect = copyRect(ref.current);
-      dispatch(dndActions.setRect({ order: originalOrder, rect }));
-    }
-  }, [dispatch, originalOrder]);
-
   const setRef = useCallback((element) => {
     ref.current = element;
   }, []);
@@ -185,8 +172,7 @@ export const useDrag = (order: string, originalOrder: string) => {
     style.pointerEvents = "";
     style.order = order;
     style.zIndex = "";
-    setRect();
-  }, [order, setRect]);
+  }, [order]);
 
   const startDrag = useCallback(
     (clientX: number, clientY: number) => {
@@ -195,7 +181,12 @@ export const useDrag = (order: string, originalOrder: string) => {
       pointerOrigin.current.x = clientX;
       pointerOrigin.current.y = clientY;
       setIsGrabbed(true);
-      dispatch(dndActions.setPlaceholderOrder(order));
+      dispatch(
+        dndActions.setPlaceholderOrder({
+          order,
+          placeholderRect: dragOriginRectRef.current,
+        })
+      );
     },
     [dispatch, setStyles, order]
   );
@@ -246,7 +237,7 @@ export const useDrag = (order: string, originalOrder: string) => {
       pointerOrigin.current.y = 0;
       dragOriginRectRef.current = null;
       resetStyles();
-      dispatch(dndActions.setPlaceholderOrder(null));
+      dispatch(dndActions.resetPlaceholder());
       rects.current = null;
     },
     [resetStyles, dispatch]
@@ -313,11 +304,6 @@ export const useDrag = (order: string, originalOrder: string) => {
   ]);
 
   useEffect(() => {
-    window.addEventListener("resize", setRect);
-    return () => window.removeEventListener("resize", setRect);
-  }, [setRect]);
-
-  useEffect(() => {
     if (!ref.current) return;
     const draggable = ref.current;
     draggable.draggable = false;
@@ -328,10 +314,6 @@ export const useDrag = (order: string, originalOrder: string) => {
       draggable.removeEventListener("touchstart", handleTouchStart);
     };
   }, [handleMouseDown, handleTouchStart]);
-
-  useLayoutEffect(() => {
-    setRect();
-  }, [setRect, order]);
 
   return {
     ref: setRef,

@@ -30,13 +30,13 @@ export interface Draggable {
 export interface Draggables {
   placeholderOrder: string | null;
   elementsOrder: OrderRecord;
-  rects: RectsRecord;
+  placeholderRect: GridCellRect | null;
 }
 
 const initialState: Draggables = {
   placeholderOrder: null,
   elementsOrder: {},
-  rects: {},
+  placeholderRect: null,
 };
 
 export const findKeyByValue = (elementsOrder: OrderRecord, value: string) =>
@@ -55,21 +55,25 @@ const switchIndexes = (
   };
 };
 
+interface Placeholder {
+  order: string;
+  placeholderRect: GridCellRect | null;
+}
+
 export const { actions: dndActions, reducer: dndReducer } = createSlice({
   initialState,
   name: "grid-board",
   reducers: {
     cleanState: () => initialState,
-    setPlaceholderOrder: (
-      state,
-      { payload }: PayloadAction<string | null>
-    ) => ({
+    resetPlaceholder: (state) => ({
       ...state,
-      placeholderOrder: payload,
+      placeholderOrder: null,
+      placeholderRect: null,
     }),
-    setRect: (state, { payload }: PayloadAction<Draggable>) => ({
+    setPlaceholderOrder: (state, { payload }: PayloadAction<Placeholder>) => ({
       ...state,
-      rects: { ...state.rects, [payload.order]: payload.rect },
+      placeholderOrder: payload.order,
+      placeholderRect: payload.placeholderRect,
     }),
     setElementsOrder: (
       state,
