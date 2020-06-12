@@ -6,6 +6,7 @@ import {
   RectsRecord,
   Rect,
 } from "./redux/dndReducer";
+import { getViewportIntersection } from "./scroll";
 
 interface IntersectionArea {
   order: string;
@@ -16,7 +17,6 @@ const releaseEvents = [
   "mouseup",
   "touchend",
   "touchcancel",
-  // "scroll",
   "resize",
   "orientationchange",
 ];
@@ -136,6 +136,7 @@ export const useDrag = (order: string, originalOrder: string) => {
   const isIntersectedRef = useRef(false);
   const dragOriginRectRef = useRef<GridCellRect | null>(null);
   const pointerOrigin = useRef({ x: 0, y: 0 });
+  const pointerPostion = useRef({ x: 0, y: 0 });
 
   const setRef = useCallback((element) => {
     ref.current = element;
@@ -195,8 +196,10 @@ export const useDrag = (order: string, originalOrder: string) => {
     (clientX: number, clientY: number) => {
       if (!ref.current) return;
       const style = ref.current.style;
-      const x = clientX - pointerOrigin.current.x;
-      const y = clientY - pointerOrigin.current.y;
+      pointerPostion.current.x = clientX;
+      pointerPostion.current.y = clientY;
+      const x = pointerPostion.current.x - pointerOrigin.current.x;
+      const y = pointerPostion.current.y - pointerOrigin.current.y;
 
       style.transform = `translate(${x}px,${y}px)`;
 
@@ -225,6 +228,14 @@ export const useDrag = (order: string, originalOrder: string) => {
         );
         rects.current = calcRects(ref.current);
       }
+      requestAnimationFrame(() => {
+        const vi = getViewportIntersection(dragOriginRectRef.current, x, y);
+        if (vi && (vi.bottom < 0 || vi.top < 0)) {
+          const y = vi.bottom < 0 ? -vi.bottom : vi.top;
+          window.scrollBy({ left: 0, top: y, behavior: "smooth" });
+          console.log(vi);
+        }
+      });
     },
     [dispatch, order, originalOrder]
   );
@@ -235,6 +246,8 @@ export const useDrag = (order: string, originalOrder: string) => {
       setIsGrabbed(false);
       pointerOrigin.current.x = 0;
       pointerOrigin.current.y = 0;
+      pointerPostion.current.x = 0;
+      pointerPostion.current.y = 0;
       dragOriginRectRef.current = null;
       resetStyles();
       dispatch(dndActions.resetPlaceholder());
@@ -242,6 +255,10 @@ export const useDrag = (order: string, originalOrder: string) => {
     },
     [resetStyles, dispatch]
   );
+
+  const scrollListener = useCallback(() => {
+    handleMove(pointerPostion.current.x, pointerPostion.current.y);
+  }, [handleMove]);
 
   const mouseMoveListener = useCallback(
     (event: MouseEvent) => {
@@ -277,15 +294,17 @@ export const useDrag = (order: string, originalOrder: string) => {
   );
 
   const removeEventListeners = useCallback(() => {
+    window.removeEventListener("scroll", scrollListener, options);
     window.removeEventListener("mousemove", mouseMoveListener, options);
     window.removeEventListener("touchmove", touchMoveListener, options);
     releaseEvents.forEach((event) =>
       window.removeEventListener(event, releaseListener)
     );
-  }, [mouseMoveListener, touchMoveListener, releaseListener]);
+  }, [scrollListener, mouseMoveListener, touchMoveListener, releaseListener]);
 
   useEffect(() => {
     if (isGrabbed) {
+      window.addEventListener("scroll", scrollListener, options);
       window.addEventListener("mousemove", mouseMoveListener, options);
       window.addEventListener("touchmove", touchMoveListener, options);
       releaseEvents.forEach((event) =>
@@ -297,6 +316,7 @@ export const useDrag = (order: string, originalOrder: string) => {
     return removeEventListeners;
   }, [
     isGrabbed,
+    scrollListener,
     mouseMoveListener,
     touchMoveListener,
     releaseListener,
