@@ -20,11 +20,12 @@ interface DraggableAttributes {
 
 const StyledDraggable = styled.div.attrs((props: DraggableAttributes) => ({
   "data-draggable": props.order,
+  draggable: false,
 }))<DraggableAttributes>`
   cursor: grab;
   user-select: none;
   overflow-anchor: none;
-  box-sizing: "border-box";
+  box-sizing: border-box;
 `;
 interface BoardProps {
   children: React.ReactElement<HTMLElement>[];

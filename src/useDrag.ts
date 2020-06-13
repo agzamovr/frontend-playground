@@ -20,7 +20,7 @@ const releaseEvents = [
   "resize",
   "orientationchange",
 ];
-const options = { capture: false, passive: false };
+const options = { capture: false, passive: false } as const;
 const compareIntersections = (a: IntersectionArea, b: IntersectionArea) =>
   a.areaRatio > b.areaRatio
     ? -1

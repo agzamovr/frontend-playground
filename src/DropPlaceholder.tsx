@@ -10,8 +10,11 @@ interface DropPlaceHolderProps {
   style?: CSSProperties;
 }
 export const DropPlaceHolder: FunctionComponent = () => {
-  const { placeholderOrder, placeholderRect: rect } = useSelector(
-    ({ draggables }: Store) => draggables
+  const placeholderOrder = useSelector(
+    ({ draggables }: Store) => draggables.placeholderOrder
+  );
+  const rect = useSelector(
+    ({ draggables }: Store) => draggables.placeholderRect
   );
   const shown = placeholderOrder !== null;
   return (
