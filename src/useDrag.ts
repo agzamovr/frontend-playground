@@ -233,7 +233,6 @@ export const useDrag = (order: string, originalOrder: string) => {
         if (vi && (vi.bottom < 0 || vi.top < 0)) {
           const y = vi.bottom < 0 ? -vi.bottom : vi.top;
           window.scrollBy({ left: 0, top: y, behavior: "smooth" });
-          console.log(vi);
         }
       });
     },
