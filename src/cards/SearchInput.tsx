@@ -23,12 +23,17 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function CustomizedInputBase() {
+export default function SearchInput() {
   const classes = useStyles();
 
   return (
     <Card className={classes.root} variant="outlined">
-      <InputBase className={classes.input} placeholder="Search Cards" />
+      <InputBase
+        className={classes.input}
+        placeholder="Search Cards"
+        type="search"
+        inputMode="search"
+      />
       <IconButton className={classes.iconButton} aria-label="search">
         <SearchIcon />
       </IconButton>
