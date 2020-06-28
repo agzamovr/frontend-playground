@@ -16,6 +16,7 @@ const useStyles = makeStyles<Theme, { selected: boolean }>((theme: Theme) =>
     }),
     title: {
       flexGrow: 1,
+      userSelect: "none",
     },
   })
 );
