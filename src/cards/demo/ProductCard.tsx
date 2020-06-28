@@ -1,27 +1,30 @@
 import React from "react";
-import { InputAdornment, Box } from "@material-ui/core";
-import { SelectableCard } from "cards/SelectableCard";
-import { Field, FieldConfig } from "cards/FieldComponent";
+import { InputAdornment } from "@material-ui/core";
+import { FieldConfig } from "cards/FieldComponent";
+import { CardConfig } from "cards/demo/DemoCards";
 
 const fields: FieldConfig[] = [
   {
     name: "textfield",
-    props: { label: "Name", disabled: true },
+    props: { placeholder: "Name", disabled: true },
   },
   {
     name: "textfield",
     props: {
-      label: "Amount",
+      placeholder: "Amount",
       type: "number",
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
+      InputProps: {
+        endAdornment: <InputAdornment position="end">pcs</InputAdornment>,
+      },
     },
   },
   {
     name: "textfield",
     props: {
-      label: "Width",
+      placeholder: "Width",
       type: "number",
       disabled: true,
       inputMode: "decimal",
@@ -34,7 +37,7 @@ const fields: FieldConfig[] = [
   {
     name: "textfield",
     props: {
-      label: "Height",
+      placeholder: "Height",
       type: "number",
       disabled: true,
       inputMode: "decimal",
@@ -47,7 +50,7 @@ const fields: FieldConfig[] = [
   {
     name: "textfield",
     props: {
-      label: "Length",
+      placeholder: "Length",
       type: "number",
       disabled: true,
       inputMode: "decimal",
@@ -60,20 +63,20 @@ const fields: FieldConfig[] = [
   {
     name: "textfield",
     props: {
-      label: "Weight",
+      placeholder: "Weight",
       type: "number",
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
       InputProps: {
-        endAdornment: <InputAdornment position="end">Kg</InputAdornment>,
+        endAdornment: <InputAdornment position="end">kg</InputAdornment>,
       },
     },
   },
   {
     name: "textfield",
     props: {
-      label: "Price",
+      placeholder: "Price",
       type: "number",
       disabled: true,
       inputMode: "decimal",
@@ -85,12 +88,7 @@ const fields: FieldConfig[] = [
   },
 ];
 
-export const ProductCard = () => (
-  <SelectableCard title="Product">
-    {fields.map((field, index) => (
-      <Box key={index}>
-        <Field {...field} />
-      </Box>
-    ))}
-  </SelectableCard>
-);
+export const ProductCardConfig: CardConfig = {
+  title: "Product",
+  fields,
+};

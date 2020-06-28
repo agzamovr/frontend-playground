@@ -6,8 +6,10 @@ import RadioButtonUncheckedRoundedIcon from "@material-ui/icons/RadioButtonUnche
 import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import { Field, FieldConfig } from "cards/FieldComponent";
+import { Grid } from "@material-ui/core";
 
-const useStyles = makeStyles<Theme, { selected: boolean }>((theme: Theme) =>
+const useStyles = makeStyles<Theme, { selected: boolean }>((theme) =>
   createStyles({
     root: (props) => ({
       maxWidth: 360,
@@ -29,6 +31,7 @@ interface SelectableTitleProps {
 
 interface SelectableCardProps {
   title: string;
+  fields: FieldConfig[];
 }
 
 export const SelectableTitle: FunctionComponent<SelectableTitleProps> = ({
@@ -61,6 +64,7 @@ export const SelectableCard: FunctionComponent<SelectableCardProps> = (
 ) => {
   const [selected, setSelected] = useState(false);
   const classes = useStyles({ selected });
+  const { title, fields } = props;
   return (
     <Card
       className={classes.root}
@@ -68,8 +72,12 @@ export const SelectableCard: FunctionComponent<SelectableCardProps> = (
       onClick={() => setSelected(!selected)}
     >
       <CardContent>
-        <SelectableTitle title={props.title} selected={selected} />
-        {props.children}
+        <SelectableTitle title={title} selected={selected} />
+        {fields.map((field, index) => (
+          <Grid key={index}>
+            <Field {...field} />
+          </Grid>
+        ))}
       </CardContent>
     </Card>
   );

@@ -1,7 +1,6 @@
-import React, { MouseEvent } from "react";
-import { Box } from "@material-ui/core";
-import { FieldConfig, Field } from "cards/FieldComponent";
-import { SelectableCard } from "cards/SelectableCard";
+import { MouseEvent } from "react";
+import { FieldConfig } from "cards/FieldComponent";
+import { CardConfig } from "cards/demo/DemoCards";
 
 const noop = (event: MouseEvent) => {
   event.preventDefault();
@@ -51,12 +50,7 @@ const fields: FieldConfig[] = [
   },
 ];
 
-export const ChecklistCard = () => (
-  <SelectableCard title="Checklist">
-    {fields.map((field, index) => (
-      <Box key={index}>
-        <Field {...field} />
-      </Box>
-    ))}
-  </SelectableCard>
-);
+export const ChecklistCardConfig: CardConfig = {
+  title: "Checklist",
+  fields,
+};

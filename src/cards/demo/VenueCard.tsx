@@ -1,12 +1,12 @@
 import React from "react";
-import { InputAdornment, Box } from "@material-ui/core";
+import { InputAdornment } from "@material-ui/core";
 import BusinessIcon from "@material-ui/icons/Business";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import PhoneIcon from "@material-ui/icons/Phone";
 import EmailIcon from "@material-ui/icons/Email";
 import ContactMailIcon from "@material-ui/icons/ContactMail";
-import { SelectableCard } from "cards/SelectableCard";
-import { Field, FieldConfig } from "cards/FieldComponent";
+import { FieldConfig } from "cards/FieldComponent";
+import { CardConfig } from "cards/demo/DemoCards";
 
 const fields: FieldConfig[] = [
   {
@@ -83,18 +83,12 @@ const fields: FieldConfig[] = [
     name: "datetime",
     props: {
       disabled: true,
-      showTodayButton: true,
       disablePast: true,
     },
   },
 ];
 
-export const VenueCard = () => (
-  <SelectableCard title="Venue">
-    {fields.map((field) => (
-      <Box>
-        <Field {...field} />
-      </Box>
-    ))}
-  </SelectableCard>
-);
+export const VenueCardConfig: CardConfig = {
+  title: "Venue/Location",
+  fields,
+};

@@ -1,7 +1,5 @@
-import React from "react";
-import Box from "@material-ui/core/Box";
-import { SelectableCard } from "cards/SelectableCard";
-import { Field, FieldConfig } from "cards/FieldComponent";
+import { FieldConfig } from "cards/FieldComponent";
+import { CardConfig } from "cards/demo/DemoCards";
 
 const fields: FieldConfig[] = [
   {
@@ -17,12 +15,7 @@ const fields: FieldConfig[] = [
   },
 ];
 
-export const HeaderDescriptionCard = () => (
-  <SelectableCard title="Title">
-    {fields.map((field, index) => (
-      <Box key={index}>
-        <Field {...field} />
-      </Box>
-    ))}
-  </SelectableCard>
-);
+export const HeaderDescriptionCardConfig: CardConfig = {
+  title: "Title",
+  fields,
+};
