@@ -12,5 +12,16 @@ export const theme = createMuiTheme({
         borderRadius: "4px",
       },
     },
+    MuiInputBase: {
+      input: {
+        "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
+          "-webkit-appearance": "none",
+          margin: 0,
+        },
+        '&[type="number"]': {
+          "-moz-appearance": "textfield",
+        },
+      },
+    },
   },
 });
