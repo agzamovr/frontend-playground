@@ -83,8 +83,8 @@ const fields: FieldConfig[] = [
 
 export const CustomerCard = () => (
   <SelectableCard title="Customer">
-    {fields.map((field) => (
-      <Box>
+    {fields.map((field, index) => (
+      <Box key={index}>
         <Field {...field} />
       </Box>
     ))}

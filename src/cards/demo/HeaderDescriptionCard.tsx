@@ -19,8 +19,8 @@ const fields: FieldConfig[] = [
 
 export const HeaderDescriptionCard = () => (
   <SelectableCard title="Title">
-    {fields.map((field) => (
-      <Box>
+    {fields.map((field, index) => (
+      <Box key={index}>
         <Field {...field} />
       </Box>
     ))}
