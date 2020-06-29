@@ -1,5 +1,3 @@
-import React from "react";
-import { InputAdornment } from "@material-ui/core";
 import { FieldConfig } from "cards/FieldComponent";
 import { CardConfig } from "cards/demo/DemoCards";
 
@@ -16,9 +14,7 @@ const fields: FieldConfig[] = [
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
-      InputProps: {
-        endAdornment: <InputAdornment position="end">pcs</InputAdornment>,
-      },
+      end: { text: "pcs" },
     },
   },
   {
@@ -29,9 +25,7 @@ const fields: FieldConfig[] = [
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
-      InputProps: {
-        endAdornment: <InputAdornment position="end">cm</InputAdornment>,
-      },
+      end: { text: "cm" },
     },
   },
   {
@@ -42,9 +36,7 @@ const fields: FieldConfig[] = [
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
-      InputProps: {
-        endAdornment: <InputAdornment position="end">cm</InputAdornment>,
-      },
+      end: { text: "cm" },
     },
   },
   {
@@ -55,9 +47,7 @@ const fields: FieldConfig[] = [
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
-      InputProps: {
-        endAdornment: <InputAdornment position="end">cm</InputAdornment>,
-      },
+      end: { text: "cm" },
     },
   },
   {
@@ -68,9 +58,7 @@ const fields: FieldConfig[] = [
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
-      InputProps: {
-        endAdornment: <InputAdornment position="end">kg</InputAdornment>,
-      },
+      end: { text: "kg" },
     },
   },
   {
@@ -81,9 +69,7 @@ const fields: FieldConfig[] = [
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
-      InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
-      },
+      start: { text: "$" },
     },
   },
 ];

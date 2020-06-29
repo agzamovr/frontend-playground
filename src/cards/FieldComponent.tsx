@@ -1,9 +1,7 @@
 import React, { FunctionComponent } from "react";
 
 import {
-  TextFieldProps,
   Chip,
-  TextField,
   ChipProps,
   makeStyles,
   DividerProps,
@@ -13,6 +11,7 @@ import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { ChecklistProps, Checklist } from "./Checklist";
 import { Header, HeaderProps } from "./Header";
 import { Datetime, DatetimeProps } from "./Datetime";
+import { TextfieldProps, TextField } from "cards/Textfield";
 
 export interface Styled {
   style?: CSSProperties;
@@ -34,9 +33,8 @@ interface ChipConfig extends Styled {
 interface DatetimeConfig extends DatetimeProps {
   name: "datetime";
 }
-interface TextFieldConfig extends Styled {
+interface TextFieldConfig extends TextfieldProps {
   name: "textfield";
-  props?: TextFieldProps;
 }
 interface ChecklistConfig extends ChecklistProps {
   name: "checklist";
@@ -63,7 +61,7 @@ export const Field: FunctionComponent<FieldConfig> = (props) => {
     case "chip":
       return <Chip {...props.props} className={classes?.root} />;
     case "textfield":
-      return <TextField {...props.props} className={classes?.root} />;
+      return <TextField {...props} />;
     case "checklist":
       return <Checklist {...props} />;
     case "datetime":

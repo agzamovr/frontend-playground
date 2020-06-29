@@ -1,10 +1,3 @@
-import React from "react";
-import { InputAdornment } from "@material-ui/core";
-import BusinessIcon from "@material-ui/icons/Business";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import PhoneIcon from "@material-ui/icons/Phone";
-import EmailIcon from "@material-ui/icons/Email";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
 import { FieldConfig } from "cards/FieldComponent";
 import { CardConfig } from "cards/demo/DemoCards";
 
@@ -14,13 +7,7 @@ const fields: FieldConfig[] = [
     props: {
       placeholder: "Street address, floor",
       disabled: true,
-      InputProps: {
-        startAdornment: (
-          <InputAdornment position="start">
-            <BusinessIcon />
-          </InputAdornment>
-        ),
-      },
+      start: { icon: "business" },
     },
   },
   {
@@ -28,13 +15,7 @@ const fields: FieldConfig[] = [
     props: {
       placeholder: "City, State, Zip",
       disabled: true,
-      InputProps: {
-        startAdornment: (
-          <InputAdornment position="start">
-            <LocationOnIcon />
-          </InputAdornment>
-        ),
-      },
+      start: { icon: "location_on" },
     },
   },
   {
@@ -42,13 +23,7 @@ const fields: FieldConfig[] = [
     props: {
       placeholder: "Phone number",
       disabled: true,
-      InputProps: {
-        startAdornment: (
-          <InputAdornment position="start">
-            <PhoneIcon />
-          </InputAdornment>
-        ),
-      },
+      start: { icon: "phone" },
     },
   },
   {
@@ -56,13 +31,7 @@ const fields: FieldConfig[] = [
     props: {
       placeholder: "Email",
       disabled: true,
-      InputProps: {
-        startAdornment: (
-          <InputAdornment position="start">
-            <EmailIcon />
-          </InputAdornment>
-        ),
-      },
+      start: { icon: "email" },
     },
   },
   {
@@ -70,13 +39,7 @@ const fields: FieldConfig[] = [
     props: {
       placeholder: "Full Name",
       disabled: true,
-      InputProps: {
-        startAdornment: (
-          <InputAdornment position="start">
-            <ContactMailIcon />
-          </InputAdornment>
-        ),
-      },
+      start: { icon: "contact_mail" },
     },
   },
 ];
