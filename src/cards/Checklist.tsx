@@ -1,7 +1,6 @@
 import React, { FunctionComponent, Fragment } from "react";
 
 import {
-  ListProps,
   CheckboxProps,
   List,
   ListItem,
@@ -12,13 +11,18 @@ import {
 } from "@material-ui/core";
 import { Styled } from "./FieldComponent";
 
+type CheckboxPropKeys =
+  | "indeterminate"
+  | "checked"
+  | "color"
+  | "disabled"
+  | "onClick";
 export interface ChecklistProps extends Styled {
-  props?: ListProps;
   items: {
     // itemProps?: ListItemProps<"li", { button?: false }> &
     //   ListItemProps<"div", { button?: true }>;
-    formControlProps: Omit<FormControlLabelProps, "control">;
-    checkboxProps: CheckboxProps;
+    formControlProps: Pick<FormControlLabelProps, "label">;
+    checkboxProps: Pick<CheckboxProps, CheckboxPropKeys>;
     subChecklist?: ChecklistProps;
   }[];
 }
@@ -30,7 +34,7 @@ const ChecklistComponent: FunctionComponent<
   const isNested = props.level > 0;
   const paddingLeft = isNested ? theme.spacing(4) : 0;
   return (
-    <List {...props.props} disablePadding={isNested} style={{ paddingLeft }}>
+    <List disablePadding={isNested} style={{ paddingLeft }}>
       {props.items.map((item, index) => (
         <Fragment key={index}>
           <ListItem>

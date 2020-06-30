@@ -5,7 +5,7 @@ import { Styled } from "./FieldComponent";
 
 export interface HeaderProps<C extends React.ElementType = "h1">
   extends Styled {
-  props: TypographyProps<C, { component?: C }> & {
+  props: Pick<TypographyProps<C, { component?: C }>, "color"> & {
     text: string;
     variant: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   };

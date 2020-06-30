@@ -11,9 +11,15 @@ interface Adornment {
   icon?: string;
   text?: string;
 }
-
+type TextFieldKeys =
+  | "label"
+  | "placeholder"
+  | "disabled"
+  | "type"
+  | "inputMode"
+  | "inputProps";
 export interface TextfieldProps extends Styled {
-  props: MuiTextFieldProps & {
+  props: Pick<MuiTextFieldProps, TextFieldKeys> & {
     start?: Adornment;
     end?: Adornment;
   };
