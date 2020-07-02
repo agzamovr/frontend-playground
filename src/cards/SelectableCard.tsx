@@ -12,8 +12,14 @@ import { Grid } from "@material-ui/core";
 const useStyles = makeStyles<Theme, { selected: boolean }>((theme) =>
   createStyles({
     root: (props) => ({
-      maxWidth: 360,
+      display: "flex",
+      flexDirection: "column",
+      maxWidth: 345,
       minWidth: 300,
+      width: "100%",
+      // maxHeight: 250,
+      height: "100%",
+      overflowY: "auto",
       borderColor: props.selected ? theme.palette.primary.main : undefined,
     }),
     title: {
@@ -32,6 +38,7 @@ interface SelectableTitleProps {
 interface SelectableCardProps {
   title: string;
   fields: FieldConfig[];
+  onSelect?: (selected: boolean) => void;
 }
 
 export const SelectableTitle: FunctionComponent<SelectableTitleProps> = ({
@@ -65,12 +72,12 @@ export const SelectableCard: FunctionComponent<SelectableCardProps> = (
   const [selected, setSelected] = useState(false);
   const classes = useStyles({ selected });
   const { title, fields } = props;
+  const handleSelect = () => {
+    setSelected(!selected);
+    props.onSelect && props.onSelect(!selected);
+  };
   return (
-    <Card
-      className={classes.root}
-      variant="outlined"
-      onClick={() => setSelected(!selected)}
-    >
+    <Card className={classes.root} variant="outlined" onClick={handleSelect}>
       <CardContent>
         <SelectableTitle title={title} selected={selected} />
         {fields.map((field, index) => (
