@@ -1,12 +1,5 @@
-import { MouseEvent } from "react";
 import { FieldConfig } from "cards/FieldComponent";
 import { CardConfig } from "cards/demo/DemoCards";
-
-const noop = (event: MouseEvent) => {
-  event.preventDefault();
-  event.stopPropagation();
-  return false;
-};
 
 const fields: FieldConfig[] = [
   {
@@ -14,7 +7,10 @@ const fields: FieldConfig[] = [
     items: [
       {
         formControlProps: { label: "Deliver to Customer" },
-        checkboxProps: { checked: true, color: "primary", onClick: noop },
+        checkboxProps: {
+          checked: true,
+          color: "primary",
+        },
       },
       {
         formControlProps: { label: "Install" },
@@ -22,7 +18,6 @@ const fields: FieldConfig[] = [
           indeterminate: true,
           checked: true,
           color: "primary",
-          onClick: noop,
         },
         subChecklist: {
           items: [
@@ -32,7 +27,6 @@ const fields: FieldConfig[] = [
                 checked: true,
                 disabled: true,
                 color: "primary",
-                onClick: noop,
               },
             },
             {
@@ -40,7 +34,6 @@ const fields: FieldConfig[] = [
               checkboxProps: {
                 checked: false,
                 color: "primary",
-                onClick: noop,
               },
             },
           ],

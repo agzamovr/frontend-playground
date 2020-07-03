@@ -11,12 +11,7 @@ import {
 } from "@material-ui/core";
 import { Styled } from "./FieldComponent";
 
-type CheckboxPropKeys =
-  | "indeterminate"
-  | "checked"
-  | "color"
-  | "disabled"
-  | "onClick";
+type CheckboxPropKeys = "indeterminate" | "checked" | "color" | "disabled";
 export interface ChecklistProps extends Styled {
   items: {
     // itemProps?: ListItemProps<"li", { button?: false }> &
