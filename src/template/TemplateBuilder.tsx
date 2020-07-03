@@ -37,13 +37,20 @@ export const TemplateBuilder: FunctionComponent = () => {
     dispatcher(templateActions.addSelectedCards());
   };
 
+  const handleCardRemove = (index: number) =>
+    dispatcher(templateActions.removeCard(index));
+
   return (
     <>
       <Box p={2}>
         <Grid container spacing={2}>
           {cards.map(({ title, fields }, index) => (
             <Grid item key={index}>
-              <TemplateCard title={title} fields={fields} />
+              <TemplateCard
+                title={title}
+                fields={fields}
+                onCardRemove={() => handleCardRemove(index)}
+              />
             </Grid>
           ))}
           <Grid item>

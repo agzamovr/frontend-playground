@@ -2,8 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CardConfig, DemoCardList } from "cards/demo/DemoCards";
 import { DemoCardKeys } from "cards/demo/DemoCards";
 
+type SelectedCard = { order: number; demoCard: DemoCardKeys };
 export interface Cards {
-  selectedCards: DemoCardKeys[];
+  selectedCards: SelectedCard[];
   cards: CardConfig[];
 }
 
@@ -12,8 +13,10 @@ const initialState: Cards = {
   cards: [],
 };
 
-const mapSelectedCards = (selectedCards: DemoCardKeys[]) =>
-  selectedCards.map((key) => ({ ...DemoCardList[key] }));
+const mapSelectedCards = (selectedCards: SelectedCard[]) =>
+  [...selectedCards]
+    .sort((card1, card2) => (card1.order < card2.order ? -1 : 1))
+    .map((card) => ({ ...DemoCardList[card.demoCard] }));
 
 export const {
   actions: templateActions,
@@ -23,18 +26,24 @@ export const {
   name: "cards",
   reducers: {
     cleanState: () => initialState,
-    addCard: (state, { payload }: PayloadAction<DemoCardKeys>) => ({
+    selectDemoCard: (state, { payload }: PayloadAction<SelectedCard>) => ({
       ...state,
       selectedCards: [...state.selectedCards, payload],
     }),
-    removeCard: (state, { payload }: PayloadAction<DemoCardKeys>) => ({
+    unselectDemoCard: (state, { payload }: PayloadAction<DemoCardKeys>) => ({
       ...state,
-      selectedCards: state.selectedCards.filter((card) => card !== payload),
+      selectedCards: state.selectedCards.filter(
+        (card) => card.demoCard !== payload
+      ),
     }),
     addSelectedCards: (state) => ({
       ...state,
       selectedCards: initialState.selectedCards,
       cards: [...state.cards, ...mapSelectedCards(state.selectedCards)],
+    }),
+    removeCard: (state, { payload }: PayloadAction<number>) => ({
+      ...state,
+      cards: state.cards.filter((_, i) => i !== payload),
     }),
   },
 });

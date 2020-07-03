@@ -3,7 +3,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { Field, FieldConfig } from "cards/FieldComponent";
-import { Grid, CardHeader, CardActions, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  CardHeader,
+  CardActions,
+  IconButton,
+  Tooltip,
+} from "@material-ui/core";
 import TuneIcon from "@material-ui/icons/Tune";
 import DeleteIcon from "@material-ui/icons/Delete";
 
@@ -19,7 +25,6 @@ const useStyles = makeStyles({
     overflowY: "auto",
   },
   content: {
-    // height: "100%",
     flexGrow: 1,
   },
 });
@@ -27,11 +32,12 @@ const useStyles = makeStyles({
 interface TemplateCardProps {
   title: string;
   fields: FieldConfig[];
+  onCardRemove: () => void;
 }
 
 export const TemplateCard: FunctionComponent<TemplateCardProps> = (props) => {
   const classes = useStyles();
-  const { title, fields } = props;
+  const { title, fields, onCardRemove } = props;
   return (
     <Card className={classes.root} variant="outlined">
       <CardHeader
@@ -51,12 +57,16 @@ export const TemplateCard: FunctionComponent<TemplateCardProps> = (props) => {
       </CardContent>
       <CardActions disableSpacing>
         <Grid container justify="flex-end">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-          <IconButton>
-            <TuneIcon />
-          </IconButton>
+          <Tooltip title="Remove card">
+            <IconButton onClick={onCardRemove}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Card settings">
+            <IconButton>
+              <TuneIcon />
+            </IconButton>
+          </Tooltip>
         </Grid>
       </CardActions>
     </Card>

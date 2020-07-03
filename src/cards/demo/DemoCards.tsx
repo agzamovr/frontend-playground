@@ -31,10 +31,16 @@ export const DemoCardList: Record<DemoCardKeys, CardConfig> = {
 
 export const DemoCards = () => {
   const dispatcher = useDispatch();
-  const handleSelect = (key: DemoCardKeys, selected: boolean) => {
+  const handleSelect = (
+    index: number,
+    key: DemoCardKeys,
+    selected: boolean
+  ) => {
     selected
-      ? dispatcher(templateActions.addCard(key))
-      : dispatcher(templateActions.removeCard(key));
+      ? dispatcher(
+          templateActions.selectDemoCard({ order: index, demoCard: key })
+        )
+      : dispatcher(templateActions.unselectDemoCard(key));
   };
   return (
     <Box p={1}>
@@ -48,7 +54,7 @@ export const DemoCards = () => {
               title={title}
               fields={fields}
               onSelect={(selected) =>
-                handleSelect(key as DemoCardKeys, selected)
+                handleSelect(index, key as DemoCardKeys, selected)
               }
             />
           </Grid>
