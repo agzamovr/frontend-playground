@@ -1,15 +1,15 @@
 import React from "react";
 import { SelectableCard } from "cards/SelectableCard";
-import { FieldConfig } from "cards/FieldComponent";
+import { FieldConfig } from "components/FieldComponent";
 import { CustomerCardConfig } from "cards/demo/CustomerCard";
 import { HeaderDescriptionCardConfig } from "cards/demo/HeaderDescriptionCard";
 import { Grid, Box } from "@material-ui/core";
-import SearchInput from "cards/SearchInput";
 import { ChecklistCardConfig } from "cards/demo/ChecklistCard";
 import { VenueCardConfig } from "cards/demo/VenueCard";
 import { ProductCardConfig } from "cards/demo/ProductCard";
 import { templateActions } from "template/redux/templateReducer";
 import { useDispatch } from "react-redux";
+import SearchInput from "components/SearchInput";
 
 export interface CardConfig {
   title: string;

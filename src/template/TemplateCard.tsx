@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { Field, FieldConfig } from "cards/FieldComponent";
+import { Field, FieldConfig } from "components/FieldComponent";
 import {
   Grid,
   CardHeader,

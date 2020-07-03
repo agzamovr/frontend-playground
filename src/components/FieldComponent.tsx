@@ -1,11 +1,11 @@
 import React, { FunctionComponent } from "react";
 
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
-import { ChecklistProps, Checklist } from "./Checklist";
-import { Header, HeaderProps } from "./Header";
-import { Datetime, DatetimeProps } from "./Datetime";
-import { TextfieldProps, TextField } from "cards/Textfield";
-import { ChipProps, Chip } from "cards/Chip";
+import { ChipProps, Chip } from "components/Chip";
+import { HeaderProps, Header } from "components/Header";
+import { DatetimeProps, Datetime } from "components/Datetime";
+import { TextfieldProps, TextField } from "components/TextField";
+import { ChecklistProps, Checklist } from "cards/Checklist";
 
 export interface Styled {
   style?: CSSProperties;

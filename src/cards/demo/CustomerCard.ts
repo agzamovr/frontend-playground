@@ -1,4 +1,4 @@
-import { FieldConfig } from "cards/FieldComponent";
+import { FieldConfig } from "components/FieldComponent";
 import { CardConfig } from "cards/demo/DemoCards";
 
 const fields: FieldConfig[] = [

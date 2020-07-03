@@ -1,11 +1,11 @@
 import React from "react";
-import { Styled } from "./FieldComponent";
 import {
   InputAdornment,
   TextFieldProps as MuiTextFieldProps,
   TextField as MuiTextField,
 } from "@material-ui/core";
 import Icon from "@material-ui/core/Icon";
+import { Styled } from "components/FieldComponent";
 
 interface Adornment {
   icon?: string;
