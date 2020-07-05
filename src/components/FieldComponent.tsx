@@ -4,8 +4,9 @@ import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { ChipProps, Chip } from "components/Chip";
 import { HeaderProps, Header } from "components/Header";
 import { DatetimeProps, Datetime } from "components/Datetime";
-import { TextfieldProps, TextField } from "components/TextField";
+import { TextfieldProps, TextField } from "components/TextField/TextField";
 import { ChecklistProps, Checklist } from "cards/Checklist";
+import { SwitchProps, Switch } from "components/Switch";
 
 export interface Styled {
   style?: CSSProperties;
@@ -17,6 +18,10 @@ interface HeaderConfig extends HeaderProps {
 
 interface ChipConfig extends ChipProps {
   name: "chip";
+}
+
+interface SwitchConfig extends SwitchProps {
+  name: "switch";
 }
 interface DatetimeConfig extends DatetimeProps {
   name: "datetime";
@@ -31,6 +36,7 @@ interface ChecklistConfig extends ChecklistProps {
 export type FieldConfig =
   | HeaderConfig
   | ChipConfig
+  | SwitchConfig
   | TextFieldConfig
   | ChecklistConfig
   | DatetimeConfig;
@@ -41,6 +47,8 @@ export const Field: FunctionComponent<FieldConfig> = (props) => {
       return <Header {...props} />;
     case "chip":
       return <Chip {...props} />;
+    case "switch":
+      return <Switch {...props} />;
     case "textfield":
       return <TextField {...props} />;
     case "checklist":

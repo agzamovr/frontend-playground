@@ -17,7 +17,9 @@ type TextFieldKeys =
   | "disabled"
   | "type"
   | "inputMode"
-  | "inputProps";
+  | "inputProps"
+  | "defaultValue"
+  | "helperText";
 export interface TextfieldProps extends Styled {
   props: Pick<MuiTextFieldProps, TextFieldKeys> & {
     start?: Adornment;
