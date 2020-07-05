@@ -33,11 +33,12 @@ interface TemplateCardProps {
   title: string;
   fields: FieldConfig[];
   onCardRemove: () => void;
+  onSettingsClicked: () => void;
 }
 
 export const TemplateCard: FunctionComponent<TemplateCardProps> = (props) => {
   const classes = useStyles();
-  const { title, fields, onCardRemove } = props;
+  const { title, fields, onCardRemove, onSettingsClicked } = props;
   return (
     <Card className={classes.root} variant="outlined">
       <CardHeader
@@ -63,7 +64,7 @@ export const TemplateCard: FunctionComponent<TemplateCardProps> = (props) => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Card settings">
-            <IconButton>
+            <IconButton onClick={onSettingsClicked}>
               <TuneIcon />
             </IconButton>
           </Tooltip>
