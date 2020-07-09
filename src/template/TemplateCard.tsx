@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { Field, FieldConfig } from "components/FieldComponent";
+import { Fields, FieldConfig } from "components/FieldComponent";
 import {
   Grid,
   CardHeader,
@@ -50,11 +50,7 @@ export const TemplateCard: FunctionComponent<TemplateCardProps> = (props) => {
         }}
       />
       <CardContent className={classes.content}>
-        {fields.map((field, index) => (
-          <Grid key={index} item>
-            <Field {...field} />
-          </Grid>
-        ))}
+        <Fields fields={fields} />
       </CardContent>
       <CardActions disableSpacing>
         <Grid container justify="flex-end">

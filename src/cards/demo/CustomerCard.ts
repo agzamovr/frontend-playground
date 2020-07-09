@@ -3,7 +3,7 @@ import { CardConfig } from "cards/demo/DemoCards";
 
 const fields: FieldConfig[] = [
   {
-    name: "textfield",
+    type: "textfield",
     props: {
       placeholder: "Street address, floor",
       disabled: true,
@@ -11,7 +11,7 @@ const fields: FieldConfig[] = [
     },
   },
   {
-    name: "textfield",
+    type: "textfield",
     props: {
       placeholder: "City, State, Zip",
       disabled: true,
@@ -19,7 +19,7 @@ const fields: FieldConfig[] = [
     },
   },
   {
-    name: "textfield",
+    type: "textfield",
     props: {
       placeholder: "Phone number",
       disabled: true,
@@ -27,7 +27,7 @@ const fields: FieldConfig[] = [
     },
   },
   {
-    name: "textfield",
+    type: "textfield",
     props: {
       placeholder: "Email",
       disabled: true,
@@ -35,7 +35,7 @@ const fields: FieldConfig[] = [
     },
   },
   {
-    name: "textfield",
+    type: "textfield",
     props: {
       placeholder: "Full Name",
       disabled: true,

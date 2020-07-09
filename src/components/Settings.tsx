@@ -2,14 +2,14 @@ import React, { FunctionComponent, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { Field, FieldConfig } from "components/FieldComponent";
+import { Fields, FieldConfig } from "components/FieldComponent";
 import { textFieldSettings } from "components/TextField/TextFieldSettings";
 import { Grid, Box, Typography, Collapse } from "@material-ui/core";
 import { CardConfig } from "cards/demo/DemoCards";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
@@ -20,44 +20,72 @@ const useStyles = makeStyles({
     flex: "0 0 auto",
     overflowY: "auto",
   },
-  content: {
-    flexGrow: 1,
+  tab: {
+    [theme.breakpoints.up("sm")]: {
+      minWidth: "min-content",
+    },
   },
-});
+}));
 
 interface SettingsProps {
   card: CardConfig;
 }
 
 interface FieldSettingsProps {
-  classes: Record<"root", string>;
+  classes: Record<"root" | "tab", string>;
   field: FieldConfig;
 }
+const fieldSettingsLabel = (field: FieldConfig) =>
+  field.type === "composed"
+    ? field.name
+    : field.type === "textfield"
+    ? field.props.label || field.props.placeholder
+    : null;
+
+const fieldSettings = ({ classes, field }: FieldSettingsProps): FieldConfig[] =>
+  field.type === "composed"
+    ? [
+        {
+          type: "tabs",
+          props: {
+            value: 0,
+            indicatorColor: "primary",
+            scrollButtons: "off",
+            variant: "scrollable",
+          },
+          tabs: field.fields.map((subField) => ({
+            tab: {
+              label: fieldSettingsLabel(subField),
+              className: classes.tab,
+            },
+            panel: fieldSettings({ classes, field: subField }),
+          })),
+        },
+      ]
+    : field.type === "textfield"
+    ? textFieldSettings(field.props)
+    : [];
 
 const FieldSettings = ({ classes, field }: FieldSettingsProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const handleClick = () => setIsExpanded(!isExpanded);
-  return field.name === "textfield" ? (
+  return (
     <Card variant="outlined" className={classes.root}>
       <CardContent>
         <Box display="flex" alignItems="center" onClick={handleClick}>
           <Typography color="textPrimary" variant="h6" style={{ flexGrow: 1 }}>
-            {field.props.label || field.props.placeholder}
+            {fieldSettingsLabel(field)}
           </Typography>
           {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </Box>
         <Collapse in={isExpanded} timeout="auto" unmountOnExit>
           <Grid container spacing={2} direction="column">
-            {textFieldSettings(field.props).map((field, index) => (
-              <Grid key={index} item>
-                <Field {...field} />
-              </Grid>
-            ))}
+            <Fields fields={fieldSettings({ classes, field })} />
           </Grid>
         </Collapse>
       </CardContent>
     </Card>
-  ) : null;
+  );
 };
 
 export const Settings: FunctionComponent<SettingsProps> = (props) => {
@@ -69,8 +97,8 @@ export const Settings: FunctionComponent<SettingsProps> = (props) => {
         <Grid item>
           <Typography variant="h5">{card.title}</Typography>
         </Grid>
-        {card.fields.map((field) => (
-          <Grid item>
+        {card.fields.map((field, index) => (
+          <Grid item key={index}>
             <FieldSettings classes={classes} field={field} />
           </Grid>
         ))}

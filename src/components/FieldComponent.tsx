@@ -7,42 +7,57 @@ import { DatetimeProps, Datetime } from "components/Datetime";
 import { TextfieldProps, TextField } from "components/TextField/TextField";
 import { ChecklistProps, Checklist } from "cards/Checklist";
 import { SwitchProps, Switch } from "components/Switch";
+import { Grid } from "@material-ui/core";
+import { TabsProps, Tabs } from "components/Tabs/Tabs";
 
 export interface Styled {
   style?: CSSProperties;
 }
 
 interface HeaderConfig extends HeaderProps {
-  name: "header";
+  type: "header";
 }
 
 interface ChipConfig extends ChipProps {
-  name: "chip";
+  type: "chip";
 }
 
 interface SwitchConfig extends SwitchProps {
-  name: "switch";
+  type: "switch";
 }
 interface DatetimeConfig extends DatetimeProps {
-  name: "datetime";
+  type: "datetime";
 }
 interface TextFieldConfig extends TextfieldProps {
-  name: "textfield";
+  type: "textfield";
 }
 interface ChecklistConfig extends ChecklistProps {
-  name: "checklist";
+  type: "checklist";
 }
 
-export type FieldConfig =
+interface TabsConfig extends TabsProps {
+  type: "tabs";
+}
+
+type SimpleFieldConfig =
   | HeaderConfig
   | ChipConfig
   | SwitchConfig
   | TextFieldConfig
   | ChecklistConfig
-  | DatetimeConfig;
+  | DatetimeConfig
+  | TabsConfig;
 
-export const Field: FunctionComponent<FieldConfig> = (props) => {
-  switch (props.name) {
+export type FieldConfig =
+  | SimpleFieldConfig
+  | {
+      type: "composed";
+      name: string;
+      fields: FieldConfig[];
+    };
+
+export const Field: FunctionComponent<SimpleFieldConfig> = (props) => {
+  switch (props.type) {
     case "header":
       return <Header {...props} />;
     case "chip":
@@ -55,5 +70,23 @@ export const Field: FunctionComponent<FieldConfig> = (props) => {
       return <Checklist {...props} />;
     case "datetime":
       return <Datetime {...props} />;
+    case "tabs":
+      return <Tabs {...props} />;
   }
 };
+
+export const Fields: FunctionComponent<{ fields: FieldConfig[] }> = ({
+  fields,
+}) => (
+  <>
+    {fields.map((field, index) =>
+      field.type === "composed" ? (
+        <Fields key={index} fields={field.fields} />
+      ) : (
+        <Grid key={index} item>
+          <Field {...field} />
+        </Grid>
+      )
+    )}
+  </>
+);

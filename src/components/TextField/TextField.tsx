@@ -18,6 +18,7 @@ type TextFieldKeys =
   | "type"
   | "inputMode"
   | "inputProps"
+  | "value"
   | "defaultValue"
   | "helperText";
 export interface TextfieldProps extends Styled {

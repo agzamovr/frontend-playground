@@ -6,8 +6,7 @@ import RadioButtonUncheckedRoundedIcon from "@material-ui/icons/RadioButtonUnche
 import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { Field, FieldConfig } from "components/FieldComponent";
-import { Grid } from "@material-ui/core";
+import { Fields, FieldConfig } from "components/FieldComponent";
 
 const useStyles = makeStyles<Theme, { selected: boolean }>((theme) =>
   createStyles({
@@ -80,11 +79,7 @@ export const SelectableCard: FunctionComponent<SelectableCardProps> = (
     <Card className={classes.root} variant="outlined" onClick={handleSelect}>
       <CardContent>
         <SelectableTitle title={title} selected={selected} />
-        {fields.map((field, index) => (
-          <Grid key={index}>
-            <Field {...field} />
-          </Grid>
-        ))}
+        <Fields fields={fields} />
       </CardContent>
     </Card>
   );

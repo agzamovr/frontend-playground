@@ -3,11 +3,11 @@ import { CardConfig } from "cards/demo/DemoCards";
 
 const fields: FieldConfig[] = [
   {
-    name: "textfield",
+    type: "textfield",
     props: { placeholder: "Name", disabled: true },
   },
   {
-    name: "textfield",
+    type: "textfield",
     props: {
       placeholder: "Amount",
       type: "number",
@@ -18,40 +18,46 @@ const fields: FieldConfig[] = [
     },
   },
   {
-    name: "textfield",
-    props: {
-      placeholder: "Width",
-      type: "number",
-      disabled: true,
-      inputMode: "decimal",
-      inputProps: { min: "0" },
-      end: { text: "cm" },
-    },
+    type: "composed",
+    name: "Size",
+    fields: [
+      {
+        type: "textfield",
+        props: {
+          placeholder: "Width",
+          type: "number",
+          disabled: true,
+          inputMode: "decimal",
+          inputProps: { min: "0" },
+          end: { text: "cm" },
+        },
+      },
+      {
+        type: "textfield",
+        props: {
+          placeholder: "Height",
+          type: "number",
+          disabled: true,
+          inputMode: "decimal",
+          inputProps: { min: "0" },
+          end: { text: "cm" },
+        },
+      },
+      {
+        type: "textfield",
+        props: {
+          placeholder: "Length",
+          type: "number",
+          disabled: true,
+          inputMode: "decimal",
+          inputProps: { min: "0" },
+          end: { text: "cm" },
+        },
+      },
+    ],
   },
   {
-    name: "textfield",
-    props: {
-      placeholder: "Height",
-      type: "number",
-      disabled: true,
-      inputMode: "decimal",
-      inputProps: { min: "0" },
-      end: { text: "cm" },
-    },
-  },
-  {
-    name: "textfield",
-    props: {
-      placeholder: "Length",
-      type: "number",
-      disabled: true,
-      inputMode: "decimal",
-      inputProps: { min: "0" },
-      end: { text: "cm" },
-    },
-  },
-  {
-    name: "textfield",
+    type: "textfield",
     props: {
       placeholder: "Weight",
       type: "number",
@@ -62,7 +68,7 @@ const fields: FieldConfig[] = [
     },
   },
   {
-    name: "textfield",
+    type: "textfield",
     props: {
       placeholder: "Price",
       type: "number",
