@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { templateActions } from "template/redux/templateReducer";
 import { Store } from "redux/store";
 import { TemplateCard } from "template/TemplateCard";
-import { Settings } from "components/Settings";
+import { CardSettings } from "components/Settings/CardSettings";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,7 +74,7 @@ export const TemplateBuilder: FunctionComponent = () => {
         {drawer === "cards" ? (
           <DemoCards />
         ) : drawer === "settings" && card ? (
-          <Settings card={card} />
+          <CardSettings card={card} />
         ) : null}
         <Fab color="primary" className={classes.fab} onClick={handleFabClick}>
           <CheckIcon />

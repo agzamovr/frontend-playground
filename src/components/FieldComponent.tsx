@@ -39,7 +39,7 @@ interface TabsConfig extends TabsProps {
   type: "tabs";
 }
 
-type SimpleFieldConfig =
+export type SimpleFieldConfig =
   | HeaderConfig
   | ChipConfig
   | SwitchConfig
@@ -48,13 +48,13 @@ type SimpleFieldConfig =
   | DatetimeConfig
   | TabsConfig;
 
-export type FieldConfig =
-  | SimpleFieldConfig
-  | {
-      type: "composed";
-      name: string;
-      fields: FieldConfig[];
-    };
+export type ComposedFieldConfig = {
+  type: "composed";
+  name: string;
+  fields: FieldConfig[];
+};
+
+export type FieldConfig = SimpleFieldConfig | ComposedFieldConfig;
 
 export const Field: FunctionComponent<SimpleFieldConfig> = (props) => {
   switch (props.type) {
