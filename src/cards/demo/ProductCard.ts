@@ -1,5 +1,6 @@
 import { FieldConfig } from "components/FieldComponent";
 import { CardConfig } from "cards/demo/DemoCards";
+import { Size } from "components/Size/Size";
 
 const fields: FieldConfig[] = [
   {
@@ -17,45 +18,7 @@ const fields: FieldConfig[] = [
       end: { text: "pcs" },
     },
   },
-  {
-    type: "composed",
-    name: "Size",
-    fields: [
-      {
-        type: "textfield",
-        props: {
-          placeholder: "Width",
-          type: "number",
-          disabled: true,
-          inputMode: "decimal",
-          inputProps: { min: "0" },
-          end: { text: "cm" },
-        },
-      },
-      {
-        type: "textfield",
-        props: {
-          placeholder: "Height",
-          type: "number",
-          disabled: true,
-          inputMode: "decimal",
-          inputProps: { min: "0" },
-          end: { text: "cm" },
-        },
-      },
-      {
-        type: "textfield",
-        props: {
-          placeholder: "Length",
-          type: "number",
-          disabled: true,
-          inputMode: "decimal",
-          inputProps: { min: "0" },
-          end: { text: "cm" },
-        },
-      },
-    ],
-  },
+  { ...Size },
   {
     type: "textfield",
     props: {
