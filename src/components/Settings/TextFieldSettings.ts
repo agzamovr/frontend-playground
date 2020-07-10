@@ -17,6 +17,10 @@ export const textFieldSettings = (
   },
   {
     type: "textfield",
+    props: { label: "Help text", value: props.helperText },
+  },
+  {
+    type: "textfield",
     props: { label: "Tooltip" },
   },
   {
