@@ -2,6 +2,7 @@ import { FieldConfig } from "components/FieldComponent";
 import { FieldSettingsProps } from "components/Settings/FieldSettings";
 import { composedSettings } from "components/Settings/ComposedFieldSettings";
 import { textFieldSettings } from "components/Settings/TextFieldSettings";
+import { sizeSettings } from "components/Settings/SizeSettings";
 
 export const fieldSettingsLabel = (field: FieldConfig) =>
   field.component === "composed"
@@ -15,7 +16,9 @@ export const fieldSettings = ({
   field,
 }: FieldSettingsProps): FieldConfig[] =>
   field.component === "composed"
-    ? composedSettings(classes, field)
+    ? field.name === "Size"
+      ? sizeSettings(classes, field)
+      : composedSettings(classes, field)
     : field.component === "textfield"
     ? textFieldSettings(field.props)
     : [];
