@@ -3,7 +3,7 @@ import { CardConfig } from "cards/demo/DemoCards";
 
 const fields: FieldConfig[] = [
   {
-    type: "checklist",
+    component: "checklist",
     items: [
       {
         formControlProps: { label: "Deliver to Customer" },

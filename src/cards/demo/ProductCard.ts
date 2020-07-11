@@ -4,11 +4,11 @@ import { Size } from "components/Size/Size";
 
 const fields: FieldConfig[] = [
   {
-    type: "textfield",
+    component: "textfield",
     props: { placeholder: "Name", disabled: true },
   },
   {
-    type: "textfield",
+    component: "textfield",
     props: {
       placeholder: "Amount",
       type: "number",
@@ -20,7 +20,7 @@ const fields: FieldConfig[] = [
   },
   { ...Size },
   {
-    type: "textfield",
+    component: "textfield",
     props: {
       placeholder: "Weight",
       type: "number",
@@ -31,7 +31,7 @@ const fields: FieldConfig[] = [
     },
   },
   {
-    type: "textfield",
+    component: "textfield",
     props: {
       placeholder: "Price",
       type: "number",

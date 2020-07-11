@@ -3,14 +3,14 @@ import { CardConfig } from "cards/demo/DemoCards";
 
 const fields: FieldConfig[] = [
   {
-    type: "chip",
+    component: "chip",
     props: { label: "STATUS" },
     style: {
       backgroundColor: "#FFB74D",
     },
   },
   {
-    type: "textfield",
+    component: "textfield",
     props: { label: "Description and notes", disabled: true },
   },
 ];

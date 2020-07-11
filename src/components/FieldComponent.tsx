@@ -15,28 +15,28 @@ export interface Styled {
 }
 
 interface HeaderConfig extends HeaderProps {
-  type: "header";
+  component: "header";
 }
 
 interface ChipConfig extends ChipProps {
-  type: "chip";
+  component: "chip";
 }
 
 interface SwitchConfig extends SwitchProps {
-  type: "switch";
+  component: "switch";
 }
 interface DatetimeConfig extends DatetimeProps {
-  type: "datetime";
+  component: "datetime";
 }
 interface TextFieldConfig extends TextfieldProps {
-  type: "textfield";
+  component: "textfield";
 }
 interface ChecklistConfig extends ChecklistProps {
-  type: "checklist";
+  component: "checklist";
 }
 
 interface TabsConfig extends TabsProps {
-  type: "tabs";
+  component: "tabs";
 }
 
 export type SimpleFieldConfig =
@@ -49,7 +49,7 @@ export type SimpleFieldConfig =
   | TabsConfig;
 
 export type ComposedFieldConfig = {
-  type: "composed";
+  component: "composed";
   name: string;
   fields: FieldConfig[];
 };
@@ -57,7 +57,7 @@ export type ComposedFieldConfig = {
 export type FieldConfig = SimpleFieldConfig | ComposedFieldConfig;
 
 export const Field: FunctionComponent<SimpleFieldConfig> = (props) => {
-  switch (props.type) {
+  switch (props.component) {
     case "header":
       return <Header {...props} />;
     case "chip":
@@ -80,7 +80,7 @@ export const Fields: FunctionComponent<{ fields: FieldConfig[] }> = ({
 }) => (
   <>
     {fields.map((field, index) =>
-      field.type === "composed" ? (
+      field.component === "composed" ? (
         <Fields key={index} fields={field.fields} />
       ) : (
         <Grid key={index} item>

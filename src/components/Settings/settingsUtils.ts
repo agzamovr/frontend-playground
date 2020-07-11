@@ -4,9 +4,9 @@ import { composedSettings } from "components/Settings/ComposedFieldSettings";
 import { textFieldSettings } from "components/Settings/TextFieldSettings";
 
 export const fieldSettingsLabel = (field: FieldConfig) =>
-  field.type === "composed"
+  field.component === "composed"
     ? field.name
-    : field.type === "textfield"
+    : field.component === "textfield"
     ? field.props.label || field.props.placeholder
     : null;
 
@@ -14,8 +14,8 @@ export const fieldSettings = ({
   classes,
   field,
 }: FieldSettingsProps): FieldConfig[] =>
-  field.type === "composed"
+  field.component === "composed"
     ? composedSettings(classes, field)
-    : field.type === "textfield"
+    : field.component === "textfield"
     ? textFieldSettings(field.props)
     : [];

@@ -5,26 +5,26 @@ export const textFieldSettings = (
   props: TextfieldProps["props"]
 ): FieldConfig[] => [
   {
-    type: "textfield",
+    component: "textfield",
     props: {
       label: "Label",
       value: props.label,
     },
   },
   {
-    type: "textfield",
+    component: "textfield",
     props: { label: "Placeholder", value: props.placeholder },
   },
   {
-    type: "textfield",
+    component: "textfield",
     props: { label: "Help text", value: props.helperText },
   },
   {
-    type: "textfield",
+    component: "textfield",
     props: { label: "Tooltip" },
   },
   {
-    type: "switch",
+    component: "switch",
     props: { color: "primary" },
     formControlProps: { label: "Required" },
   },

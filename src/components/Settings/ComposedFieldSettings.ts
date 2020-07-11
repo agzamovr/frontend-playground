@@ -10,7 +10,7 @@ export const composedSettings = (
   composedField: ComposedFieldConfig
 ): FieldConfig[] => [
   {
-    type: "tabs",
+    component: "tabs",
     props: {
       value: 0,
       indicatorColor: "primary",

@@ -1,11 +1,11 @@
 import { FieldConfig } from "components/FieldComponent";
 
 export const Contact: FieldConfig = {
-  type: "composed",
+  component: "composed",
   name: "Contact",
   fields: [
     {
-      type: "textfield",
+      component: "textfield",
       props: {
         placeholder: "Phone number",
         disabled: true,
@@ -13,7 +13,7 @@ export const Contact: FieldConfig = {
       },
     },
     {
-      type: "textfield",
+      component: "textfield",
       props: {
         placeholder: "Email",
         disabled: true,
@@ -21,7 +21,7 @@ export const Contact: FieldConfig = {
       },
     },
     {
-      type: "textfield",
+      component: "textfield",
       props: {
         placeholder: "Full Name",
         disabled: true,
