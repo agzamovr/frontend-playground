@@ -10,6 +10,7 @@ import { SwitchProps, Switch } from "components/Switch";
 import { Grid } from "@material-ui/core";
 import { TabsProps, Tabs } from "components/Tabs/Tabs";
 import { SelectProps, Select } from "components/Select/Select";
+import { RadioGroup, RadioGroupProps } from "components/RadioGroup/RadioGroup";
 
 export interface Styled {
   style?: CSSProperties;
@@ -25,6 +26,9 @@ interface ChipConfig extends ChipProps {
 
 interface SwitchConfig extends SwitchProps {
   component: "switch";
+}
+interface RadioConfig extends RadioGroupProps {
+  component: "radio";
 }
 interface DatetimeConfig extends DatetimeProps {
   component: "datetime";
@@ -47,6 +51,7 @@ export type SimpleFieldConfig =
   | HeaderConfig
   | ChipConfig
   | SwitchConfig
+  | RadioConfig
   | TextFieldConfig
   | SelecttFieldConfig
   | ChecklistConfig
@@ -69,6 +74,8 @@ export const Field: FunctionComponent<SimpleFieldConfig> = (props) => {
       return <Chip {...props} />;
     case "switch":
       return <Switch {...props} />;
+    case "radio":
+      return <RadioGroup {...props} />;
     case "textfield":
       return <TextField {...props} />;
     case "select":
