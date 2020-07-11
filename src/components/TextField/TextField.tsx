@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import {
   InputAdornment,
   TextFieldProps as MuiTextFieldProps,
@@ -20,6 +20,7 @@ type TextFieldKeys =
   | "inputProps"
   | "value"
   | "defaultValue"
+  | "select"
   | "helperText";
 export interface TextfieldProps extends Styled {
   props: Pick<MuiTextFieldProps, TextFieldKeys> & {
@@ -28,7 +29,7 @@ export interface TextfieldProps extends Styled {
   };
 }
 
-export const TextField = (props: TextfieldProps) => {
+export const TextField: FunctionComponent<TextfieldProps> = (props) => {
   const { start, end, ...rest } = props.props;
   const startAdornment =
     start?.icon || start?.text ? (
@@ -44,6 +45,8 @@ export const TextField = (props: TextfieldProps) => {
     ) : undefined;
 
   return (
-    <MuiTextField {...rest} InputProps={{ startAdornment, endAdornment }} />
+    <MuiTextField {...rest} InputProps={{ startAdornment, endAdornment }}>
+      {props.children}
+    </MuiTextField>
   );
 };

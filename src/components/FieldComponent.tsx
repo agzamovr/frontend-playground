@@ -9,6 +9,7 @@ import { ChecklistProps, Checklist } from "cards/Checklist";
 import { SwitchProps, Switch } from "components/Switch";
 import { Grid } from "@material-ui/core";
 import { TabsProps, Tabs } from "components/Tabs/Tabs";
+import { SelectProps, Select } from "components/Select/Select";
 
 export interface Styled {
   style?: CSSProperties;
@@ -31,6 +32,9 @@ interface DatetimeConfig extends DatetimeProps {
 interface TextFieldConfig extends TextfieldProps {
   component: "textfield";
 }
+interface SelecttFieldConfig extends SelectProps {
+  component: "select";
+}
 interface ChecklistConfig extends ChecklistProps {
   component: "checklist";
 }
@@ -44,6 +48,7 @@ export type SimpleFieldConfig =
   | ChipConfig
   | SwitchConfig
   | TextFieldConfig
+  | SelecttFieldConfig
   | ChecklistConfig
   | DatetimeConfig
   | TabsConfig;
@@ -66,6 +71,8 @@ export const Field: FunctionComponent<SimpleFieldConfig> = (props) => {
       return <Switch {...props} />;
     case "textfield":
       return <TextField {...props} />;
+    case "select":
+      return <Select {...props} />;
     case "checklist":
       return <Checklist {...props} />;
     case "datetime":
