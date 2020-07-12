@@ -3,6 +3,7 @@ import {
   MenuItem as MuiMenuItem,
   MenuItemProps as MuiMenuItemProps,
   ListSubheader,
+  FormControl as MuiFormControl,
 } from "@material-ui/core";
 import { Styled } from "components/FieldComponent";
 import { TextfieldProps, TextField } from "components/TextField/TextField";
@@ -71,7 +72,9 @@ export const Select: FunctionComponent<SelectProps> = ({
   groupBy = false,
   values,
 }) => (
-  <TextField props={{ ...props, select: true }}>
-    {groupBy ? <GroupedList values={values} /> : <FlatList values={values} />}
-  </TextField>
+  <MuiFormControl>
+    <TextField props={{ ...props, select: true }}>
+      {groupBy ? <GroupedList values={values} /> : <FlatList values={values} />}
+    </TextField>
+  </MuiFormControl>
 );
