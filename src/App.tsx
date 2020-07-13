@@ -1,26 +1,17 @@
 import React, { FunctionComponent } from "react";
-import styled from "styled-components";
-import { GridBoard } from "./GridBoard";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
+import { ThemeProvider, CssBaseline } from "@material-ui/core";
+import { theme } from "./Theme";
+import { TemplateBuilder } from "template/TemplateBuilder";
 
-const StyledCard = styled.div`
-  background: gray;
-  width: 100%;
-  min-height: 50px;
-  border-radius: 4px;
-`;
-
-const App: FunctionComponent = () => {
-  return (
+const App: FunctionComponent = () => (
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
     <Provider store={store}>
-      <GridBoard>
-        {Array.from({ length: 5 }, (v, i) => (
-          <StyledCard key={i}>Draggable {i}</StyledCard>
-        ))}
-      </GridBoard>
+      <TemplateBuilder />
     </Provider>
-  );
-};
+  </ThemeProvider>
+);
 
 export default App;
