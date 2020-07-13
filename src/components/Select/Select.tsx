@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Fragment, forwardRef } from "react";
+import React, { FunctionComponent } from "react";
 import {
   MenuItem as MuiMenuItem,
   MenuItemProps as MuiMenuItemProps,
@@ -38,34 +38,20 @@ const groupBy = (
   return map;
 };
 
-const GroupedList = forwardRef<HTMLLIElement, Pick<SelectProps, "values">>(
-  ({ values }, ref) => (
-    <>
-      {Object.entries(groupBy(values)).map(([key, values], index) => (
-        <Fragment key={index}>
-          <ListSubheader ref={ref}>{key}</ListSubheader>
-          {values.map(({ label, value }: SubMenuItemProps, index) => (
-            <MuiMenuItem value={value} key={index}>
-              {label}
-            </MuiMenuItem>
-          ))}
-        </Fragment>
-      ))}
-    </>
-  )
-);
+const flatList = (values: SelectProps["values"]) =>
+  values.map(({ label, value }) => (
+    <MuiMenuItem value={value} key={label}>
+      {label}
+    </MuiMenuItem>
+  ));
 
-const FlatList = forwardRef<HTMLLIElement, Pick<SelectProps, "values">>(
-  ({ values }, ref) => (
-    <>
-      {values.map(({ label, value }, index) => (
-        <MuiMenuItem ref={ref} value={value} key={index}>
-          {label}
-        </MuiMenuItem>
-      ))}
-    </>
-  )
-);
+const groupedList = (values: SelectProps["values"]) =>
+  Object.entries(groupBy(values))
+    .map(([key, values]) => [
+      <ListSubheader key={key}>{key}</ListSubheader>,
+      flatList(values),
+    ])
+    .flat(Infinity);
 
 export const Select: FunctionComponent<SelectProps> = ({
   props,
@@ -74,7 +60,7 @@ export const Select: FunctionComponent<SelectProps> = ({
 }) => (
   <MuiFormControl>
     <TextField props={{ ...props, select: true }}>
-      {groupBy ? <GroupedList values={values} /> : <FlatList values={values} />}
+      {groupBy ? groupedList(values) : flatList(values)}
     </TextField>
   </MuiFormControl>
 );
