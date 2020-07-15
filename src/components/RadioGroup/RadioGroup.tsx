@@ -29,8 +29,9 @@ export const RadioGroup: FunctionComponent<RadioGroupProps> = ({
 }) => (
   <MuiFormControl component="fieldset">
     <MuiRadioGroup {...props}>
-      {values.map(({ props, value, label }) => (
+      {values.map(({ props, value, label }, index) => (
         <MuiFormControlLabel
+          key={index}
           value={value}
           control={<MuiRadio {...props} />}
           label={label}
