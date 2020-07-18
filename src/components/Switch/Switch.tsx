@@ -1,5 +1,5 @@
 import React from "react";
-import { Styled } from "./FieldComponent";
+import { Styled } from "../FieldComponent";
 import {
   SwitchProps as MuiSwitchProps,
   Switch as MuiSwitch,
@@ -7,8 +7,9 @@ import {
   FormControlLabel,
 } from "@material-ui/core";
 
+type SwitchKeys = "name" | "color" | "value" | "type";
 export interface SwitchProps extends Styled {
-  props: Pick<MuiSwitchProps, "color">;
+  props: Pick<MuiSwitchProps, SwitchKeys>;
   formControlProps: Pick<FormControlLabelProps, "label">;
 }
 

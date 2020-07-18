@@ -6,7 +6,7 @@ import { HeaderProps, Header } from "components/Header";
 import { DatetimeProps, Datetime } from "components/Datetime";
 import { TextfieldProps, TextField } from "components/TextField/TextField";
 import { ChecklistProps, Checklist } from "cards/Checklist";
-import { SwitchProps, Switch } from "components/Switch";
+import { SwitchProps, Switch } from "components/Switch/Switch";
 import { Grid } from "@material-ui/core";
 import { TabsProps, Tabs } from "components/Tabs/Tabs";
 import { SelectProps, Select } from "components/Select/Select";
@@ -88,10 +88,10 @@ export const Field: FunctionComponent<SimpleFieldConfig> = (props) => {
       return <Tabs {...props} />;
   }
 };
-
-export const Fields: FunctionComponent<{ fields: FieldConfig[] }> = ({
-  fields,
-}) => (
+interface FieldsProps {
+  fields: FieldConfig[];
+}
+export const Fields: FunctionComponent<FieldsProps> = ({ fields }) => (
   <>
     {fields.map((field, index) =>
       field.component === "composed" ? (
