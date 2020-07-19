@@ -8,7 +8,11 @@ const fields: FieldConfig[] = [
   },
   {
     component: "textfield",
-    props: { label: "Description and notes", disabled: true },
+    props: {
+      name: "description",
+      label: "Description and notes",
+      disabled: true,
+    },
   },
 ];
 

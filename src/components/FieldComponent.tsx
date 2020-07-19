@@ -56,6 +56,7 @@ export type SimpleFieldConfig =
 export type ComposedFieldConfig = {
   component: "composed";
   name: string;
+  label: string;
   fields: FieldConfig[];
 };
 

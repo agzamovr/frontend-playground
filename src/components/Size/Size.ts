@@ -2,11 +2,13 @@ import { FieldConfig } from "components/FieldComponent";
 
 export const Size: FieldConfig = {
   component: "composed",
-  name: "Size",
+  name: "size",
+  label: "Size",
   fields: [
     {
       component: "textfield",
       props: {
+        name: "width",
         placeholder: "Width",
         type: "number",
         disabled: true,
@@ -18,6 +20,7 @@ export const Size: FieldConfig = {
     {
       component: "textfield",
       props: {
+        name: "height",
         placeholder: "Height",
         type: "number",
         disabled: true,
@@ -29,6 +32,7 @@ export const Size: FieldConfig = {
     {
       component: "textfield",
       props: {
+        name: "length",
         placeholder: "Length",
         type: "number",
         disabled: true,

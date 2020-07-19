@@ -2,11 +2,13 @@ import { FieldConfig } from "components/FieldComponent";
 
 export const Address: FieldConfig = {
   component: "composed",
-  name: "Address",
+  name: "address",
+  label: "Address",
   fields: [
     {
       component: "textfield",
       props: {
+        name: "addressLine1",
         placeholder: "Street address, floor",
         disabled: true,
         start: { icon: "business" },
@@ -15,6 +17,7 @@ export const Address: FieldConfig = {
     {
       component: "textfield",
       props: {
+        name: "addressLine2",
         placeholder: "City, State, Zip",
         disabled: true,
         start: { icon: "location_on" },
