@@ -9,7 +9,7 @@ import {
   FormControlLabelProps,
   useTheme,
 } from "@material-ui/core";
-import { Styled } from "../components/FieldComponent";
+import { Styled } from "./FieldComponent";
 
 type CheckboxPropKeys = "indeterminate" | "checked" | "color" | "disabled";
 export interface ChecklistProps extends Styled {

@@ -5,7 +5,7 @@ import { ChipProps, Chip } from "components/Chip";
 import { HeaderProps, Header } from "components/Header";
 import { DatetimeProps, Datetime } from "components/Datetime";
 import { TextfieldProps, TextField } from "components/TextField/TextField";
-import { ChecklistProps, Checklist } from "cards/Checklist";
+import { ChecklistProps, Checklist } from "components/Checklist";
 import { SwitchProps, Switch } from "components/Switch/Switch";
 import { Grid } from "@material-ui/core";
 import { TabsProps, Tabs } from "components/Tabs/Tabs";
