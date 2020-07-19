@@ -5,6 +5,7 @@ import { SwitchProps, Switch } from "components/Switch/Switch";
 export const FormSwitch = (fieldProps: SwitchProps) => (
   <FormikField
     name={fieldProps.props.name}
+    type="checkbox"
     component={({ field, form, ...rest }: FieldProps<string>) => (
       <Switch
         props={{ ...fieldProps.props, ...rest, ...field }}
