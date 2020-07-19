@@ -11,8 +11,6 @@ interface Adornment {
   text?: string;
 }
 type TextFieldKeys =
-  | "name"
-  | "label"
   | "placeholder"
   | "disabled"
   | "type"
@@ -21,10 +19,12 @@ type TextFieldKeys =
   | "value"
   | "defaultValue"
   | "select"
-  | "helperText"
   | "error";
 export interface TextfieldProps {
   props: Pick<MuiTextFieldProps, TextFieldKeys> & {
+    name: string;
+    label?: string;
+    helperText?: string;
     start?: Adornment;
     end?: Adornment;
   };
