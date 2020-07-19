@@ -6,7 +6,8 @@ import {
   Tab as MuiTab,
   Grid as MuiGrid,
 } from "@material-ui/core";
-import { FieldConfig, Fields } from "components/FieldComponent";
+import { FieldConfig } from "components/FieldComponent";
+import { FormFields } from "components/Form/FormField";
 
 type TabsKeys =
   | "color"
@@ -44,7 +45,7 @@ export const Tabs: FunctionComponent<TabsProps> = ({ props, tabs }) => {
         ))}
       </MuiTabs>
       <MuiGrid container item spacing={2} direction="column">
-        <Fields fields={tabs[value].panel} />
+        <FormFields fields={tabs[value].panel} />
       </MuiGrid>
     </>
   );
