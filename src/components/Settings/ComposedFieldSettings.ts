@@ -23,7 +23,11 @@ export const composedSettings = (
         label: fieldSettingsLabel(subField),
         className: classes.tab,
       },
-      panel: fieldSettings({ classes, field: subField }),
+      panel: fieldSettings({
+        classes,
+        namePrefix: `${composedField.name}.`,
+        field: subField,
+      }),
     })),
   },
 ];

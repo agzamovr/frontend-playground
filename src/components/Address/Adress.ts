@@ -8,7 +8,7 @@ export const Address: FieldConfig = {
     {
       component: "textfield",
       props: {
-        name: "addressLine1",
+        name: "address.addressLine1",
         placeholder: "Street address, floor",
         disabled: true,
         start: { icon: "business" },
@@ -17,7 +17,7 @@ export const Address: FieldConfig = {
     {
       component: "textfield",
       props: {
-        name: "addressLine2",
+        name: "address.addressLine2",
         placeholder: "City, State, Zip",
         disabled: true,
         start: { icon: "location_on" },

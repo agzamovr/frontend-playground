@@ -3,6 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Box, Typography } from "@material-ui/core";
 import { CardConfig } from "cards/demo/DemoCards";
 import { FieldSettings } from "components/Settings/FieldSettings";
+import { fieldsSettingsInitialValues } from "components/Settings/settingsUtils";
+import { Formik, Form } from "formik";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,18 +34,28 @@ interface SettingsProps {
 export const CardSettings: FunctionComponent<SettingsProps> = (props) => {
   const classes = useStyles();
   const { card } = props;
+  const initialValues = fieldsSettingsInitialValues(card.fields);
   return (
-    <Box p={1}>
-      <Grid container spacing={1} direction="column">
-        <Grid item>
-          <Typography variant="h5">{card.title}</Typography>
-        </Grid>
-        {card.fields.map((field, index) => (
-          <Grid item key={index}>
-            <FieldSettings classes={classes} field={field} />
+    <Formik
+      initialValues={initialValues}
+      onSubmit={(values, { setSubmitting }) => {
+        setSubmitting(false);
+      }}
+    >
+      <Form>
+        <Box p={1}>
+          <Grid container spacing={1} direction="column">
+            <Grid item>
+              <Typography variant="h5">{card.title}</Typography>
+            </Grid>
+            {card.fields.map((field, index) => (
+              <Grid item key={index}>
+                <FieldSettings classes={classes} namePrefix="" field={field} />
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
-    </Box>
+        </Box>
+      </Form>
+    </Formik>
   );
 };

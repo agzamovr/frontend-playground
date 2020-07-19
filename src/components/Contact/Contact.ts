@@ -8,7 +8,7 @@ export const Contact: FieldConfig = {
     {
       component: "textfield",
       props: {
-        name: "phoneNumber",
+        name: "contact.phoneNumber",
         placeholder: "Phone number",
         disabled: true,
         start: { icon: "phone" },
@@ -17,7 +17,7 @@ export const Contact: FieldConfig = {
     {
       component: "textfield",
       props: {
-        name: "email",
+        name: "contact.email",
         placeholder: "Email",
         disabled: true,
         start: { icon: "email" },
@@ -26,7 +26,7 @@ export const Contact: FieldConfig = {
     {
       component: "textfield",
       props: {
-        name: "fullName",
+        name: "contact.fullName",
         placeholder: "Full Name",
         disabled: true,
         start: { icon: "contact_mail" },

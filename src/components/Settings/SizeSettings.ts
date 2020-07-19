@@ -1,6 +1,19 @@
 import { FieldConfig, ComposedFieldConfig } from "components/FieldComponent";
 import { FieldSettingsProps } from "components/Settings/FieldSettings";
 import { composedSettings } from "components/Settings/ComposedFieldSettings";
+import {
+  fieldsSettingsInitialValues,
+  SettingsFormValues,
+} from "components/Settings/settingsUtils";
+
+export const sizeSettingsValues = (
+  composedField: ComposedFieldConfig
+): SettingsFormValues => ({
+  [composedField.name]: {
+    unit: "m",
+    ...fieldsSettingsInitialValues(composedField.fields),
+  },
+});
 
 export const sizeSettings = (
   classes: FieldSettingsProps["classes"],
@@ -8,7 +21,11 @@ export const sizeSettings = (
 ): FieldConfig[] => [
   {
     component: "select",
-    props: { label: "Unit", helperText: "Unit of measure" },
+    props: {
+      name: `${composedField.name}.unit`,
+      label: "Unit",
+      helperText: "Unit of measure",
+    },
     groupBy: true,
     values: [
       { group: "International", label: "Nanometer (nm)", value: "nm" },
