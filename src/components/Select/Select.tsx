@@ -5,7 +5,6 @@ import {
   ListSubheader,
   FormControl as MuiFormControl,
 } from "@material-ui/core";
-import { Styled } from "components/FieldComponent";
 import { TextfieldProps, TextField } from "components/TextField/TextField";
 
 type MenuItemProps = {
@@ -16,7 +15,7 @@ type MenuItemProps = {
 
 type SubMenuItemProps = Pick<MenuItemProps, "label" | "value">;
 
-export interface SelectProps extends Styled {
+export interface SelectProps {
   props: TextfieldProps["props"];
   groupBy?: boolean;
   values: MenuItemProps[];

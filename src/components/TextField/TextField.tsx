@@ -5,7 +5,6 @@ import {
   TextField as MuiTextField,
 } from "@material-ui/core";
 import Icon from "@material-ui/core/Icon";
-import { Styled } from "components/FieldComponent";
 
 interface Adornment {
   icon?: string;
@@ -24,7 +23,7 @@ type TextFieldKeys =
   | "select"
   | "helperText"
   | "error";
-export interface TextfieldProps extends Styled {
+export interface TextfieldProps {
   props: Pick<MuiTextFieldProps, TextFieldKeys> & {
     start?: Adornment;
     end?: Adornment;

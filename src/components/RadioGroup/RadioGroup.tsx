@@ -7,7 +7,6 @@ import {
   RadioGroup as MuiRadioGroup,
   FormControlLabel as MuiFormControlLabel,
 } from "@material-ui/core";
-import { Styled } from "components/FieldComponent";
 
 type RadioGroupKeys = "name" | "defaultValue" | "value" | "row";
 type RadioKeys = "checked" | "value" | "name" | "inputProps" | "color" | "size";
@@ -18,7 +17,7 @@ type RadioProps = {
   props?: Pick<MuiRadioProps, RadioKeys>;
 };
 
-export interface RadioGroupProps extends Styled {
+export interface RadioGroupProps {
   props?: Pick<MuiRadioGroupProps, RadioGroupKeys>;
   values: RadioProps[];
 }

@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from "react";
 
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { ChipProps, Chip } from "components/Chip";
 import { HeaderProps, Header } from "components/Header";
 import { DatetimeProps, Datetime } from "components/Datetime";
@@ -11,10 +10,6 @@ import { Grid } from "@material-ui/core";
 import { TabsProps, Tabs } from "components/Tabs/Tabs";
 import { SelectProps, Select } from "components/Select/Select";
 import { RadioGroup, RadioGroupProps } from "components/RadioGroup/RadioGroup";
-
-export interface Styled {
-  style?: CSSProperties;
-}
 
 interface HeaderConfig extends HeaderProps {
   component: "header";

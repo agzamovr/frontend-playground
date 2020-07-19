@@ -1,8 +1,7 @@
 import React from "react";
-import { Styled } from "./FieldComponent";
 import { ChipProps as MuiChipProps, Chip as MuiChip } from "@material-ui/core";
 
-export interface ChipProps extends Styled {
+export interface ChipProps {
   props: Pick<MuiChipProps, "label" | "className">;
 }
 

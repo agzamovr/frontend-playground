@@ -5,9 +5,6 @@ const fields: FieldConfig[] = [
   {
     component: "chip",
     props: { label: "STATUS" },
-    style: {
-      backgroundColor: "#FFB74D",
-    },
   },
   {
     component: "textfield",

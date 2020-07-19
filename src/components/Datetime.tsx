@@ -5,9 +5,8 @@ import {
   KeyboardDateTimePickerProps,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import { Styled } from "./FieldComponent";
 type KeyboardDateTimePickerPropKeys = "disabled" | "disablePast";
-export interface DatetimeProps extends Styled {
+export interface DatetimeProps {
   props?: Pick<KeyboardDateTimePickerProps, KeyboardDateTimePickerPropKeys>;
 }
 export const Datetime = (props: DatetimeProps) => {
