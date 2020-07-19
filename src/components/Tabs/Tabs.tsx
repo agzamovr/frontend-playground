@@ -21,12 +21,14 @@ type TabsKeys =
 
 type TabKeys = "label" | "disabled" | "className";
 
+interface TabProps {
+  tab: Pick<MuiTabProps, TabKeys>;
+  panel: FieldConfig[];
+}
+
 export interface TabsProps {
   props: Pick<MuiTabsProps, TabsKeys>;
-  tabs: {
-    tab: Pick<MuiTabProps, TabKeys>;
-    panel: FieldConfig[];
-  }[];
+  tabs: TabProps[];
 }
 
 export const Tabs: FunctionComponent<TabsProps> = ({ props, tabs }) => {
