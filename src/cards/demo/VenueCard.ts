@@ -8,6 +8,7 @@ const fields: FieldConfig[] = [
   { ...Contact },
   {
     component: "datetime",
+    name: "venueDate",
     props: {
       disabled: true,
       disablePast: true,

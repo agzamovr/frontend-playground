@@ -4,6 +4,7 @@ import { CardConfig } from "cards/demo/DemoCards";
 const fields: FieldConfig[] = [
   {
     component: "checklist",
+    name: "checklist",
     items: [
       {
         formControlProps: { label: "Deliver to Customer" },

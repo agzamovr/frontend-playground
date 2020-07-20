@@ -1,10 +1,11 @@
 import React from "react";
 import { Field as FormikField, FieldProps } from "formik";
-import { SwitchProps, Switch } from "components/Switch/Switch";
+import { Switch } from "components/Switch/Switch";
+import { SwitchConfig } from "components/FieldComponent";
 
-export const FormSwitch = (fieldProps: SwitchProps) => (
+export const FormSwitch = (fieldProps: SwitchConfig) => (
   <FormikField
-    name={fieldProps.props.name}
+    name={fieldProps.name}
     type="checkbox"
     component={({ field, form, ...rest }: FieldProps<string>) => (
       <Switch

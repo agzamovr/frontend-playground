@@ -23,8 +23,8 @@ export const addressSettings = (
   cardinalitySelector(composedField),
   {
     component: "select",
+    name: `${composedField.name}.provider`,
     props: {
-      name: `${composedField.name}.provider`,
       label: "Provider",
       helperText: "Geo service provider",
     },

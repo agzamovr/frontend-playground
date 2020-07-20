@@ -22,7 +22,8 @@ export const cardinalitySelector = (
   field: ComposedFieldConfig
 ): FieldConfig => ({
   component: "radio",
-  props: { name: `${field.name}.cardinality`, row: true },
+  name: `${field.name}.cardinality`,
+  props: { row: true },
   values: [
     {
       label: "Single",
@@ -71,7 +72,7 @@ const fieldSettingsInitialValue = (
       ? addressSettingsValues(field)
       : fieldsSettingsInitialValues(field.fields)
     : field.component === "textfield"
-    ? textFieldSettingsValues(field.props)
+    ? textFieldSettingsValues(field)
     : null;
 
 export const fieldsSettingsInitialValues = (
@@ -103,5 +104,5 @@ export const fieldSettings = ({
       ? addressSettings(classes, field)
       : composedSettings(classes, field)
     : field.component === "textfield"
-    ? textFieldSettings(`${namePrefix}${field.props.name}`)
+    ? textFieldSettings(`${namePrefix}${field.name}`)
     : [];

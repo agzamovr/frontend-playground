@@ -8,8 +8,8 @@ import {
   FormControlLabel as MuiFormControlLabel,
 } from "@material-ui/core";
 
-type RadioGroupKeys = "name" | "defaultValue" | "value" | "row";
-type RadioKeys = "checked" | "value" | "name" | "inputProps" | "color" | "size";
+type RadioGroupKeys = "defaultValue" | "value" | "row";
+type RadioKeys = "checked" | "value" | "inputProps" | "color" | "size";
 
 type RadioProps = {
   label: string;

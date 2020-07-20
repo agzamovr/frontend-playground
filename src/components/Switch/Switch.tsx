@@ -6,7 +6,7 @@ import {
   FormControlLabel,
 } from "@material-ui/core";
 
-type SwitchKeys = "name" | "color" | "value" | "type";
+type SwitchKeys = "color" | "value" | "type";
 export interface SwitchProps {
   props: Pick<MuiSwitchProps, SwitchKeys>;
   formControlProps: Pick<FormControlLabelProps, "label">;

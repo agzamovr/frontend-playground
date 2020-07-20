@@ -1,11 +1,10 @@
-import { FieldConfig } from "components/FieldComponent";
-import { TextfieldProps } from "components/TextField/TextField";
+import { FieldConfig, TextFieldConfig } from "components/FieldComponent";
 
-export const textFieldSettingsValues = (props: TextfieldProps["props"]) => ({
-  [props.name]: {
-    label: props.label ?? "",
-    placeholder: props.placeholder ?? "",
-    helperText: props.helperText ?? "",
+export const textFieldSettingsValues = (config: TextFieldConfig) => ({
+  [config.name]: {
+    label: config.props.label ?? "",
+    placeholder: config.props.placeholder ?? "",
+    helperText: config.props.helperText ?? "",
     required: false,
   },
 });
@@ -13,32 +12,34 @@ export const textFieldSettingsValues = (props: TextfieldProps["props"]) => ({
 export const textFieldSettings = (namePrefix: string): FieldConfig[] => [
   {
     component: "textfield",
+    name: `${namePrefix}.label`,
     props: {
-      name: `${namePrefix}.label`,
       label: "Label",
     },
   },
   {
     component: "textfield",
+    name: `${namePrefix}.placeholder`,
     props: {
-      name: `${namePrefix}.placeholder`,
       label: "Placeholder",
     },
   },
   {
     component: "textfield",
+    name: `${namePrefix}.helperText`,
     props: {
-      name: `${namePrefix}.helperText`,
       label: "Help text",
     },
   },
   {
     component: "textfield",
-    props: { name: `${namePrefix}.tooltip`, label: "Tooltip" },
+    name: `${namePrefix}.tooltip`,
+    props: { label: "Tooltip" },
   },
   {
     component: "switch",
-    props: { name: `${namePrefix}.required`, color: "primary" },
+    name: `${namePrefix}.required`,
+    props: { color: "primary" },
     formControlProps: { label: "Required" },
   },
 ];

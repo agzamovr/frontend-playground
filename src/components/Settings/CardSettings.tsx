@@ -39,12 +39,16 @@ export const CardSettings: FunctionComponent<SettingsProps> = (props) => {
     <Formik
       initialValues={initialValues}
       onSubmit={(values, { setSubmitting }) => {
+        console.log(values);
         setSubmitting(false);
       }}
     >
       <Form>
         <Box p={1}>
           <Grid container spacing={1} direction="column">
+            <Grid item>
+              <button type="submit">Submit</button>
+            </Grid>
             <Grid item>
               <Typography variant="h5">{card.title}</Typography>
             </Grid>

@@ -4,12 +4,13 @@ import { CardConfig } from "cards/demo/DemoCards";
 const fields: FieldConfig[] = [
   {
     component: "chip",
+    name: "status",
     props: { label: "STATUS" },
   },
   {
     component: "textfield",
+    name: "description",
     props: {
-      name: "description",
       label: "Description and notes",
       disabled: true,
     },

@@ -21,8 +21,8 @@ export const sizeSettings = (
 ): FieldConfig[] => [
   {
     component: "select",
+    name: `${composedField.name}.unit`,
     props: {
-      name: `${composedField.name}.unit`,
       label: "Unit",
       helperText: "Unit of measure",
     },

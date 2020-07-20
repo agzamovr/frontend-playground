@@ -11,6 +11,7 @@ export const composedSettings = (
 ): FieldConfig[] => [
   {
     component: "tabs",
+    name: `${composedField.name}.composedFieldSettings`,
     props: {
       value: 0,
       indicatorColor: "primary",

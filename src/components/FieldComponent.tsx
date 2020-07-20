@@ -11,34 +11,37 @@ import { TabsProps, Tabs } from "components/Tabs/Tabs";
 import { SelectProps, Select } from "components/Select/Select";
 import { RadioGroup, RadioGroupProps } from "components/RadioGroup/RadioGroup";
 
-interface HeaderConfig extends HeaderProps {
+interface FormName {
+  name: string;
+}
+interface HeaderConfig extends HeaderProps, FormName {
   component: "header";
 }
 
-interface ChipConfig extends ChipProps {
+interface ChipConfig extends ChipProps, FormName {
   component: "chip";
 }
 
-interface SwitchConfig extends SwitchProps {
+export interface SwitchConfig extends SwitchProps, FormName {
   component: "switch";
 }
-interface RadioConfig extends RadioGroupProps {
+export interface RadioConfig extends RadioGroupProps, FormName {
   component: "radio";
 }
-interface DatetimeConfig extends DatetimeProps {
+interface DatetimeConfig extends DatetimeProps, FormName {
   component: "datetime";
 }
-interface TextFieldConfig extends TextfieldProps {
+export interface TextFieldConfig extends TextfieldProps, FormName {
   component: "textfield";
 }
-interface SelecttFieldConfig extends SelectProps {
+export interface SelecttFieldConfig extends SelectProps, FormName {
   component: "select";
 }
-interface ChecklistConfig extends ChecklistProps {
+interface ChecklistConfig extends ChecklistProps, FormName {
   component: "checklist";
 }
 
-interface TabsConfig extends TabsProps {
+interface TabsConfig extends TabsProps, FormName {
   component: "tabs";
 }
 
