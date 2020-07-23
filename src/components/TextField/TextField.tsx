@@ -26,6 +26,7 @@ export interface TextfieldProps {
     helperText?: string;
     start?: Adornment;
     end?: Adornment;
+    required?: boolean;
   };
 }
 

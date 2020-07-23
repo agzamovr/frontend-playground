@@ -1,11 +1,14 @@
 import { FieldConfig, TextFieldConfig } from "components/FieldComponent";
+import { SettingsFormValues } from "components/Settings/settingsUtils";
 
-export const textFieldSettingsValues = (config: TextFieldConfig) => ({
+export const textFieldSettingsValues = (
+  config: TextFieldConfig
+): SettingsFormValues => ({
   [config.name]: {
     label: config.props.label ?? "",
     placeholder: config.props.placeholder ?? "",
     helperText: config.props.helperText ?? "",
-    required: false,
+    required: config.props.required ?? false,
   },
 });
 
