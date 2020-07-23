@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useState, useRef } from "react";
 import {
   makeStyles,
   createStyles,
@@ -16,6 +16,8 @@ import { templateActions } from "template/redux/templateReducer";
 import { Store } from "redux/store";
 import { TemplateCard } from "template/TemplateCard";
 import { CardSettings } from "components/Settings/CardSettings";
+import { SettingsFormValues } from "components/Settings/settingsUtils";
+import { FormikProps } from "formik";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,24 +32,37 @@ const useStyles = makeStyles((theme: Theme) =>
 export const TemplateBuilder: FunctionComponent = () => {
   const dispatcher = useDispatch();
   const [drawer, setDrawer] = useState<null | "cards" | "settings">(null);
+  const [cardIndex, setCardIndex] = useState<number | null>(null);
   const [card, setCard] = useState<CardConfig | null>(null);
   const classes = useStyles();
   const cards = useSelector(({ template }: Store) => template.cards);
+  const formRef = useRef<FormikProps<SettingsFormValues>>(null);
 
   const handleFabClick = () => {
-    setDrawer(null);
-    dispatcher(templateActions.addSelectedCards());
+    if (drawer === "cards") {
+      dispatcher(templateActions.addSelectedCards());
+      setDrawer(null);
+    } else if (drawer === "settings" && cardIndex !== null) {
+      formRef.current?.submitForm().then((v) => setDrawer(null));
+    }
+  };
+
+  const handleApplySettings = (values: SettingsFormValues) => {
+    if (cardIndex !== null)
+      dispatcher(templateActions.applyCardSettings([cardIndex, values]));
   };
 
   const handleCardRemove = (index: number) =>
     dispatcher(templateActions.removeCard(index));
 
-  const handleCardSettingsClick = (card: CardConfig) => {
+  const handleCardSettingsClick = (index: number, card: CardConfig) => {
+    setCardIndex(index);
     setCard(card);
     setDrawer("settings");
   };
   const closeDrawer = () => {
     setDrawer(null);
+    setCardIndex(null);
     setCard(null);
   };
 
@@ -61,7 +76,7 @@ export const TemplateBuilder: FunctionComponent = () => {
                 title={card.title}
                 fields={card.fields}
                 onCardRemove={() => handleCardRemove(index)}
-                onSettingsClicked={() => handleCardSettingsClick(card)}
+                onSettingsClicked={() => handleCardSettingsClick(index, card)}
               />
             </Grid>
           ))}
@@ -74,7 +89,11 @@ export const TemplateBuilder: FunctionComponent = () => {
         {drawer === "cards" ? (
           <DemoCards />
         ) : drawer === "settings" && card ? (
-          <CardSettings card={card} />
+          <CardSettings
+            ref={formRef}
+            card={card}
+            onSubmit={handleApplySettings}
+          />
         ) : null}
         <Fab color="primary" className={classes.fab} onClick={handleFabClick}>
           <CheckIcon />

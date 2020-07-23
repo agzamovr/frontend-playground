@@ -1,10 +1,13 @@
-import React, { FunctionComponent } from "react";
+import React, { forwardRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Box, Typography } from "@material-ui/core";
 import { CardConfig } from "cards/demo/DemoCards";
 import { FieldSettings } from "components/Settings/FieldSettings";
-import { fieldsSettingsInitialValues } from "components/Settings/settingsUtils";
-import { Formik, Form } from "formik";
+import {
+  fieldsSettingsInitialValues,
+  SettingsFormValues,
+} from "components/Settings/settingsUtils";
+import { Formik, Form, FormikProps } from "formik";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,26 +32,26 @@ const useStyles = makeStyles((theme) => ({
 
 interface SettingsProps {
   card: CardConfig;
+  onSubmit: (values: SettingsFormValues) => void;
 }
 
-export const CardSettings: FunctionComponent<SettingsProps> = (props) => {
+export const CardSettings = forwardRef<
+  FormikProps<SettingsFormValues>,
+  SettingsProps
+>(({ card, onSubmit }, ref) => {
   const classes = useStyles();
-  const { card } = props;
-  const initialValues = fieldsSettingsInitialValues(card.fields);
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={fieldsSettingsInitialValues(card.fields)}
+      innerRef={ref}
       onSubmit={(values, { setSubmitting }) => {
-        console.log(values);
+        onSubmit(values);
         setSubmitting(false);
       }}
     >
       <Form>
         <Box p={1}>
           <Grid container spacing={1} direction="column">
-            <Grid item>
-              <button type="submit">Submit</button>
-            </Grid>
             <Grid item>
               <Typography variant="h5">{card.title}</Typography>
             </Grid>
@@ -62,4 +65,4 @@ export const CardSettings: FunctionComponent<SettingsProps> = (props) => {
       </Form>
     </Formik>
   );
-};
+});

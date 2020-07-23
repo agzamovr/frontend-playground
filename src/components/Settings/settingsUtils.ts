@@ -38,7 +38,7 @@ export const cardinalitySelector = (
   ],
 });
 
-interface TextFieldFormValues {
+export interface TextFieldFormValues {
   label: string;
   placeholder: string;
   helperText: string;
@@ -53,12 +53,14 @@ interface SelectProviderValues {
 interface CardinalityValues {
   cardinality: "" | "single" | "multiple";
 }
-type SettingsForm =
+export type SettingsForm =
   | TextFieldFormValues
   | UnitOfMeasureValues
   | SelectProviderValues
   | CardinalityValues;
-export type SettingsFormValues = Record<string, SettingsForm>;
+export type SettingsFormValues = {
+  [k: string]: SettingsForm | SettingsFormValues;
+};
 
 const fieldSettingsInitialValue = (
   field: FieldConfig
