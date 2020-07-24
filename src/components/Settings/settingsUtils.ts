@@ -1,42 +1,16 @@
-import { FieldConfig, ComposedFieldConfig } from "components/FieldComponent";
+import { FieldConfig } from "components/FieldComponent";
 import { FieldSettingsProps } from "components/Settings/FieldSettings";
-import { composedSettings } from "components/Settings/ComposedFieldSettings";
+import {
+  composedSettings,
+  composedFieldSettingsValues,
+} from "components/Settings/ComposedFieldSettings";
 import {
   textFieldSettings,
   textFieldSettingsValues,
 } from "components/Settings/TextFieldSettings";
-import {
-  sizeSettings,
-  sizeSettingsValues,
-} from "components/Settings/SizeSettings";
-import {
-  contactSettings,
-  contactSettingsValues,
-} from "components/Settings/ContactSettings";
-import {
-  addressSettings,
-  addressSettingsValues,
-} from "components/Settings/AddressSettings";
 
-export const cardinalitySelector = (
-  field: ComposedFieldConfig
-): FieldConfig => ({
-  component: "radio",
-  name: `${field.name}.cardinality`,
-  props: { row: true },
-  values: [
-    {
-      label: "Single",
-      value: "single",
-      props: { size: "small", color: "primary" },
-    },
-    {
-      label: "Multiple",
-      value: "multiple",
-      props: { size: "small", color: "primary" },
-    },
-  ],
-});
+import { UnitOfMeasureValues } from "components/Settings/uom/unitOfMeasures";
+import { CardinalityValues } from "components/Settings/cardinality/cardinality";
 
 export interface TextFieldFormValues {
   label: string;
@@ -44,14 +18,8 @@ export interface TextFieldFormValues {
   helperText: string;
   required: boolean;
 }
-interface UnitOfMeasureValues {
-  unit: string;
-}
 interface SelectProviderValues {
   provider: string;
-}
-interface CardinalityValues {
-  cardinality: "" | "single" | "multiple";
 }
 export type SettingsForm =
   | TextFieldFormValues
@@ -66,13 +34,7 @@ const fieldSettingsInitialValue = (
   field: FieldConfig
 ): SettingsFormValues | null =>
   field.component === "composed"
-    ? field.name === "size"
-      ? sizeSettingsValues(field)
-      : field.name === "contact"
-      ? contactSettingsValues(field)
-      : field.name === "address"
-      ? addressSettingsValues(field)
-      : fieldsSettingsInitialValues(field.fields)
+    ? composedFieldSettingsValues(field)
     : field.component === "textfield"
     ? textFieldSettingsValues(field)
     : null;
@@ -98,13 +60,7 @@ export const fieldSettings = ({
   field,
 }: FieldSettingsProps): FieldConfig[] =>
   field.component === "composed"
-    ? field.name === "size"
-      ? sizeSettings(classes, field)
-      : field.name === "contact"
-      ? contactSettings(classes, field)
-      : field.name === "address"
-      ? addressSettings(classes, field)
-      : composedSettings(classes, field)
+    ? composedSettings(classes, field)
     : field.component === "textfield"
     ? textFieldSettings(`${namePrefix}${field.name}`)
     : [];

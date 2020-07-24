@@ -18,11 +18,11 @@ type SubMenuItemProps = Pick<MenuItemProps, "label" | "value">;
 export interface SelectProps {
   props: TextfieldProps["props"];
   groupBy?: boolean;
-  values: MenuItemProps[];
+  values: readonly MenuItemProps[];
 }
 
 const groupBy = (
-  values: MenuItemProps[]
+  values: SelectProps["values"]
 ): Record<string, SubMenuItemProps[]> => {
   const map: Record<string, SubMenuItemProps[]> = {};
   values.forEach(({ group, label, value }) => {

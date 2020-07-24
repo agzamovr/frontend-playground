@@ -10,6 +10,9 @@ import { Grid } from "@material-ui/core";
 import { TabsProps, Tabs } from "components/Tabs/Tabs";
 import { SelectProps, Select } from "components/Select/Select";
 import { RadioGroup, RadioGroupProps } from "components/RadioGroup/RadioGroup";
+import { UnitOfMeasureValues } from "components/Settings/uom/unitOfMeasures";
+import { CardinalityValues } from "components/Settings/cardinality/cardinality";
+import { DatasourceProviderValues } from "components/Settings/datasourceProvider/datasourceProvider";
 
 interface FormName {
   name: string;
@@ -61,7 +64,9 @@ export type ComposedFieldConfig = {
   name: string;
   label: string;
   fields: FieldConfig[];
-};
+} & CardinalityValues &
+  UnitOfMeasureValues &
+  DatasourceProviderValues;
 
 export type FieldConfig = SimpleFieldConfig | ComposedFieldConfig;
 

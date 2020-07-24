@@ -4,6 +4,8 @@ export const Address: FieldConfig = {
   component: "composed",
   name: "address",
   label: "Address",
+  cardinality: "single",
+  datasourceProvider: { provider: "geocoding", value: "mapbox" },
   fields: [
     {
       component: "textfield",

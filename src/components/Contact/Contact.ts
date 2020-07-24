@@ -4,6 +4,7 @@ export const Contact: FieldConfig = {
   component: "composed",
   name: "contact",
   label: "Contact",
+  cardinality: "single",
   fields: [
     {
       component: "textfield",

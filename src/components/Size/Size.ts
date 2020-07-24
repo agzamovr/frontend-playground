@@ -4,6 +4,7 @@ export const Size: FieldConfig = {
   component: "composed",
   name: "size",
   label: "Size",
+  unitOfMeasure: { unit: "length", value: "m" },
   fields: [
     {
       component: "textfield",
