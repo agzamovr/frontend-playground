@@ -6,7 +6,10 @@ import {
   TextFieldFormValues,
 } from "components/Settings/settingsUtils";
 import { FieldConfig, ComposedFieldConfig } from "components/FieldComponent";
-import { UnitOfMeasureField } from "components/Settings/uom/unitOfMeasures";
+import {
+  UnitOfMeasureField,
+  UnitOfMeasureValues,
+} from "components/Settings/uom/unitOfMeasures";
 import { CardinalityType } from "components/Settings/cardinality/cardinality";
 import { DatasourceProviderField } from "components/Settings/datasourceProvider/datasourceProvider";
 
@@ -37,6 +40,18 @@ const applyComplexFieldSettings = (
   fields: applyFieldSettings(field.fields, settings as SettingsFormValues),
 });
 
+const textFieldSettingsProps = ({
+  label,
+  placeholder,
+  helperText,
+  required,
+}: TextFieldFormValues) => ({
+  label,
+  placeholder,
+  helperText,
+  required,
+});
+
 const applyFieldSettings = (
   fields: FieldConfig[],
   settings: SettingsFormValues
@@ -50,7 +65,14 @@ const applyFieldSettings = (
       : field.component === "textfield"
       ? {
           ...field,
-          props: settings[field.name] as TextFieldFormValues,
+          unitOfMeasure: (settings[field.name] as UnitOfMeasureValues)
+            .unitOfMeasure,
+          props: {
+            ...field.props,
+            ...textFieldSettingsProps(
+              settings[field.name] as TextFieldFormValues
+            ),
+          },
         }
       : field
   );

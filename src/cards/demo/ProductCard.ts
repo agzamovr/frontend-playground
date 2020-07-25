@@ -24,6 +24,7 @@ const fields: FieldConfig[] = [
   {
     component: "textfield",
     name: "weight",
+    unitOfMeasure: { unit: "weight", value: "kg" },
     props: {
       placeholder: "Weight",
       type: "number",
@@ -36,13 +37,14 @@ const fields: FieldConfig[] = [
   {
     component: "textfield",
     name: "price",
+    unitOfMeasure: { unit: "currency", value: "USD" },
     props: {
       placeholder: "Price",
       type: "number",
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
-      start: { text: "$" },
+      end: { text: "USD" },
     },
   },
 ];

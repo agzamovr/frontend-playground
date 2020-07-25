@@ -62,5 +62,5 @@ export const fieldSettings = ({
   field.component === "composed"
     ? composedSettings(classes, field)
     : field.component === "textfield"
-    ? textFieldSettings(`${namePrefix}${field.name}`)
+    ? textFieldSettings(field, namePrefix)
     : [];

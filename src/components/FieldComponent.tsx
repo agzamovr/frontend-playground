@@ -34,7 +34,10 @@ export interface RadioConfig extends RadioGroupProps, FormName {
 interface DatetimeConfig extends DatetimeProps, FormName {
   component: "datetime";
 }
-export interface TextFieldConfig extends TextfieldProps, FormName {
+export interface TextFieldConfig
+  extends TextfieldProps,
+    FormName,
+    UnitOfMeasureValues {
   component: "textfield";
 }
 export interface SelecttFieldConfig extends SelectProps, FormName {
