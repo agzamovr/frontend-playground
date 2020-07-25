@@ -5,7 +5,10 @@ import {
   SettingsFormValues,
   TextFieldFormValues,
 } from "components/Settings/settingsUtils";
-import { FieldConfig } from "components/FieldComponent";
+import { FieldConfig, ComposedFieldConfig } from "components/FieldComponent";
+import { UnitOfMeasureField } from "components/Settings/uom/unitOfMeasures";
+import { CardinalityType } from "components/Settings/cardinality/cardinality";
+import { DatasourceProviderField } from "components/Settings/datasourceProvider/datasourceProvider";
 
 type SelectedCard = { order: number; demoCard: DemoCardKeys };
 export interface Cards {
@@ -23,19 +26,27 @@ const mapSelectedCards = (selectedCards: SelectedCard[]) =>
     .sort((card1, card2) => (card1.order < card2.order ? -1 : 1))
     .map((card) => ({ ...DemoCardList[card.demoCard] }));
 
+const applyComplexFieldSettings = (
+  field: ComposedFieldConfig,
+  settings: SettingsFormValues
+): ComposedFieldConfig => ({
+  ...field,
+  unitOfMeasure: settings.unitOfMeasure as UnitOfMeasureField,
+  cardinality: settings.cardinality as CardinalityType,
+  datasourceProvider: settings.datasourceProvider as DatasourceProviderField,
+  fields: applyFieldSettings(field.fields, settings as SettingsFormValues),
+});
+
 const applyFieldSettings = (
   fields: FieldConfig[],
   settings: SettingsFormValues
 ): FieldConfig[] =>
   fields.map((field) =>
     field.component === "composed"
-      ? {
-          ...field,
-          fields: applyFieldSettings(
-            field.fields,
-            settings[field.name] as SettingsFormValues
-          ),
-        }
+      ? applyComplexFieldSettings(
+          field,
+          settings[field.name] as SettingsFormValues
+        )
       : field.component === "textfield"
       ? {
           ...field,
