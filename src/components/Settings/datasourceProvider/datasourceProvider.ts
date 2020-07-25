@@ -16,15 +16,16 @@ export interface DatasourceProviderField {
 export interface DatasourceProviderValues {
   datasourceProvider?: DatasourceProviderField;
 }
-const geoServiceProvider: DatasourceProvider[] = [
-  { label: "Google Maps", value: "google" },
-  { label: "Mapbox", value: "mapbox" },
-  { label: "Yandex Maps", value: "yandex" },
-];
+const geoServiceProvider = {
+  props: { label: "Provider", helperText: "Geo service provider" },
+  values: [
+    { label: "Google Maps", value: "google" },
+    { label: "Mapbox", value: "mapbox" },
+    { label: "Yandex Maps", value: "yandex" },
+  ],
+};
 
-export const datasourceProvider = (
-  name: DatasourceProviderType
-): DatasourceProvider[] => {
+export const datasourceProvider = (name: DatasourceProviderType) => {
   switch (name) {
     case "geocoding":
       return geoServiceProvider;
@@ -35,11 +36,7 @@ export const datasoruceProvider = (
 ): FieldConfig => ({
   component: "select",
   name: `${field.name}.datasourceProvider.value`,
-  props: {
-    label: "Provider",
-    helperText: "Geo service provider",
-  },
-  values: field.datasourceProvider
-    ? datasourceProvider(field.datasourceProvider.provider)
-    : [],
+  ...datasourceProvider(
+    field.datasourceProvider?.provider as DatasourceProviderType
+  ),
 });
