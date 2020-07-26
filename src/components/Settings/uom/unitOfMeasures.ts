@@ -7,12 +7,18 @@ import {
 export type UnitOfMeasurType = "length" | "currency" | "weight";
 
 type UnitOfMeasure = {
-  group?: string;
-  label: string;
-  value: string;
+  props: {
+    label: string;
+    helperText?: string;
+  };
+  values: {
+    group?: string;
+    label: string;
+    value: string;
+  }[];
 };
 
-const lengthUnits = {
+const lengthUnits: UnitOfMeasure = {
   props: { label: "Unit", helperText: "Unit of measure" },
   values: [
     { group: "International", label: "Nanometer (nm)", value: "nm" },
@@ -32,7 +38,7 @@ const lengthUnits = {
   ],
 };
 
-const weightUnits = {
+const weightUnits: UnitOfMeasure = {
   props: { label: "Unit", helperText: "Unit of measure" },
   values: [
     { group: "International", label: "Nanogram (nm)", value: "ng" },
@@ -49,7 +55,7 @@ const weightUnits = {
   ],
 };
 
-const currencies = {
+const currencies: UnitOfMeasure = {
   props: { label: "Currency" },
   values: [
     {
@@ -87,7 +93,7 @@ const currencies = {
   ],
 };
 
-export const unitOfMeasure = (name: UnitOfMeasurType) => {
+export const unitOfMeasure = (name: UnitOfMeasurType): UnitOfMeasure => {
   switch (name) {
     case "length":
       return lengthUnits;

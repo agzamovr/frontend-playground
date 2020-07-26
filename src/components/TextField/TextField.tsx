@@ -5,6 +5,7 @@ import {
   TextField as MuiTextField,
 } from "@material-ui/core";
 import Icon from "@material-ui/core/Icon";
+import { UnitOfMeasureValues } from "components/Settings/uom/unitOfMeasures";
 
 interface Adornment {
   icon?: string;
@@ -20,7 +21,7 @@ type TextFieldKeys =
   | "defaultValue"
   | "select"
   | "error";
-export interface TextfieldProps {
+export interface TextfieldProps extends UnitOfMeasureValues {
   props: Pick<MuiTextFieldProps, TextFieldKeys> & {
     label?: string;
     helperText?: string;
@@ -32,6 +33,7 @@ export interface TextfieldProps {
 
 export const TextField: FunctionComponent<TextfieldProps> = (props) => {
   const { start, end, ...rest } = props.props;
+  const { children, unitOfMeasure } = props;
   const startAdornment =
     start?.icon || start?.text ? (
       <InputAdornment position="start">
@@ -43,11 +45,12 @@ export const TextField: FunctionComponent<TextfieldProps> = (props) => {
       <InputAdornment position="end">
         {end?.icon ? <Icon>{end?.icon}</Icon> : end?.text}
       </InputAdornment>
+    ) : unitOfMeasure?.value ? (
+      <InputAdornment position="end">{unitOfMeasure.value}</InputAdornment>
     ) : undefined;
-
   return (
     <MuiTextField {...rest} InputProps={{ startAdornment, endAdornment }}>
-      {props.children}
+      {children}
     </MuiTextField>
   );
 };

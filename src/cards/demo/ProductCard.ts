@@ -31,7 +31,6 @@ const fields: FieldConfig[] = [
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
-      end: { text: "kg" },
     },
   },
   {
@@ -44,7 +43,6 @@ const fields: FieldConfig[] = [
       disabled: true,
       inputMode: "decimal",
       inputProps: { min: "0" },
-      end: { text: "USD" },
     },
   },
 ];

@@ -15,7 +15,6 @@ export const Size: FieldConfig = {
         disabled: true,
         inputMode: "decimal",
         inputProps: { min: "0" },
-        end: { text: "cm" },
       },
     },
     {
@@ -27,7 +26,6 @@ export const Size: FieldConfig = {
         disabled: true,
         inputMode: "decimal",
         inputProps: { min: "0" },
-        end: { text: "cm" },
       },
     },
     {
@@ -39,7 +37,6 @@ export const Size: FieldConfig = {
         disabled: true,
         inputMode: "decimal",
         inputProps: { min: "0" },
-        end: { text: "cm" },
       },
     },
   ],

@@ -34,10 +34,7 @@ export interface RadioConfig extends RadioGroupProps, FormName {
 interface DatetimeConfig extends DatetimeProps, FormName {
   component: "datetime";
 }
-export interface TextFieldConfig
-  extends TextfieldProps,
-    FormName,
-    UnitOfMeasureValues {
+export interface TextFieldConfig extends TextfieldProps, FormName {
   component: "textfield";
 }
 export interface SelecttFieldConfig extends SelectProps, FormName {
@@ -98,11 +95,25 @@ export const Field: FunctionComponent<SimpleFieldConfig> = (props) => {
 interface FieldsProps {
   fields: FieldConfig[];
 }
+const applyCompositeSubfieldsProps = (
+  compositeField: ComposedFieldConfig
+): FieldConfig[] =>
+  compositeField.fields.map((field) =>
+    field.component === "textfield"
+      ? {
+          ...field,
+          props: {
+            ...field.props,
+            end: { text: compositeField.unitOfMeasure?.value },
+          },
+        }
+      : field
+  );
 export const Fields: FunctionComponent<FieldsProps> = ({ fields }) => (
   <>
     {fields.map((field, index) =>
       field.component === "composed" ? (
-        <Fields key={index} fields={field.fields} />
+        <Fields key={index} fields={applyCompositeSubfieldsProps(field)} />
       ) : (
         <Grid key={index} item>
           <Field {...field} />

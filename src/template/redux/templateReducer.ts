@@ -29,7 +29,7 @@ const mapSelectedCards = (selectedCards: SelectedCard[]) =>
     .sort((card1, card2) => (card1.order < card2.order ? -1 : 1))
     .map((card) => ({ ...DemoCardList[card.demoCard] }));
 
-const applyComplexFieldSettings = (
+const applyComposedFieldSettings = (
   field: ComposedFieldConfig,
   settings: SettingsFormValues
 ): ComposedFieldConfig => ({
@@ -58,7 +58,7 @@ const applyFieldSettings = (
 ): FieldConfig[] =>
   fields.map((field) =>
     field.component === "composed"
-      ? applyComplexFieldSettings(
+      ? applyComposedFieldSettings(
           field,
           settings[field.name] as SettingsFormValues
         )
