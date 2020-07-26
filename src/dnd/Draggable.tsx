@@ -6,7 +6,7 @@ import { Store } from "../redux/store";
 import { findKeyByValue } from "./redux/dndReducer";
 
 interface DraggableAttributes {
-  order: string;
+  order: number;
 }
 
 const StyledDraggable = styled.div.attrs((props: DraggableAttributes) => ({
@@ -19,7 +19,7 @@ const StyledDraggable = styled.div.attrs((props: DraggableAttributes) => ({
   box-sizing: border-box;
 `;
 interface DraggableProps {
-  originalOrder: string;
+  originalOrder: number;
 }
 export const Draggable: FunctionComponent<DraggableProps> = (props) => {
   const { originalOrder, children } = props;
@@ -31,11 +31,7 @@ export const Draggable: FunctionComponent<DraggableProps> = (props) => {
 
   const { ref } = useDrag(order, originalOrder);
   return (
-    <StyledDraggable
-      ref={ref}
-      order={order}
-      style={{ order: order ? parseInt(order) : undefined }}
-    >
+    <StyledDraggable ref={ref} order={order} style={{ order }}>
       {children}
     </StyledDraggable>
   );

@@ -13,14 +13,14 @@ export const DropPlaceHolder: FunctionComponent = () => {
   const rect = useSelector(
     ({ draggables }: Store) => draggables.placeholderRect
   );
-  const shown = placeholderOrder !== null;
+  const shown = placeholderOrder !== undefined;
   return (
     <StyledDropPlaceholder
       style={{
         width: shown ? rect?.width + "px" : "",
         height: shown ? rect?.height + "px" : "",
         display: shown ? "block" : "none",
-        order: placeholderOrder ? parseInt(placeholderOrder) : undefined,
+        order: placeholderOrder,
         gridColumnStart: shown ? rect?.gridColumnStart : "",
         gridColumn: shown ? rect?.gridColumn : "",
         gridColumnEnd: shown ? rect?.gridColumnEnd : "",

@@ -9,7 +9,7 @@ import {
 import { getViewportIntersection } from "./scroll";
 
 interface IntersectionArea {
-  order: string;
+  order: number;
   intersectionArea: number;
   areaRatio: number;
 }
@@ -64,12 +64,7 @@ const calcRects = (el: HTMLElement | null) => {
   const nodeList = Array.from(
     el.parentElement.querySelectorAll("div[data-draggable]")
   );
-  return nodeList
-    .map((elem) => copyRect(elem as HTMLElement))
-    .reduce((acc: RectsRecord, current, index) => {
-      acc[`${index}`] = current;
-      return acc;
-    }, {});
+  return nodeList.map((elem) => copyRect(elem as HTMLElement));
 };
 
 const getIntersectionArea = (first: Rect, second: Rect) => {
@@ -89,7 +84,7 @@ const getIntersectionArea = (first: Rect, second: Rect) => {
 };
 
 const getIntersections = (
-  currentOrder: string,
+  currentOrder: number,
   currentRect: GridCellRect | null,
   shiftX: number,
   shiftY: number,
@@ -106,11 +101,10 @@ const getIntersections = (
     bottom: currentRect.bottom + shiftY,
   };
   const intersections: IntersectionArea[] = [];
-  for (const key in rects) {
-    if (currentOrder !== key && rects.hasOwnProperty(key) && rects[key]) {
+  for (let key = 0; key < rects.length; key++) {
+    if (currentOrder !== key) {
       const second = rects[key];
-      const intersectionArea =
-        first && second && getIntersectionArea(first, second);
+      const intersectionArea = getIntersectionArea(first, second);
       if (intersectionArea) {
         const minArea = Math.min(first.area, second.area);
         const areaRatio = intersectionArea / minArea;
@@ -128,7 +122,7 @@ const getIntersections = (
   }
 };
 
-export const useDrag = (order: string, originalOrder: string) => {
+export const useDrag = (order: number, originalOrder: number) => {
   const dispatch = useDispatch();
   const [isGrabbed, setIsGrabbed] = useState(false);
   const rects = useRef<RectsRecord | null>(null);
@@ -171,7 +165,7 @@ export const useDrag = (order: string, originalOrder: string) => {
     style.left = "";
     style.transform = "";
     style.pointerEvents = "";
-    style.order = order;
+    style.order = `${order}`;
     style.zIndex = "";
   }, [order]);
 

@@ -27,7 +27,7 @@ export const GridBoard: FunctionComponent<BoardProps> = (props) => {
   return (
     <StyledBoard>
       {children.map((element, index) => (
-        <Draggable key={index} originalOrder={index.toString()}>
+        <Draggable key={index} originalOrder={index}>
           {element}
         </Draggable>
       ))}

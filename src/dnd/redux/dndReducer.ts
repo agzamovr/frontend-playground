@@ -21,54 +21,53 @@ export interface GridCell {
 }
 export type GridCellRect = Rect & GridCell;
 
-export type RectsRecord = Record<string, GridCellRect>;
-export type OrderRecord = Record<string, string>;
-export interface Draggable {
-  order: string;
-  rect: GridCellRect;
-}
+export type RectsRecord = GridCellRect[];
+export type ElementOrders = number[];
 export interface Draggables {
-  placeholderOrder: string | null;
-  elementsOrder: OrderRecord;
+  placeholderOrder?: number;
+  elementsOrder: ElementOrders;
   placeholderRect: GridCellRect | null;
 }
 
 const initialState: Draggables = {
-  placeholderOrder: null,
-  elementsOrder: {},
+  elementsOrder: [],
   placeholderRect: null,
 };
 
-export const findKeyByValue = (elementsOrder: OrderRecord, value: string) =>
-  Object.keys(elementsOrder).find((key) => elementsOrder[key] === value) || "";
+const initElementsOrder = (elementsCount: number) => {
+  const elementsOrder: ElementOrders = [];
+  for (let i = 0; i < elementsCount; i++) elementsOrder.push(i);
+  return elementsOrder;
+};
+
+export const findKeyByValue = (
+  elementsOrder: ElementOrders,
+  value: number
+): number => elementsOrder.findIndex((element) => element === value);
 
 const switchIndexes = (
-  elementsOrder: OrderRecord,
-  source: string,
-  destination: string
-): OrderRecord => {
+  elementsOrder: ElementOrders,
+  source: number,
+  destination: number
+): ElementOrders => {
   const destinationIndex = findKeyByValue(elementsOrder, destination);
-  return {
-    ...elementsOrder,
-    [source]: elementsOrder[destinationIndex],
-    [destinationIndex]: elementsOrder[source],
-  };
+  return elementsOrder.map((element, index) =>
+    index === source
+      ? elementsOrder[destinationIndex]
+      : index === destinationIndex
+      ? elementsOrder[source]
+      : element
+  );
 };
 
 interface Placeholder {
-  order: string;
+  order: number;
   placeholderRect: GridCellRect | null;
 }
 interface SwitchOrder {
-  sourceOrder: string;
-  destinationOrder: string;
+  sourceOrder: number;
+  destinationOrder: number;
 }
-
-const initElementsOrder = (elementsCount: number) => {
-  const elementsOrder: OrderRecord = {};
-  for (let i = 0; i < elementsCount; i++) elementsOrder[i] = i.toString();
-  return elementsOrder;
-};
 
 export const { actions: dndActions, reducer: dndReducer } = createSlice({
   initialState,
@@ -77,7 +76,7 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
     cleanState: () => initialState,
     resetPlaceholder: (state) => ({
       ...state,
-      placeholderOrder: null,
+      placeholderOrder: undefined,
       placeholderRect: null,
     }),
     setPlaceholderOrder: (state, { payload }: PayloadAction<Placeholder>) => ({
