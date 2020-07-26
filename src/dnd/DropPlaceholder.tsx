@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
-import { Store } from "./redux/store";
+import { Store } from "../redux/store";
 
 const StyledDropPlaceholder = styled.div`
   box-sizing: border-box;

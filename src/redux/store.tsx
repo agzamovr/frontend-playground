@@ -1,5 +1,5 @@
 import { getDefaultMiddleware, configureStore } from "@reduxjs/toolkit";
-import draggables, { Draggables } from "./dndReducer";
+import draggables, { Draggables } from "../dnd/redux/dndReducer";
 import template, { Cards } from "template/redux/templateReducer";
 
 export interface Store {
