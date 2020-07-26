@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect } from "react";
 import styled from "styled-components";
 import { DropPlaceHolder } from "./DropPlaceholder";
 import { useDispatch } from "react-redux";
-import { dndActions, OrderRecord } from "./redux/dndReducer";
+import { dndActions } from "./redux/dndReducer";
 import { Draggable } from "dnd/Draggable";
 
 interface BoardProps {
@@ -22,14 +22,7 @@ export const GridBoard: FunctionComponent<BoardProps> = (props) => {
   const { children } = props;
   const elementsCount = children.length;
   useEffect(() => {
-    const elementsOrder: OrderRecord = {};
-    for (let i = 0; i < elementsCount; i++) elementsOrder[i] = i.toString();
-    dispatch(
-      dndActions.setElementsOrder({
-        placeholderOrder: null,
-        elementsOrder: elementsOrder,
-      })
-    );
+    dispatch(dndActions.initElementsOrder(elementsCount));
   }, [dispatch, elementsCount]);
   return (
     <StyledBoard>

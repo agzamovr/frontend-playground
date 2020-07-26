@@ -59,6 +59,16 @@ interface Placeholder {
   order: string;
   placeholderRect: GridCellRect | null;
 }
+interface SwitchOrder {
+  sourceOrder: string;
+  destinationOrder: string;
+}
+
+const initElementsOrder = (elementsCount: number) => {
+  const elementsOrder: OrderRecord = {};
+  for (let i = 0; i < elementsCount; i++) elementsOrder[i] = i.toString();
+  return elementsOrder;
+};
 
 export const { actions: dndActions, reducer: dndReducer } = createSlice({
   initialState,
@@ -75,28 +85,11 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
       placeholderOrder: payload.order,
       placeholderRect: payload.placeholderRect,
     }),
-    setElementsOrder: (
-      state,
-      {
-        payload,
-      }: PayloadAction<{
-        placeholderOrder: string | null;
-        elementsOrder: OrderRecord;
-      }>
-    ) => ({
+    initElementsOrder: (state, { payload }: PayloadAction<number>) => ({
       ...state,
-      placeholderOrder: payload.placeholderOrder,
-      elementsOrder: { ...payload.elementsOrder },
+      elementsOrder: initElementsOrder(payload),
     }),
-    switchElementsOrder: (
-      state,
-      {
-        payload,
-      }: PayloadAction<{
-        sourceOrder: string;
-        destinationOrder: string;
-      }>
-    ) => ({
+    switchElementsOrder: (state, { payload }: PayloadAction<SwitchOrder>) => ({
       ...state,
       placeholderOrder: findKeyByValue(
         state.elementsOrder,
