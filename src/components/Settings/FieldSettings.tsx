@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { useState, forwardRef } from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { FieldConfig } from "components/FieldComponent";
@@ -17,29 +17,33 @@ export interface FieldSettingsProps {
   field: FieldConfig;
 }
 
-export const FieldSettings: FunctionComponent<FieldSettingsProps> = ({
-  classes,
-  field,
-}) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const handleClick = () => setIsExpanded(!isExpanded);
-  return (
-    <Card variant="outlined" className={classes.root}>
-      <CardContent>
-        <Box display="flex" alignItems="center" onClick={handleClick}>
-          <Typography color="textPrimary" variant="h6" style={{ flexGrow: 1 }}>
-            {fieldSettingsLabel(field)}
-          </Typography>
-          {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        </Box>
-        <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-          <Grid container spacing={2} direction="column">
-            <FormFields
-              fields={fieldSettings({ classes, namePrefix: "", field })}
-            />
-          </Grid>
-        </Collapse>
-      </CardContent>
-    </Card>
-  );
-};
+export const FieldSettings = forwardRef<HTMLDivElement, FieldSettingsProps>(
+  ({ classes, field }, ref) => {
+    const [isExpanded, setIsExpanded] = useState(true);
+    const handleClick = () => setIsExpanded(!isExpanded);
+    return (
+      <Card variant="outlined" className={classes.root}>
+        <CardContent>
+          <Box display="flex" alignItems="center" onClick={handleClick}>
+            <Typography
+              color="textPrimary"
+              variant="h6"
+              style={{ flexGrow: 1 }}
+              ref={ref}
+            >
+              {fieldSettingsLabel(field)}
+            </Typography>
+            {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </Box>
+          <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+            <Grid container spacing={2} direction="column">
+              <FormFields
+                fields={fieldSettings({ classes, namePrefix: "", field })}
+              />
+            </Grid>
+          </Collapse>
+        </CardContent>
+      </Card>
+    );
+  }
+);

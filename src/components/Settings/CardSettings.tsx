@@ -8,6 +8,8 @@ import {
   SettingsFormValues,
 } from "components/Settings/settingsUtils";
 import { Formik, Form, FormikProps } from "formik";
+import { DnDContext } from "dnd/DnDContext";
+import { Draggable } from "dnd/Draggable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,11 +57,20 @@ export const CardSettings = forwardRef<
             <Grid item>
               <Typography variant="h5">{card.title}</Typography>
             </Grid>
-            {card.fields.map((field, index) => (
-              <Grid item key={index}>
-                <FieldSettings classes={classes} namePrefix="" field={field} />
-              </Grid>
-            ))}
+            <DnDContext>
+              {card.fields.map((field, index) => (
+                <Draggable key={index} originalOrder={index}>
+                  {(innerRef) => (
+                    <FieldSettings
+                      classes={classes}
+                      namePrefix=""
+                      field={field}
+                      ref={innerRef}
+                    />
+                  )}
+                </Draggable>
+              ))}
+            </DnDContext>
           </Grid>
         </Box>
       </Form>
