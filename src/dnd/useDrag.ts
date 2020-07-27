@@ -127,13 +127,18 @@ export const useDrag = (order: number, originalOrder: number) => {
   const [isGrabbed, setIsGrabbed] = useState(false);
   const rects = useRef<RectsRecord | null>(null);
   const ref = useRef<HTMLElement | null>(null);
+  const dragHandleRef = useRef<HTMLElement | null>(null);
   const isIntersectedRef = useRef(false);
   const dragOriginRectRef = useRef<GridCellRect | null>(null);
   const pointerOrigin = useRef({ x: 0, y: 0 });
-  const pointerPostion = useRef({ x: 0, y: 0 });
+  const pointerPosition = useRef({ x: 0, y: 0 });
 
   const setRef = useCallback((element) => {
     ref.current = element;
+  }, []);
+
+  const setDragHandleRef = useCallback((element) => {
+    dragHandleRef.current = element;
   }, []);
 
   const setStyles = useCallback(() => {
@@ -190,10 +195,10 @@ export const useDrag = (order: number, originalOrder: number) => {
     (clientX: number, clientY: number) => {
       if (!ref.current) return;
       const style = ref.current.style;
-      pointerPostion.current.x = clientX;
-      pointerPostion.current.y = clientY;
-      const x = pointerPostion.current.x - pointerOrigin.current.x;
-      const y = pointerPostion.current.y - pointerOrigin.current.y;
+      pointerPosition.current.x = clientX;
+      pointerPosition.current.y = clientY;
+      const x = pointerPosition.current.x - pointerOrigin.current.x;
+      const y = pointerPosition.current.y - pointerOrigin.current.y;
 
       style.transform = `translate(${x}px,${y}px)`;
 
@@ -239,8 +244,8 @@ export const useDrag = (order: number, originalOrder: number) => {
       setIsGrabbed(false);
       pointerOrigin.current.x = 0;
       pointerOrigin.current.y = 0;
-      pointerPostion.current.x = 0;
-      pointerPostion.current.y = 0;
+      pointerPosition.current.x = 0;
+      pointerPosition.current.y = 0;
       dragOriginRectRef.current = null;
       resetStyles();
       dispatch(dndActions.resetPlaceholder());
@@ -250,7 +255,7 @@ export const useDrag = (order: number, originalOrder: number) => {
   );
 
   const scrollListener = useCallback(() => {
-    handleMove(pointerPostion.current.x, pointerPostion.current.y);
+    handleMove(pointerPosition.current.x, pointerPosition.current.y);
   }, [handleMove]);
 
   const mouseMoveListener = useCallback(
@@ -317,9 +322,12 @@ export const useDrag = (order: number, originalOrder: number) => {
   ]);
 
   useEffect(() => {
-    if (!ref.current) return;
-    const draggable = ref.current;
+    if (!dragHandleRef.current) return;
+    const draggable = dragHandleRef.current;
     draggable.draggable = false;
+    draggable.style.cursor = "grab";
+    draggable.style.userSelect = "none";
+    draggable.style.overflowAnchor = "none";
     draggable.addEventListener("mousedown", handleMouseDown);
     draggable.addEventListener("touchstart", handleTouchStart);
     return () => {
@@ -330,5 +338,6 @@ export const useDrag = (order: number, originalOrder: number) => {
 
   return {
     ref: setRef,
+    dragHandleRef: setDragHandleRef,
   };
 };

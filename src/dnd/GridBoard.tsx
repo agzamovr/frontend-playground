@@ -1,9 +1,7 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
-import { DropPlaceHolder } from "./DropPlaceholder";
-import { useDispatch } from "react-redux";
-import { dndActions } from "./redux/dndReducer";
-import { Draggable } from "dnd/Draggable";
+import { DnDContext } from "dnd/DnDContext";
+import { Grid } from "@material-ui/core";
 
 interface BoardProps {
   children: React.ReactElement<HTMLElement>[];
@@ -16,22 +14,19 @@ const StyledBoard = styled.div`
   grid-gap: 5px;
   overflow: auto;
 `;
+const StyledCard = styled.div`
+  background: gray;
+  width: 100%;
+  min-height: 50px;
+  border-radius: 4px;
+`;
 
-export const GridBoard: FunctionComponent<BoardProps> = (props) => {
-  const dispatch = useDispatch();
-  const { children } = props;
-  const elementsCount = children.length;
-  useEffect(() => {
-    dispatch(dndActions.initElementsOrder(elementsCount));
-  }, [dispatch, elementsCount]);
-  return (
-    <StyledBoard>
-      {children.map((element, index) => (
-        <Draggable key={index} originalOrder={index}>
-          {element}
-        </Draggable>
+export const GridBoard = () => (
+  <Grid container spacing={2} justify="space-evenly">
+    <DnDContext>
+      {Array.from({ length: 150 }, (v, i) => (
+        <StyledCard key={i}>Draggable {i}</StyledCard>
       ))}
-      <DropPlaceHolder />
-    </StyledBoard>
-  );
-};
+    </DnDContext>
+  </Grid>
+);

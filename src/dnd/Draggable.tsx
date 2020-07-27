@@ -1,25 +1,15 @@
-import React, { FunctionComponent } from "react";
-import styled from "styled-components";
-import { useDrag } from "./useDrag";
+import React, { FunctionComponent, ReactElement } from "react";
+import { useDrag } from "dnd/useDrag";
 import { useSelector, shallowEqual } from "react-redux";
-import { Store } from "../redux/store";
+import { Store } from "redux/store";
 import { findKeyByValue } from "./redux/dndReducer";
+import { Grid } from "@material-ui/core";
 
-interface DraggableAttributes {
-  order: number;
-}
-
-const StyledDraggable = styled.div.attrs((props: DraggableAttributes) => ({
-  "data-draggable": props.order,
-  draggable: false,
-}))<DraggableAttributes>`
-  cursor: grab;
-  user-select: none;
-  overflow-anchor: none;
-  box-sizing: border-box;
-`;
 interface DraggableProps {
   originalOrder: number;
+  children: (
+    innerRef: (element?: HTMLElement | null) => void
+  ) => ReactElement<HTMLElement>;
 }
 export const Draggable: FunctionComponent<DraggableProps> = (props) => {
   const { originalOrder, children } = props;
@@ -29,10 +19,19 @@ export const Draggable: FunctionComponent<DraggableProps> = (props) => {
     shallowEqual
   );
 
-  const { ref } = useDrag(order, originalOrder);
+  const { ref, dragHandleRef } = useDrag(order, originalOrder);
   return (
-    <StyledDraggable ref={ref} order={order} style={{ order }}>
-      {children}
-    </StyledDraggable>
+    <Grid
+      ref={ref}
+      item
+      style={{
+        order,
+        boxSizing: "border-box",
+      }}
+      data-draggable={order}
+      draggable={false}
+    >
+      {children(dragHandleRef)}
+    </Grid>
   );
 };
