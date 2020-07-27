@@ -56,7 +56,7 @@ export const fieldSettingsLabel = (field: FieldConfig) =>
 
 export const fieldSettings = ({
   classes,
-  namePrefix,
+  namePrefix = "",
   field,
 }: FieldSettingsProps): FieldConfig[] =>
   field.component === "composed"

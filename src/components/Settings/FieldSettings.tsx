@@ -13,12 +13,12 @@ import { FormFields } from "components/Form/FormField";
 
 export interface FieldSettingsProps {
   classes: Record<"root" | "tabs" | "tab", string>;
-  namePrefix: string;
+  namePrefix?: string;
   field: FieldConfig;
 }
 
 export const FieldSettings = forwardRef<HTMLDivElement, FieldSettingsProps>(
-  ({ classes, field }, ref) => {
+  ({ classes, namePrefix = "", field }, ref) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const handleClick = () => setIsExpanded(!isExpanded);
     return (
@@ -38,7 +38,7 @@ export const FieldSettings = forwardRef<HTMLDivElement, FieldSettingsProps>(
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <Grid container spacing={2} direction="column">
               <FormFields
-                fields={fieldSettings({ classes, namePrefix: "", field })}
+                fields={fieldSettings({ classes, namePrefix, field })}
               />
             </Grid>
           </Collapse>

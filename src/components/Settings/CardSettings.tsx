@@ -63,7 +63,6 @@ export const CardSettings = forwardRef<
                   {(innerRef) => (
                     <FieldSettings
                       classes={classes}
-                      namePrefix=""
                       field={field}
                       ref={innerRef}
                     />
