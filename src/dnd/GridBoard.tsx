@@ -23,7 +23,7 @@ const StyledCard = styled.div`
 
 export const GridBoard = () => (
   <Grid container spacing={2} justify="space-evenly">
-    <DnDContext>
+    <DnDContext onDragEnd={() => {}}>
       {Array.from({ length: 150 }, (v, i) => (
         <StyledCard key={i}>Draggable {i}</StyledCard>
       ))}

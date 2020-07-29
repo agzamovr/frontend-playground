@@ -19,7 +19,7 @@ const releaseEvents = [
   "touchcancel",
   "resize",
   "orientationchange",
-];
+] as const;
 const options = { capture: false, passive: false } as const;
 const compareIntersections = (a: IntersectionArea, b: IntersectionArea) =>
   a.areaRatio > b.areaRatio
@@ -250,6 +250,7 @@ export const useDrag = (order: number, originalOrder: number) => {
       resetStyles();
       dispatch(dndActions.resetPlaceholder());
       rects.current = null;
+      dispatch(dndActions.dragEnd());
     },
     [resetStyles, dispatch]
   );

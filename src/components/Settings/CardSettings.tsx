@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Box, Typography } from "@material-ui/core";
 import { CardConfig } from "cards/demo/DemoCards";
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface SettingsProps {
   card: CardConfig;
-  onSubmit: (values: SettingsFormValues) => void;
+  onSubmit: (values: SettingsFormValues, fieldsOrder: number[]) => void;
 }
 
 export const CardSettings = forwardRef<
@@ -42,12 +42,15 @@ export const CardSettings = forwardRef<
   SettingsProps
 >(({ card, onSubmit }, ref) => {
   const classes = useStyles();
+  const fieldsOrder = useRef(card.fields.map((_, index) => index));
+  const setFieldsOrder = (newOrder: number[]) =>
+    (fieldsOrder.current = newOrder);
   return (
     <Formik
       initialValues={fieldsSettingsInitialValues(card.fields)}
       innerRef={ref}
       onSubmit={(values, { setSubmitting }) => {
-        onSubmit(values);
+        onSubmit(values, fieldsOrder.current);
         setSubmitting(false);
       }}
     >
@@ -57,7 +60,7 @@ export const CardSettings = forwardRef<
             <Grid item>
               <Typography variant="h5">{card.title}</Typography>
             </Grid>
-            <DnDContext>
+            <DnDContext onDragEnd={setFieldsOrder}>
               {card.fields.map((field, index) => (
                 <Draggable key={index} originalOrder={index}>
                   {(innerRef) => (

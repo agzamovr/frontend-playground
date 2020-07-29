@@ -27,17 +27,13 @@ export interface Draggables {
   placeholderOrder?: number;
   elementsOrder: ElementOrders;
   placeholderRect: GridCellRect | null;
+  draggableOriginalOrder: number | null;
 }
 
 const initialState: Draggables = {
   elementsOrder: [],
   placeholderRect: null,
-};
-
-const initElementsOrder = (elementsCount: number) => {
-  const elementsOrder: ElementOrders = [];
-  for (let i = 0; i < elementsCount; i++) elementsOrder.push(i);
-  return elementsOrder;
+  draggableOriginalOrder: null,
 };
 
 export const findKeyByValue = (
@@ -71,9 +67,8 @@ interface SwitchOrder {
 
 export const { actions: dndActions, reducer: dndReducer } = createSlice({
   initialState,
-  name: "grid-board",
+  name: "dragAndDropSlice",
   reducers: {
-    cleanState: () => initialState,
     resetPlaceholder: (state) => ({
       ...state,
       placeholderOrder: undefined,
@@ -83,10 +78,6 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
       ...state,
       placeholderOrder: payload.order,
       placeholderRect: payload.placeholderRect,
-    }),
-    initElementsOrder: (state, { payload }: PayloadAction<number>) => ({
-      ...state,
-      elementsOrder: initElementsOrder(payload),
     }),
     switchElementsOrder: (state, { payload }: PayloadAction<SwitchOrder>) => ({
       ...state,
@@ -100,6 +91,7 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
         payload.destinationOrder
       ),
     }),
+    dragEnd: (state) => state,
   },
 });
 

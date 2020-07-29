@@ -19,7 +19,7 @@ export interface FieldSettingsProps {
 
 export const FieldSettings = forwardRef<HTMLDivElement, FieldSettingsProps>(
   ({ classes, namePrefix = "", field }, ref) => {
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(false);
     const handleClick = () => setIsExpanded(!isExpanded);
     return (
       <Card variant="outlined" className={classes.root}>

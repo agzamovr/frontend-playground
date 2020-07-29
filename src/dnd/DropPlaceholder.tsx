@@ -1,17 +1,17 @@
 import React, { FunctionComponent } from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
-import { Store } from "../redux/store";
+import { Draggables } from "dnd/redux/dndReducer";
 
 const StyledDropPlaceholder = styled.div`
   box-sizing: border-box;
 `;
 export const DropPlaceHolder: FunctionComponent = () => {
   const placeholderOrder = useSelector(
-    ({ draggables }: Store) => draggables.placeholderOrder
+    ({ placeholderOrder }: Draggables) => placeholderOrder
   );
   const rect = useSelector(
-    ({ draggables }: Store) => draggables.placeholderRect
+    ({ placeholderRect }: Draggables) => placeholderRect
   );
   const shown = placeholderOrder !== undefined;
   return (

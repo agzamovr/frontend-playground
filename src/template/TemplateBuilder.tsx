@@ -47,9 +47,15 @@ export const TemplateBuilder: FunctionComponent = () => {
     }
   };
 
-  const handleApplySettings = (values: SettingsFormValues) => {
-    if (cardIndex !== null)
-      dispatcher(templateActions.applyCardSettings([cardIndex, values]));
+  const handleApplySettings = (
+    values: SettingsFormValues,
+    fieldsOrder: number[]
+  ) => {
+    if (cardIndex !== null) {
+      dispatcher(
+        templateActions.applyCardSettings([cardIndex, values, fieldsOrder])
+      );
+    }
   };
 
   const handleCardRemove = (index: number) =>

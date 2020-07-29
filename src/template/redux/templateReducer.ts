@@ -77,15 +77,22 @@ const applyFieldSettings = (
       : field
   );
 
+const reorderCardFields = (fieldsOrder: number[], fields: FieldConfig[]) =>
+  fieldsOrder.map((order) => fields[order]);
+
 const applyCardSettings = (
   cards: CardConfig[],
   index: number,
-  settings: SettingsFormValues
+  settings: SettingsFormValues,
+  fieldsOrder: number[]
 ) => [
   ...cards.slice(0, index),
   {
     ...cards[index],
-    fields: applyFieldSettings(cards[index].fields, settings),
+    fields: reorderCardFields(
+      fieldsOrder,
+      applyFieldSettings(cards[index].fields, settings)
+    ),
   },
   ...cards.slice(index + 1),
 ];
@@ -119,10 +126,10 @@ export const {
     }),
     applyCardSettings: (
       state,
-      { payload }: PayloadAction<[number, SettingsFormValues]>
+      { payload }: PayloadAction<[number, SettingsFormValues, number[]]>
     ) => ({
       ...state,
-      cards: applyCardSettings(state.cards, payload[0], payload[1]),
+      cards: applyCardSettings(state.cards, payload[0], payload[1], payload[2]),
     }),
   },
 });
