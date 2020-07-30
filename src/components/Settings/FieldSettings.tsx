@@ -10,6 +10,8 @@ import {
   fieldSettings,
 } from "components/Settings/settingsUtils";
 import { FormFields } from "components/Form/FormField";
+import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
+import Grey from "@material-ui/core/colors/grey";
 
 export interface FieldSettingsProps {
   classes: Record<"root" | "tabs" | "tab", string>;
@@ -17,7 +19,7 @@ export interface FieldSettingsProps {
   field: FieldConfig;
 }
 
-export const FieldSettings = forwardRef<HTMLDivElement, FieldSettingsProps>(
+export const FieldSettings = forwardRef<SVGSVGElement, FieldSettingsProps>(
   ({ classes, namePrefix = "", field }, ref) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const handleClick = () => setIsExpanded(!isExpanded);
@@ -29,11 +31,15 @@ export const FieldSettings = forwardRef<HTMLDivElement, FieldSettingsProps>(
               color="textPrimary"
               variant="h6"
               style={{ flexGrow: 1 }}
-              ref={ref}
             >
               {fieldSettingsLabel(field)}
             </Typography>
-            {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            {isExpanded ? (
+              <ExpandLessIcon style={{ color: Grey[500] }} />
+            ) : (
+              <ExpandMoreIcon style={{ color: Grey[500] }} />
+            )}
+            <DragIndicatorIcon style={{ color: Grey[500] }} ref={ref} />
           </Box>
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <Grid container spacing={2} direction="column">

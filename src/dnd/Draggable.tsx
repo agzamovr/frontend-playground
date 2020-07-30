@@ -7,7 +7,7 @@ import { Grid } from "@material-ui/core";
 interface DraggableProps {
   originalOrder: number;
   children: (
-    innerRef: (element?: HTMLElement | null) => void
+    innerRef: (element?: Element | null) => void
   ) => ReactElement<HTMLElement>;
 }
 export const Draggable: FunctionComponent<DraggableProps> = (props) => {
