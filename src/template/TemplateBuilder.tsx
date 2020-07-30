@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useCallback } from "react";
 import { Grid, Box } from "@material-ui/core";
-import { CardConfig } from "cards/demo/DemoCards";
 import { AddNewCard } from "cards/AddNewCard";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { templateActions } from "template/redux/templateReducer";
@@ -8,12 +7,19 @@ import { Store } from "redux/store";
 import { TemplateCard } from "template/TemplateCard";
 import { TemplateBuilderDrawer } from "template/TemplateBuilderDrawer";
 
+const indexes = (length: number) => {
+  const indexes = [];
+  for (let i = 0; i < length; i++) indexes.push(i);
+  return indexes;
+};
+
 export const TemplateBuilder: FunctionComponent = () => {
   const dispatcher = useDispatch();
-  const cards = useSelector(
-    ({ template }: Store) => template.cards,
+  const cardsLength = useSelector(
+    ({ template }: Store) => template.cards.length,
     shallowEqual
   );
+  const cardIndexes = indexes(cardsLength);
   const handleAddCard = useCallback(() => {
     dispatcher(templateActions.openAddNewCardDrawer());
   }, [dispatcher]);
@@ -22,24 +28,15 @@ export const TemplateBuilder: FunctionComponent = () => {
     [dispatcher]
   );
 
-  const handleCardSettingsClick = useCallback(
-    (index: number, card: CardConfig) => {
-      dispatcher(templateActions.openCardConfig([index, card]));
-    },
-    [dispatcher]
-  );
-
   return (
     <>
       <Box p={2}>
         <Grid container spacing={2}>
-          {cards.map((card, index) => (
+          {cardIndexes.map((index) => (
             <Grid item key={index}>
               <TemplateCard
-                title={card.title}
-                fields={card.fields}
+                cardIndex={index}
                 onCardRemove={() => handleCardRemove(index)}
-                onSettingsClicked={() => handleCardSettingsClick(index, card)}
               />
             </Grid>
           ))}

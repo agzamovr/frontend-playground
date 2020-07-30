@@ -162,7 +162,7 @@ export const {
       ...state,
       cards: applyCardSettings(
         state.cards,
-        state.cardConfigIndex || -1,
+        state.cardConfigIndex ?? -1,
         payload[0],
         payload[1]
       ),

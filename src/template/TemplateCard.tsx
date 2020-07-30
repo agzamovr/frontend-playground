@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { Fields, FieldConfig } from "components/FieldComponent";
+import { Fields } from "components/FieldComponent";
 import {
   Grid,
   CardHeader,
@@ -12,6 +12,9 @@ import {
 } from "@material-ui/core";
 import TuneIcon from "@material-ui/icons/Tune";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { templateActions } from "template/redux/templateReducer";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { Store } from "redux/store";
 
 const useStyles = makeStyles({
   root: {
@@ -30,19 +33,26 @@ const useStyles = makeStyles({
 });
 
 interface TemplateCardProps {
-  title: string;
-  fields: FieldConfig[];
+  cardIndex: number;
   onCardRemove: () => void;
-  onSettingsClicked: () => void;
 }
 
 export const TemplateCard: FunctionComponent<TemplateCardProps> = (props) => {
   const classes = useStyles();
-  const { title, fields, onCardRemove, onSettingsClicked } = props;
+  const dispatcher = useDispatch();
+  const { cardIndex, onCardRemove } = props;
+  const card = useSelector(
+    ({ template }: Store) => template.cards[cardIndex],
+    shallowEqual
+  );
+  const handleCardSettingsClick = useCallback(() => {
+    dispatcher(templateActions.openCardConfig([cardIndex, card]));
+  }, [dispatcher, cardIndex, card]);
+
   return (
     <Card className={classes.root} variant="outlined">
       <CardHeader
-        title={title}
+        title={card.title}
         titleTypographyProps={{
           color: "textPrimary",
           variant: "h5",
@@ -50,7 +60,7 @@ export const TemplateCard: FunctionComponent<TemplateCardProps> = (props) => {
         }}
       />
       <CardContent className={classes.content}>
-        <Fields fields={fields} />
+        <Fields fields={card.fields} />
       </CardContent>
       <CardActions disableSpacing>
         <Grid container justify="flex-end">
@@ -60,7 +70,7 @@ export const TemplateCard: FunctionComponent<TemplateCardProps> = (props) => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Card settings">
-            <IconButton onClick={onSettingsClicked}>
+            <IconButton onClick={handleCardSettingsClick}>
               <TuneIcon />
             </IconButton>
           </Tooltip>
