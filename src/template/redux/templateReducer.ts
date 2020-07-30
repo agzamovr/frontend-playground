@@ -14,12 +14,19 @@ import { CardinalityType } from "components/Settings/cardinality/cardinality";
 import { DatasourceProviderField } from "components/Settings/datasourceProvider/datasourceProvider";
 
 type SelectedCard = { order: number; demoCard: DemoCardKeys };
+type DrawerType = null | "cards" | "settings";
 export interface Cards {
+  drawer: DrawerType;
+  cardConfigIndex: number | null;
+  cardConfig: CardConfig | null;
   selectedCards: SelectedCard[];
   cards: CardConfig[];
 }
 
 const initialState: Cards = {
+  drawer: null,
+  cardConfigIndex: null,
+  cardConfig: null,
   selectedCards: [],
   cards: [],
 };
@@ -105,6 +112,29 @@ export const {
   name: "cards",
   reducers: {
     cleanState: () => initialState,
+    setDrawer: (state, { payload }: PayloadAction<DrawerType>) => ({
+      ...state,
+      drawer: payload,
+    }),
+    openCardConfig: (
+      state,
+      { payload }: PayloadAction<[number, CardConfig]>
+    ) => ({
+      ...state,
+      drawer: "settings",
+      cardConfigIndex: payload[0],
+      cardConfig: payload[1],
+    }),
+    openAddNewCardDrawer: (state) => ({
+      ...state,
+      drawer: "cards",
+    }),
+    closeDrawer: (state) => ({
+      ...state,
+      drawer: null,
+      cardConfigIndex: null,
+      cardConfig: null,
+    }),
     selectDemoCard: (state, { payload }: PayloadAction<SelectedCard>) => ({
       ...state,
       selectedCards: [...state.selectedCards, payload],
@@ -117,6 +147,7 @@ export const {
     }),
     addSelectedCards: (state) => ({
       ...state,
+      drawer: null,
       selectedCards: initialState.selectedCards,
       cards: [...state.cards, ...mapSelectedCards(state.selectedCards)],
     }),
@@ -126,10 +157,15 @@ export const {
     }),
     applyCardSettings: (
       state,
-      { payload }: PayloadAction<[number, SettingsFormValues, number[]]>
+      { payload }: PayloadAction<[SettingsFormValues, number[]]>
     ) => ({
       ...state,
-      cards: applyCardSettings(state.cards, payload[0], payload[1], payload[2]),
+      cards: applyCardSettings(
+        state.cards,
+        state.cardConfigIndex || -1,
+        payload[0],
+        payload[1]
+      ),
     }),
   },
 });
