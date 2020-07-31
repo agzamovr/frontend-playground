@@ -1,4 +1,9 @@
-import React, { FunctionComponent, MouseEvent, useState } from "react";
+import React, {
+  FunctionComponent,
+  MouseEvent,
+  useState,
+  useCallback,
+} from "react";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import CheckCircleRoundedIcon from "@material-ui/icons/CheckCircleRounded";
@@ -70,11 +75,11 @@ export const SelectableCard: FunctionComponent<SelectableCardProps> = (
 ) => {
   const [selected, setSelected] = useState(false);
   const classes = useStyles({ selected });
-  const { title, fields } = props;
-  const handleSelect = () => {
+  const { title, fields, onSelect } = props;
+  const handleSelect = useCallback(() => {
     setSelected(!selected);
-    props.onSelect && props.onSelect(!selected);
-  };
+    onSelect && onSelect(!selected);
+  }, [onSelect, selected]);
   return (
     <Card className={classes.root} variant="outlined" onClick={handleSelect}>
       <CardContent>
