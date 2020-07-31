@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef } from "react";
+import React, { useRef, useCallback, FunctionComponent } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Box, Typography } from "@material-ui/core";
 import { CardConfig } from "cards/demo/DemoCards";
@@ -7,7 +7,8 @@ import {
   fieldsSettingsInitialValues,
   SettingsFormValues,
 } from "components/Settings/settingsUtils";
-import { Formik, Form, FormikProps } from "formik";
+import { Form } from "react-final-form";
+import { FormApi } from "final-form";
 import { DnDContext } from "dnd/DnDContext";
 import { Draggable } from "dnd/Draggable";
 
@@ -35,47 +36,56 @@ const useStyles = makeStyles((theme) => ({
 interface SettingsProps {
   card: CardConfig;
   onSubmit: (values: SettingsFormValues, fieldsOrder: number[]) => void;
+  setFormApi: (formApi: FormApi) => void;
 }
 
-export const CardSettings = forwardRef<
-  FormikProps<SettingsFormValues>,
-  SettingsProps
->(({ card, onSubmit }, ref) => {
+export const CardSettings: FunctionComponent<SettingsProps> = ({
+  card,
+  onSubmit,
+  setFormApi,
+}) => {
   const classes = useStyles();
   const fieldsOrder = useRef(card.fields.map((_, index) => index));
-  const setFieldsOrder = (newOrder: number[]) =>
-    (fieldsOrder.current = newOrder);
+  const setFieldsOrder = useCallback(
+    (newOrder: number[]) => (fieldsOrder.current = newOrder),
+    []
+  );
   return (
-    <Formik
+    <Form<SettingsFormValues>
       initialValues={fieldsSettingsInitialValues(card.fields)}
-      innerRef={ref}
-      onSubmit={(values, { setSubmitting }) => {
+      subscription={{ submitting: true }}
+      onSubmit={(values) => {
+        console.log(values);
         onSubmit(values, fieldsOrder.current);
-        setSubmitting(false);
       }}
     >
-      <Form>
-        <Box p={1}>
-          <Grid container spacing={1} direction="column">
-            <Grid item>
-              <Typography variant="h5">{card.title}</Typography>
-            </Grid>
-            <DnDContext onDragEnd={setFieldsOrder}>
-              {card.fields.map((field, index) => (
-                <Draggable key={index} originalOrder={index}>
-                  {(innerRef) => (
-                    <FieldSettings
-                      classes={classes}
-                      field={field}
-                      ref={innerRef}
-                    />
-                  )}
-                </Draggable>
-              ))}
-            </DnDContext>
-          </Grid>
-        </Box>
-      </Form>
-    </Formik>
+      {({ form, handleSubmit }) => {
+        setFormApi(form);
+        return (
+          <form onSubmit={handleSubmit} noValidate>
+            <Box p={1}>
+              <Grid container spacing={1} direction="column">
+                <Grid item>
+                  <Typography variant="h5">{card.title}</Typography>
+                </Grid>
+                <DnDContext onDragEnd={setFieldsOrder}>
+                  {card.fields.map((field, index) => (
+                    <Draggable key={index} originalOrder={index}>
+                      {(innerRef) => (
+                        <FieldSettings
+                          classes={classes}
+                          field={field}
+                          ref={innerRef}
+                        />
+                      )}
+                    </Draggable>
+                  ))}
+                </DnDContext>
+              </Grid>
+            </Box>
+          </form>
+        );
+      }}
+    </Form>
   );
-});
+};

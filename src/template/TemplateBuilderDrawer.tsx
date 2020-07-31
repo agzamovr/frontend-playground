@@ -7,8 +7,8 @@ import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { templateActions } from "template/redux/templateReducer";
 import { CardSettings } from "components/Settings/CardSettings";
 import { SettingsFormValues } from "components/Settings/settingsUtils";
-import { FormikProps } from "formik";
 import { Store } from "redux/store";
+import { FormApi } from "final-form";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,15 +32,18 @@ export const TemplateBuilderDrawer: FunctionComponent<TemplateBuilderDrawerProps
     shallowEqual
   );
 
-  const formRef = useRef<FormikProps<SettingsFormValues>>(null);
+  const formRef = useRef<FormApi>();
+
+  const setFormApi = useCallback((formApi) => {
+    formRef.current = formApi;
+  }, []);
 
   const handleFabClick = () => {
     if (drawer === "cards") {
       dispatcher(templateActions.addSelectedCards());
     } else if (drawer === "settings") {
-      formRef.current
-        ?.submitForm()
-        .then((v) => dispatcher(templateActions.closeDrawer()));
+      formRef.current?.submit();
+      dispatcher(templateActions.closeDrawer());
     }
   };
 
@@ -61,7 +64,7 @@ export const TemplateBuilderDrawer: FunctionComponent<TemplateBuilderDrawerProps
         <DemoCards />
       ) : drawer === "settings" && cardConfig ? (
         <CardSettings
-          ref={formRef}
+          setFormApi={setFormApi}
           card={cardConfig}
           onSubmit={handleApplySettings}
         />

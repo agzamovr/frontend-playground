@@ -20,7 +20,8 @@ type TextFieldKeys =
   | "value"
   | "defaultValue"
   | "select"
-  | "error";
+  | "error"
+  | "fullWidth";
 export interface TextfieldProps extends UnitOfMeasureValues {
   props: Pick<MuiTextFieldProps, TextFieldKeys> & {
     label?: string;

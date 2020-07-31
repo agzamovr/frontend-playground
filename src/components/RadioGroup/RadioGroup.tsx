@@ -18,7 +18,7 @@ type RadioProps = {
 };
 
 export interface RadioGroupProps {
-  props?: Pick<MuiRadioGroupProps, RadioGroupKeys>;
+  props: Pick<MuiRadioGroupProps, RadioGroupKeys>;
   values: RadioProps[];
 }
 

@@ -1,17 +1,16 @@
 import React from "react";
 import { Select } from "components/Select/Select";
-import { Field as FormikField, FieldProps } from "formik";
+import { Field } from "react-final-form";
 import { SelecttFieldConfig } from "components/FieldComponent";
 
 export const FormSelect = (fieldProps: SelecttFieldConfig) => (
-  <FormikField
-    name={fieldProps.name}
-    component={({ field, form, ...rest }: FieldProps<string>) => (
+  <Field name={fieldProps.name}>
+    {({ input }) => (
       <Select
-        props={{ ...fieldProps.props, ...rest, ...field }}
+        props={{ ...fieldProps.props, ...input }}
         values={fieldProps.values}
         groupBy={fieldProps.groupBy}
       />
     )}
-  />
+  </Field>
 );
