@@ -89,20 +89,21 @@ const reorderCardFields = (fieldsOrder: number[], fields: FieldConfig[]) =>
 
 const applyCardSettings = (
   cards: CardConfig[],
-  index: number,
+  cardIndex: number,
   settings: SettingsFormValues,
   fieldsOrder: number[]
-) => [
-  ...cards.slice(0, index),
-  {
-    ...cards[index],
-    fields: reorderCardFields(
-      fieldsOrder,
-      applyFieldSettings(cards[index].fields, settings)
-    ),
-  },
-  ...cards.slice(index + 1),
-];
+) =>
+  cards.map((card, index) =>
+    index !== cardIndex
+      ? card
+      : {
+          ...card,
+          fields: reorderCardFields(
+            fieldsOrder,
+            applyFieldSettings(card.fields, settings)
+          ),
+        }
+  );
 
 export const {
   actions: templateActions,
