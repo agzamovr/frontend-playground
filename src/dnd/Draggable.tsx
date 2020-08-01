@@ -1,6 +1,6 @@
 import React, { FunctionComponent, ReactElement, useMemo } from "react";
 import { useDrag } from "dnd/useDrag";
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector } from "react-redux";
 import { findKeyByValue, Draggables } from "./redux/dndReducer";
 import { Grid } from "@material-ui/core";
 
@@ -12,10 +12,8 @@ interface DraggableProps {
 }
 export const Draggable: FunctionComponent<DraggableProps> = (props) => {
   const { originalOrder, children } = props;
-  const order = useSelector(
-    ({ elementsOrder }: Draggables) =>
-      findKeyByValue(elementsOrder, originalOrder),
-    shallowEqual
+  const order = useSelector(({ elementsOrder }: Draggables) =>
+    findKeyByValue(elementsOrder, originalOrder)
   );
 
   const { ref, dragHandleRef } = useDrag(order, originalOrder);

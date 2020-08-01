@@ -19,18 +19,15 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-interface TemplateBuilderDrawerProps {}
-export const TemplateBuilderDrawer: FunctionComponent<TemplateBuilderDrawerProps> = () => {
+
+export const TemplateBuilderDrawer: FunctionComponent = () => {
   const dispatcher = useDispatch();
   const classes = useStyles();
   const drawer = useSelector(
     ({ template }: Store) => template.drawer,
     shallowEqual
   );
-  const cardConfig = useSelector(
-    ({ template }: Store) => template.cardConfig,
-    shallowEqual
-  );
+  const cardConfig = useSelector(({ template }: Store) => template.cardConfig);
 
   const formRef = useRef<FormApi>();
 
