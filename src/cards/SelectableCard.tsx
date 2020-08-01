@@ -3,6 +3,7 @@ import React, {
   MouseEvent,
   useState,
   useCallback,
+  useMemo,
 } from "react";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -25,6 +26,7 @@ const useStyles = makeStyles<Theme, { selected: boolean }>((theme) =>
       height: "100%",
       overflowY: "auto",
       borderColor: props.selected ? theme.palette.primary.main : undefined,
+      cursor: "default",
     }),
     title: {
       flexGrow: 1,
@@ -80,11 +82,12 @@ export const SelectableCard: FunctionComponent<SelectableCardProps> = (
     setSelected(!selected);
     onSelect && onSelect(!selected);
   }, [onSelect, selected]);
+  const memoFields = useMemo(() => <Fields fields={fields} />, [fields]);
   return (
     <Card className={classes.root} variant="outlined" onClick={handleSelect}>
       <CardContent>
         <SelectableTitle title={title} selected={selected} />
-        <Fields fields={fields} />
+        {memoFields}
       </CardContent>
     </Card>
   );

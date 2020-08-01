@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement } from "react";
+import React, { FunctionComponent, ReactElement, useMemo } from "react";
 import { useDrag } from "dnd/useDrag";
 import { useSelector, shallowEqual } from "react-redux";
 import { findKeyByValue, Draggables } from "./redux/dndReducer";
@@ -19,6 +19,10 @@ export const Draggable: FunctionComponent<DraggableProps> = (props) => {
   );
 
   const { ref, dragHandleRef } = useDrag(order, originalOrder);
+  const memoChildren = useMemo(() => children(dragHandleRef), [
+    children,
+    dragHandleRef,
+  ]);
   return (
     <Grid
       ref={ref}
@@ -30,7 +34,7 @@ export const Draggable: FunctionComponent<DraggableProps> = (props) => {
       data-draggable={order}
       draggable={false}
     >
-      {children(dragHandleRef)}
+      {memoChildren}
     </Grid>
   );
 };
