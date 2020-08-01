@@ -11,6 +11,10 @@ import {
 
 import { UnitOfMeasureValues } from "components/Settings/uom/unitOfMeasures";
 import { CardinalityValues } from "components/Settings/cardinality/cardinality";
+import {
+  dateTimeSettings,
+  dateTimeSettingsValues,
+} from "components/Settings/DateTimeFieldSettings";
 
 export interface TextFieldFormValues {
   label: string;
@@ -18,11 +22,22 @@ export interface TextFieldFormValues {
   helperText: string;
   required: boolean;
 }
+
+export interface DateTimeFieldFormValues {
+  label: string;
+  placeholder: string;
+  helperText: string;
+  ampm: boolean;
+  disablePast: boolean;
+  disableFuture: boolean;
+  required: boolean;
+}
 interface SelectProviderValues {
   provider: string;
 }
 export type SettingsForm =
   | TextFieldFormValues
+  | DateTimeFieldFormValues
   | UnitOfMeasureValues
   | SelectProviderValues
   | CardinalityValues;
@@ -37,6 +52,8 @@ const fieldSettingsInitialValue = (
     ? composedFieldSettingsValues(field)
     : field.component === "textfield"
     ? textFieldSettingsValues(field)
+    : field.component === "datetime"
+    ? dateTimeSettingsValues(field)
     : null;
 
 export const fieldsSettingsInitialValues = (
@@ -50,7 +67,7 @@ export const fieldsSettingsInitialValues = (
 export const fieldSettingsLabel = (field: FieldConfig) =>
   field.component === "composed"
     ? field.label
-    : field.component === "textfield"
+    : field.component === "textfield" || field.component === "datetime"
     ? field.props.label || field.props.placeholder
     : null;
 
@@ -63,4 +80,6 @@ export const fieldSettings = ({
     ? composedSettings(classes, field)
     : field.component === "textfield"
     ? textFieldSettings(field, namePrefix)
+    : field.component === "datetime"
+    ? dateTimeSettings(`${namePrefix}${field.name}`)
     : [];

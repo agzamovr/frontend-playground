@@ -11,7 +11,11 @@ const fields: FieldConfig[] = [
     name: "venueDate",
     props: {
       disabled: true,
+      label: "Date",
+      variant: "dialog",
       disablePast: true,
+      autoOk: true,
+      format: "dd.MM.yyyy HH:mm",
     },
   },
 ];

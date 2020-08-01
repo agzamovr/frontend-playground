@@ -31,7 +31,7 @@ export interface SwitchConfig extends SwitchProps, FormName {
 export interface RadioConfig extends RadioGroupProps, FormName {
   component: "radio";
 }
-interface DatetimeConfig extends DatetimeProps, FormName {
+export interface DatetimeConfig extends DatetimeProps, FormName {
   component: "datetime";
 }
 export interface TextFieldConfig extends TextfieldProps, FormName {

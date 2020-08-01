@@ -4,6 +4,7 @@ import { DemoCardKeys } from "cards/demo/DemoCards";
 import {
   SettingsFormValues,
   TextFieldFormValues,
+  DateTimeFieldFormValues,
 } from "components/Settings/settingsUtils";
 import { FieldConfig, ComposedFieldConfig } from "components/FieldComponent";
 import {
@@ -59,6 +60,24 @@ const textFieldSettingsProps = ({
   required,
 });
 
+const dateTimeFieldSettingsProps = ({
+  label,
+  placeholder,
+  helperText,
+  ampm,
+  disablePast,
+  disableFuture,
+  required,
+}: DateTimeFieldFormValues) => ({
+  label,
+  placeholder,
+  helperText,
+  ampm,
+  disablePast,
+  disableFuture,
+  required,
+});
+
 const applyFieldSettings = (
   fields: FieldConfig[],
   settings: SettingsFormValues
@@ -78,6 +97,16 @@ const applyFieldSettings = (
             ...field.props,
             ...textFieldSettingsProps(
               settings[field.name] as TextFieldFormValues
+            ),
+          },
+        }
+      : field.component === "datetime"
+      ? {
+          ...field,
+          props: {
+            ...field.props,
+            ...dateTimeFieldSettingsProps(
+              settings[field.name] as DateTimeFieldFormValues
             ),
           },
         }

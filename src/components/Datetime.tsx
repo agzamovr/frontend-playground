@@ -1,13 +1,26 @@
 import React, { useState } from "react";
 import DateFnsUtils from "@date-io/date-fns";
 import {
-  KeyboardDateTimePicker,
   KeyboardDateTimePickerProps,
   MuiPickersUtilsProvider,
+  KeyboardDateTimePicker,
 } from "@material-ui/pickers";
-type KeyboardDateTimePickerPropKeys = "disabled" | "disablePast";
+type KeyboardDatePickerPropKeys =
+  | "placeholder"
+  | "ampm"
+  | "disabled"
+  | "disablePast"
+  | "disableFuture"
+  | "variant"
+  | "format"
+  | "mask"
+  | "autoOk";
 export interface DatetimeProps {
-  props?: Pick<KeyboardDateTimePickerProps, KeyboardDateTimePickerPropKeys>;
+  props: Pick<KeyboardDateTimePickerProps, KeyboardDatePickerPropKeys> & {
+    label?: string;
+    helperText?: string;
+    required?: boolean;
+  };
 }
 export const Datetime = (props: DatetimeProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -17,12 +30,8 @@ export const Datetime = (props: DatetimeProps) => {
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDateTimePicker
-        ampm={false}
-        variant="inline"
-        label="Date & time"
         value={selectedDate}
         onChange={handleDateChange}
-        format="yyyy/MM/dd HH:mm"
         {...props.props}
       />
     </MuiPickersUtilsProvider>
