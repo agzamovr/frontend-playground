@@ -4,7 +4,6 @@ import { ChipProps, Chip } from "components/Chip";
 import { HeaderProps, Header } from "components/Header";
 import { DatetimeProps, Datetime } from "components/Datetime";
 import { TextfieldProps, TextField } from "components/TextField/TextField";
-import { ChecklistProps, Checklist } from "components/Checklist";
 import { SwitchProps, Switch } from "components/Switch/Switch";
 import { Grid } from "@material-ui/core";
 import { TabsProps, Tabs } from "components/Tabs/Tabs";
@@ -13,6 +12,8 @@ import { RadioGroup, RadioGroupProps } from "components/RadioGroup/RadioGroup";
 import { UnitOfMeasureValues } from "components/Settings/uom/unitOfMeasures";
 import { CardinalityValues } from "components/Settings/cardinality/cardinality";
 import { DatasourceProviderValues } from "components/Settings/datasourceProvider/datasourceProvider";
+import { List, ListProps } from "components/List";
+import { CheckboxProps, Checkbox } from "components/Checkbox/Checkbox";
 
 interface FormName {
   name: string;
@@ -28,6 +29,10 @@ interface ChipConfig extends ChipProps, FormName {
 export interface SwitchConfig extends SwitchProps, FormName {
   component: "switch";
 }
+
+export interface CheckboxConfig extends CheckboxProps, FormName {
+  component: "checkbox";
+}
 export interface RadioConfig extends RadioGroupProps, FormName {
   component: "radio";
 }
@@ -40,8 +45,9 @@ export interface TextFieldConfig extends TextfieldProps, FormName {
 export interface SelecttFieldConfig extends SelectProps, FormName {
   component: "select";
 }
-interface ChecklistConfig extends ChecklistProps, FormName {
-  component: "checklist";
+
+export interface ListConfig extends ListProps, FormName {
+  component: "list";
 }
 
 interface TabsConfig extends TabsProps, FormName {
@@ -52,10 +58,11 @@ export type SimpleFieldConfig =
   | HeaderConfig
   | ChipConfig
   | SwitchConfig
+  | CheckboxConfig
   | RadioConfig
   | TextFieldConfig
   | SelecttFieldConfig
-  | ChecklistConfig
+  | ListConfig
   | DatetimeConfig
   | TabsConfig;
 
@@ -78,14 +85,16 @@ export const Field: FunctionComponent<SimpleFieldConfig> = (props) => {
       return <Chip {...props} />;
     case "switch":
       return <Switch {...props} />;
+    case "checkbox":
+      return <Checkbox {...props} />;
     case "radio":
       return <RadioGroup {...props} />;
     case "textfield":
       return <TextField {...props} />;
     case "select":
       return <Select {...props} />;
-    case "checklist":
-      return <Checklist {...props} />;
+    case "list":
+      return <List {...props} />;
     case "datetime":
       return <Datetime {...props} />;
     case "tabs":

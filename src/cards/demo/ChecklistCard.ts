@@ -3,38 +3,51 @@ import { CardConfig } from "cards/demo/DemoCards";
 
 const fields: FieldConfig[] = [
   {
-    component: "checklist",
+    component: "list",
     name: "checklist",
     items: [
       {
-        formControlProps: { label: "Deliver to Customer" },
-        checkboxProps: {
-          checked: true,
-          color: "primary",
+        control: {
+          component: "checkbox",
+          name: "deliverToCustomer",
+          formControlProps: { label: "Deliver to Customer" },
+          props: { checked: true, color: "primary" },
         },
       },
       {
-        formControlProps: { label: "Install" },
-        checkboxProps: {
-          indeterminate: true,
-          checked: true,
-          color: "primary",
+        control: {
+          component: "checkbox",
+          name: "install",
+          formControlProps: { label: "Install" },
+          props: {
+            indeterminate: true,
+            checked: true,
+            color: "primary",
+          },
         },
-        subChecklist: {
+        subList: {
           items: [
             {
-              formControlProps: { label: "Mount" },
-              checkboxProps: {
-                checked: true,
-                disabled: true,
-                color: "primary",
+              control: {
+                component: "checkbox",
+                name: "mount",
+                formControlProps: { label: "Mount" },
+                props: {
+                  checked: true,
+                  disabled: true,
+                  color: "primary",
+                },
               },
             },
             {
-              formControlProps: { label: "Set up" },
-              checkboxProps: {
-                checked: false,
-                color: "primary",
+              control: {
+                component: "checkbox",
+                name: "setUp",
+                formControlProps: { label: "Set up" },
+                props: {
+                  checked: false,
+                  color: "primary",
+                },
               },
             },
           ],
