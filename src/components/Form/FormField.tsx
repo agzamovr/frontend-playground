@@ -7,6 +7,7 @@ import {
 import { Grid } from "@material-ui/core";
 import { FormTextField } from "components/TextField/FormTextField";
 import { FormSwitch } from "components/Switch/FormSwitch";
+import { FormCheckbox } from "components/Checkbox/FormCheckbox";
 import { FormSelect } from "components/Select/FormSelect";
 import { FormRadio } from "components/RadioGroup/FormRadioGroup";
 
@@ -24,6 +25,8 @@ export const FormField = (fieldProps: SimpleFieldConfig) => {
       return <FormSelect {...fieldProps} />;
     case "radio":
       return <FormRadio {...fieldProps} />;
+    case "checkbox":
+      return <FormCheckbox {...fieldProps} />;
     default:
       return <Field {...fieldProps} />;
   }

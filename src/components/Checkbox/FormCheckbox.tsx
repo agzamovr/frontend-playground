@@ -3,7 +3,7 @@ import { Field } from "react-final-form";
 import { CheckboxConfig } from "components/FieldComponent";
 import { Checkbox } from "components/Checkbox/Checkbox";
 
-export const FormSwitch = (fieldProps: CheckboxConfig) => (
+export const FormCheckbox = (fieldProps: CheckboxConfig) => (
   <Field name={fieldProps.name} type="checkbox">
     {({ input }) => (
       <Checkbox
