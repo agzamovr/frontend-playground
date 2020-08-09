@@ -28,7 +28,6 @@ const createStore = (
   const preloadedState: Draggables = {
     elementsOrder: initElementsOrder(elementsCount),
     placeholderRect: null,
-    draggableOriginalOrder: null,
   };
   const dndEventsMiddleware: Middleware = ({ getState }) => (next) => (
     action

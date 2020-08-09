@@ -27,13 +27,11 @@ export interface Draggables {
   placeholderOrder?: number;
   elementsOrder: ElementOrders;
   placeholderRect: GridCellRect | null;
-  draggableOriginalOrder: number | null;
 }
 
 const initialState: Draggables = {
   elementsOrder: [],
   placeholderRect: null,
-  draggableOriginalOrder: null,
 };
 
 export const findKeyByValue = (
