@@ -15,6 +15,7 @@ import {
   dateTimeSettings,
   dateTimeSettingsValues,
 } from "components/Settings/DateTimeFieldSettings";
+import { listSettings } from "components/Settings/ListSettings";
 
 export interface TextFieldFormValues {
   label: string;
@@ -82,4 +83,6 @@ export const fieldSettings = ({
     ? textFieldSettings(field, namePrefix)
     : field.component === "datetime"
     ? dateTimeSettings(`${namePrefix}${field.name}`)
+    : field.component === "list"
+    ? listSettings(field)
     : [];
