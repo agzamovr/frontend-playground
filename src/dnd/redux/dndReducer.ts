@@ -12,6 +12,7 @@ export interface Rect {
   area: number;
 }
 export interface GridCell {
+  order: number;
   gridColumnStart: string;
   gridColumn: string;
   gridColumnEnd: string;
@@ -43,17 +44,14 @@ const switchIndexes = (
   elementsOrder: ElementOrders,
   source: number,
   destination: number
-): ElementOrders => {
-  const destinationIndex = findKeyByValue(elementsOrder, destination);
-  return elementsOrder.map((element, index) =>
+): ElementOrders =>
+  elementsOrder.map((element, index) =>
     index === source
-      ? elementsOrder[destinationIndex]
-      : index === destinationIndex
+      ? elementsOrder[destination]
+      : index === destination
       ? elementsOrder[source]
       : element
   );
-};
-
 interface Placeholder {
   order: number;
   placeholderRect: GridCellRect | null;
@@ -79,10 +77,7 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
     }),
     switchElementsOrder: (state, { payload }: PayloadAction<SwitchOrder>) => ({
       ...state,
-      placeholderOrder: findKeyByValue(
-        state.elementsOrder,
-        payload.destinationOrder
-      ),
+      placeholderOrder: payload.destinationOrder,
       elementsOrder: switchIndexes(
         state.elementsOrder,
         payload.sourceOrder,

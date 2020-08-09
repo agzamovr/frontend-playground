@@ -16,7 +16,7 @@ export const Draggable: FunctionComponent<DraggableProps> = (props) => {
     findKeyByValue(elementsOrder, originalOrder)
   );
 
-  const { ref, dragHandleRef } = useDrag(order, originalOrder);
+  const { ref, dragHandleRef } = useDrag(order);
   const memoChildren = useMemo(() => children(dragHandleRef), [
     children,
     dragHandleRef,

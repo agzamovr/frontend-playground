@@ -49,6 +49,7 @@ const copyRect = (el: HTMLElement): GridCellRect => {
     left: rect.left,
     right: rect.right,
     top: rect.top,
+    order: parseInt(el.style.order),
     area: rect.width * rect.height,
     gridColumnStart: el.style.gridColumnStart,
     gridColumn: el.style.gridColumn,
@@ -64,7 +65,9 @@ const calcRects = (el: HTMLElement | null) => {
   const nodeList = Array.from(
     el.parentElement.querySelectorAll("div[data-draggable]")
   );
-  return nodeList.map((elem) => copyRect(elem as HTMLElement));
+  return nodeList
+    .map((elem) => copyRect(elem as HTMLElement))
+    .sort((a, z) => a.order - z.order);
 };
 
 const getIntersectionArea = (first: Rect, second: Rect) => {
@@ -122,7 +125,7 @@ const getIntersections = (
   }
 };
 
-export const useDrag = (order: number, originalOrder: number) => {
+export const useDrag = (order: number) => {
   const dispatch = useDispatch();
   const [isGrabbed, setIsGrabbed] = useState(false);
   const rects = useRef<RectsRecord | null>(null);
@@ -204,7 +207,7 @@ export const useDrag = (order: number, originalOrder: number) => {
 
       if (!rects.current) return;
       const intersection = getIntersections(
-        originalOrder,
+        order,
         dragOriginRectRef.current,
         x,
         y,
@@ -235,7 +238,7 @@ export const useDrag = (order: number, originalOrder: number) => {
         }
       });
     },
-    [dispatch, order, originalOrder]
+    [dispatch, order]
   );
 
   const releaseListener = useCallback(
