@@ -65,11 +65,6 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
   initialState,
   name: "dragAndDropSlice",
   reducers: {
-    resetPlaceholder: (state) => ({
-      ...state,
-      placeholderOrder: undefined,
-      placeholderRect: null,
-    }),
     setPlaceholderOrder: (state, { payload }: PayloadAction<Placeholder>) => ({
       ...state,
       placeholderOrder: payload.order,
@@ -84,7 +79,11 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
         payload.destinationOrder
       ),
     }),
-    dragEnd: (state) => state,
+    dragEnd: (state) => ({
+      ...state,
+      placeholderOrder: undefined,
+      placeholderRect: null,
+    }),
   },
 });
 

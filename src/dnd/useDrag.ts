@@ -251,7 +251,6 @@ export const useDrag = (order: number) => {
       pointerPosition.current.y = 0;
       dragOriginRectRef.current = null;
       resetStyles();
-      dispatch(dndActions.resetPlaceholder());
       rects.current = null;
       dispatch(dndActions.dragEnd());
     },
