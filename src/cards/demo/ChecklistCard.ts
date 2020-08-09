@@ -11,7 +11,9 @@ const fields: FieldConfig[] = [
           component: "checkbox",
           name: "deliverToCustomer",
           formControlProps: { label: "Deliver to Customer" },
-          props: { checked: true, color: "primary" },
+          props: {
+            color: "primary",
+          },
         },
       },
       {
@@ -20,8 +22,6 @@ const fields: FieldConfig[] = [
           name: "install",
           formControlProps: { label: "Install" },
           props: {
-            indeterminate: true,
-            checked: true,
             color: "primary",
           },
         },
@@ -33,8 +33,6 @@ const fields: FieldConfig[] = [
                 name: "mount",
                 formControlProps: { label: "Mount" },
                 props: {
-                  checked: true,
-                  disabled: true,
                   color: "primary",
                 },
               },
@@ -45,7 +43,6 @@ const fields: FieldConfig[] = [
                 name: "setUp",
                 formControlProps: { label: "Set up" },
                 props: {
-                  checked: false,
                   color: "primary",
                 },
               },
