@@ -185,7 +185,7 @@ export const useDrag = (order: number) => {
       pointerOrigin.current.y = clientY;
       setIsGrabbed(true);
       dispatch(
-        dndActions.setPlaceholderOrder({
+        dndActions.dragStart({
           order,
           placeholderRect: dragOriginRectRef.current,
         })
