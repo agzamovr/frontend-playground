@@ -2,16 +2,22 @@ import React, { FunctionComponent, Fragment } from "react";
 
 import {
   List as MuiList,
+  ListItemProps as MuiListItemProps,
   ListItem as MuiListItem,
   useTheme,
 } from "@material-ui/core";
-import { SimpleFieldConfig, Field } from "components/FieldComponent";
+import {
+  Field,
+  CheckboxConfig,
+  TextFieldConfig,
+} from "components/FieldComponent";
 
+type ItemPropsKeys = "disabled" | "dense" | "selected";
+type ItemProps = Pick<MuiListItemProps, ItemPropsKeys>;
 export interface ListProps {
   items: {
-    // itemProps?: MuiListItemProps<"li", { button?: false }> &
-    //   MuiListItemProps<"div", { button?: true }>;
-    control: SimpleFieldConfig;
+    props?: ItemProps;
+    control: CheckboxConfig | TextFieldConfig;
     subList?: ListProps;
   }[];
 }
@@ -25,7 +31,7 @@ const ListComponent: FunctionComponent<ListComponentProps> = (props) => {
     <MuiList disablePadding={isNested} style={{ paddingLeft }}>
       {props.items.map((item, index) => (
         <Fragment key={index}>
-          <MuiListItem>
+          <MuiListItem {...item.props}>
             <Field {...item.control} />
           </MuiListItem>
           {item.subList && (
