@@ -45,7 +45,7 @@ export const TemplateBuilderDrawer: FunctionComponent = () => {
   };
 
   const handleApplySettings = useCallback(
-    (values: SettingsFormValues, fieldsOrder: number[]) => {
+    (values: SettingsFormValues, fieldsOrder: string[]) => {
       dispatcher(templateActions.applyCardSettings([values, fieldsOrder]));
     },
     [dispatcher]

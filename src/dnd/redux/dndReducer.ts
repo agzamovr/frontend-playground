@@ -23,7 +23,7 @@ export interface GridCell {
 export type GridCellRect = Rect & GridCell;
 
 export type RectsRecord = GridCellRect[];
-export type ElementOrders = number[];
+export type ElementOrders = string[];
 export interface Draggables {
   placeholderOrder?: number;
   elementsOrder: ElementOrders;
@@ -37,7 +37,7 @@ const initialState: Draggables = {
 
 export const findKeyByValue = (
   elementsOrder: ElementOrders,
-  value: number
+  value: string
 ): number => elementsOrder.findIndex((element) => element === value);
 
 const switchIndexes = (
@@ -65,6 +65,10 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
   initialState,
   name: "dragAndDropSlice",
   reducers: {
+    addDraggable: (state, { payload }: PayloadAction<string>) => ({
+      ...state,
+      elementsOrder: [...state.elementsOrder, payload],
+    }),
     dragStart: (state, { payload }: PayloadAction<Placeholder>) => ({
       ...state,
       placeholderOrder: payload.order,

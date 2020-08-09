@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface SettingsProps {
   card: CardConfig;
-  onSubmit: (values: SettingsFormValues, fieldsOrder: number[]) => void;
+  onSubmit: (values: SettingsFormValues, fieldsOrder: string[]) => void;
   setFormApi: (formApi: FormApi) => void;
 }
 
@@ -45,9 +45,9 @@ export const CardSettings: FunctionComponent<SettingsProps> = ({
   setFormApi,
 }) => {
   const classes = useStyles();
-  const fieldsOrder = useRef(card.fields.map((_, index) => index));
+  const fieldsOrder = useRef(card.fields.map((field) => field.name));
   const setFieldsOrder = useCallback(
-    (newOrder: number[]) => (fieldsOrder.current = newOrder),
+    (newOrder: string[]) => (fieldsOrder.current = newOrder),
     []
   );
   return (
@@ -70,7 +70,7 @@ export const CardSettings: FunctionComponent<SettingsProps> = ({
                 </Grid>
                 <DnDContext onDragEnd={setFieldsOrder}>
                   {card.fields.map((field, index) => (
-                    <Draggable key={index} originalOrder={index}>
+                    <Draggable key={index} draggableId={field.name}>
                       {(innerRef) => (
                         <FieldSettings
                           classes={classes}
