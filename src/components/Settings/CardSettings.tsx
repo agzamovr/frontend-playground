@@ -11,6 +11,7 @@ import { Form } from "react-final-form";
 import { FormApi } from "final-form";
 import { DnDContext } from "dnd/DnDContext";
 import { Draggable } from "dnd/Draggable";
+import { Droppable } from "dnd/Droppable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,17 +70,19 @@ export const CardSettings: FunctionComponent<SettingsProps> = ({
                   <Typography variant="h5">{card.title}</Typography>
                 </Grid>
                 <DnDContext onDragEnd={setFieldsOrder}>
-                  {card.fields.map((field, index) => (
-                    <Draggable key={index} draggableId={field.name}>
-                      {(innerRef) => (
-                        <FieldSettings
-                          classes={classes}
-                          field={field}
-                          ref={innerRef}
-                        />
-                      )}
-                    </Draggable>
-                  ))}
+                  <Droppable>
+                    {card.fields.map((field, index) => (
+                      <Draggable key={index} draggableId={field.name}>
+                        {(innerRef) => (
+                          <FieldSettings
+                            classes={classes}
+                            field={field}
+                            ref={innerRef}
+                          />
+                        )}
+                      </Draggable>
+                    ))}
+                  </Droppable>
                 </DnDContext>
               </Grid>
             </Box>

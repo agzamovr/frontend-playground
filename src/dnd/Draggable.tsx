@@ -3,8 +3,9 @@ import React, {
   ReactElement,
   useMemo,
   useEffect,
+  useRef,
+  useCallback,
 } from "react";
-import { useDrag } from "dnd/useDrag";
 import { useSelector, useDispatch } from "react-redux";
 import { findKeyByValue, Draggables, dndActions } from "./redux/dndReducer";
 import { Grid } from "@material-ui/core";
@@ -17,8 +18,12 @@ interface DraggableProps {
 }
 export const Draggable: FunctionComponent<DraggableProps> = (props) => {
   const dispatch = useDispatch();
+  const dragHandleRef = useRef<HTMLElement | null>(null);
   const { draggableId, children } = props;
-
+  const setDragHandleRef = useCallback((element) => {
+    dragHandleRef.current = element;
+    element && element.setAttribute("data-dnd-drag-handle", "0");
+  }, []);
   useEffect(() => {
     dispatch(dndActions.addDraggable(draggableId));
   }, [dispatch, draggableId]);
@@ -26,20 +31,12 @@ export const Draggable: FunctionComponent<DraggableProps> = (props) => {
   const order = useSelector(({ elementsOrder }: Draggables) =>
     findKeyByValue(elementsOrder, draggableId)
   );
-
-  const { ref, dragHandleRef } = useDrag(order);
-  const memoChildren = useMemo(() => children(dragHandleRef), [
+  const memoChildren = useMemo(() => children(setDragHandleRef), [
     children,
-    dragHandleRef,
+    setDragHandleRef,
   ]);
   return (
-    <Grid
-      ref={ref}
-      item
-      style={{ order }}
-      data-dnd-draggable={order}
-      draggable={false}
-    >
+    <Grid item style={{ order }} data-dnd-draggable={order} draggable={false}>
       {memoChildren}
     </Grid>
   );

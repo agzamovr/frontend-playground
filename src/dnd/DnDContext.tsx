@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from "react";
 import draggables, { ElementOrders, dndActions } from "./redux/dndReducer";
-import { DropPlaceHolder } from "dnd/DropPlaceholder";
 import {
   configureStore,
   getDefaultMiddleware,
@@ -27,16 +26,11 @@ const createStore = (onDragEnd: DnDcontextProps["onDragEnd"]) => {
   return configureStore({
     reducer: draggables,
     middleware,
-    devTools: true,
+    devTools: { name: "DnDContext", maxAge: 10 },
   });
 };
 
 export const DnDContext: FunctionComponent<DnDcontextProps> = ({
   children,
   onDragEnd,
-}) => (
-  <Provider store={createStore(onDragEnd)}>
-    {children}
-    <DropPlaceHolder />
-  </Provider>
-);
+}) => <Provider store={createStore(onDragEnd)}>{children}</Provider>;
