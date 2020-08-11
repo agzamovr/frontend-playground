@@ -37,7 +37,7 @@ export const Draggable: FunctionComponent<DraggableProps> = (props) => {
       ref={ref}
       item
       style={{ order }}
-      data-draggable={order}
+      data-dnd-draggable={order}
       draggable={false}
     >
       {memoChildren}

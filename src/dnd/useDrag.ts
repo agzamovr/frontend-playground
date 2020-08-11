@@ -63,7 +63,7 @@ const copyRect = (el: HTMLElement): GridCellRect => {
 const calcRects = (el: HTMLElement | null) => {
   if (!el || !el.parentElement) return null;
   const nodeList = Array.from(
-    el.parentElement.querySelectorAll("div[data-draggable]")
+    el.parentElement.querySelectorAll("div[data-dnd-draggable]")
   );
   return nodeList
     .map((elem) => copyRect(elem as HTMLElement))
@@ -328,6 +328,7 @@ export const useDrag = (order: number) => {
     if (!dragHandleRef.current) return;
     const draggable = dragHandleRef.current;
     draggable.draggable = false;
+    draggable.setAttribute("data-dnd-drag-handle", "0");
     draggable.style.cursor = "grab";
     draggable.style.userSelect = "none";
     draggable.style.overflowAnchor = "none";
