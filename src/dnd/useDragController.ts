@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   dndActions,
@@ -127,7 +127,6 @@ const getIntersections = (
 
 export const useDragController = () => {
   const dispatch = useDispatch();
-  const [isGrabbed, setIsGrabbed] = useState(false);
   const order = useRef<number>(0);
   const rects = useRef<RectsRecord | null>(null);
   const ref = useRef<HTMLElement | null>(null);
@@ -173,24 +172,6 @@ export const useDragController = () => {
     style.order = `${order.current}`;
     style.zIndex = "";
   }, []);
-
-  const startDrag = useCallback(
-    (element: HTMLElement, clientX: number, clientY: number) => {
-      setRef(element);
-      rects.current = calcRects(ref.current);
-      setStyles();
-      pointerOrigin.current.x = clientX;
-      pointerOrigin.current.y = clientY;
-      setIsGrabbed(true);
-      dispatch(
-        dndActions.dragStart({
-          order: order.current,
-          placeholderRect: dragOriginRectRef.current,
-        })
-      );
-    },
-    [dispatch, setRef, setStyles]
-  );
 
   const handleMove = useCallback(
     (clientX: number, clientY: number) => {
@@ -240,22 +221,6 @@ export const useDragController = () => {
     [dispatch]
   );
 
-  const releaseListener = useCallback(
-    (event: Event) => {
-      event.preventDefault();
-      setIsGrabbed(false);
-      pointerOrigin.current.x = 0;
-      pointerOrigin.current.y = 0;
-      pointerPosition.current.x = 0;
-      pointerPosition.current.y = 0;
-      dragOriginRectRef.current = null;
-      resetStyles();
-      rects.current = null;
-      dispatch(dndActions.dragEnd());
-    },
-    [resetStyles, dispatch]
-  );
-
   const scrollListener = useCallback(() => {
     handleMove(pointerPosition.current.x, pointerPosition.current.y);
   }, [handleMove]);
@@ -278,6 +243,54 @@ export const useDragController = () => {
     [handleMove]
   );
 
+  const removeEventListeners = useCallback(() => {
+    window.removeEventListener("scroll", scrollListener, options);
+    window.removeEventListener("mousemove", mouseMoveListener, options);
+    window.removeEventListener("touchmove", touchMoveListener, options);
+  }, [scrollListener, mouseMoveListener, touchMoveListener]);
+
+  const releaseListener = useCallback(() => {
+    removeEventListeners();
+    releaseEvents.forEach((event) =>
+      window.removeEventListener(event, releaseListener)
+    );
+    pointerOrigin.current.x = 0;
+    pointerOrigin.current.y = 0;
+    pointerPosition.current.x = 0;
+    pointerPosition.current.y = 0;
+    dragOriginRectRef.current = null;
+    resetStyles();
+    rects.current = null;
+    dispatch(dndActions.dragEnd());
+  }, [resetStyles, dispatch, removeEventListeners]);
+
+  const addEventListeners = useCallback(() => {
+    window.addEventListener("scroll", scrollListener, options);
+    window.addEventListener("mousemove", mouseMoveListener, options);
+    window.addEventListener("touchmove", touchMoveListener, options);
+    releaseEvents.forEach((event) =>
+      window.addEventListener(event, releaseListener)
+    );
+  }, [scrollListener, mouseMoveListener, touchMoveListener, releaseListener]);
+
+  const startDrag = useCallback(
+    (element: HTMLElement, clientX: number, clientY: number) => {
+      setRef(element);
+      rects.current = calcRects(ref.current);
+      setStyles();
+      pointerOrigin.current.x = clientX;
+      pointerOrigin.current.y = clientY;
+      addEventListeners();
+      dispatch(
+        dndActions.dragStart({
+          order: order.current,
+          placeholderRect: dragOriginRectRef.current,
+        })
+      );
+    },
+    [dispatch, addEventListeners, setRef, setStyles]
+  );
+
   const handleMouseDown = useCallback(
     (event: MouseEvent) => {
       if (!shouldListenMouseEvent(event)) return;
@@ -295,43 +308,15 @@ export const useDragController = () => {
       const element = event.target as HTMLElement;
       const isDragHandle = element.hasAttribute("data-dnd-drag-handle");
       if (!isDragHandle) return;
-      event.preventDefault();
-      event.stopPropagation();
       const touch = event.touches[0];
       startDrag(element, touch.clientX, touch.clientY);
     },
     [startDrag]
   );
 
-  const removeEventListeners = useCallback(() => {
-    window.removeEventListener("scroll", scrollListener, options);
-    window.removeEventListener("mousemove", mouseMoveListener, options);
-    window.removeEventListener("touchmove", touchMoveListener, options);
-    releaseEvents.forEach((event) =>
-      window.removeEventListener(event, releaseListener)
-    );
-  }, [scrollListener, mouseMoveListener, touchMoveListener, releaseListener]);
-
   useEffect(() => {
-    if (isGrabbed) {
-      window.addEventListener("scroll", scrollListener, options);
-      window.addEventListener("mousemove", mouseMoveListener, options);
-      window.addEventListener("touchmove", touchMoveListener, options);
-      releaseEvents.forEach((event) =>
-        window.addEventListener(event, releaseListener)
-      );
-    } else {
-      removeEventListeners();
-    }
     return removeEventListeners;
-  }, [
-    isGrabbed,
-    scrollListener,
-    mouseMoveListener,
-    touchMoveListener,
-    releaseListener,
-    removeEventListeners,
-  ]);
+  }, [removeEventListeners]);
 
   useEffect(() => {
     window.addEventListener("mousedown", handleMouseDown);
