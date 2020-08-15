@@ -57,7 +57,7 @@ const copyRect = (el: HTMLElement): GridCellRect => {
 const calcRects = (el: HTMLElement | null) => {
   if (!el || !el.parentElement) return null;
   const nodeList = Array.from(
-    el.parentElement.querySelectorAll("div[data-dnd-draggable]")
+    el.parentElement.querySelectorAll("[data-dnd-draggable]")
   );
   return nodeList
     .map((elem) => copyRect(elem as HTMLElement))
