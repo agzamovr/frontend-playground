@@ -1,18 +1,9 @@
 import { useRef, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import {
-  dndActions,
-  GridCellRect,
-  RectsRecord,
-  Rect,
-} from "./redux/dndReducer";
+import { dndActions, GridCellRect, RectsRecord } from "./redux/dndReducer";
 import { getViewportIntersection } from "./scroll";
+import { copyRect, getIntersections, calcRects } from "dnd/dndGeometry";
 
-interface IntersectionArea {
-  order: number;
-  intersectionArea: number;
-  areaRatio: number;
-}
 const releaseEvents = [
   "mouseup",
   "touchend",
@@ -21,8 +12,6 @@ const releaseEvents = [
   "orientationchange",
 ] as const;
 const options = { capture: false, passive: false } as const;
-const compareIntersections = (a: IntersectionArea, z: IntersectionArea) =>
-  z.areaRatio - a.areaRatio;
 
 const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.defaultPrevented &&
@@ -32,145 +21,57 @@ const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.shiftKey &&
   !event.altKey;
 
-const copyRect = (el: HTMLElement): GridCellRect => {
-  const rect = el.getBoundingClientRect();
-  return {
-    height: rect.height,
-    width: rect.width,
-    x: rect.x,
-    y: rect.y,
-    bottom: rect.bottom,
-    left: rect.left,
-    right: rect.right,
-    top: rect.top,
-    order: parseInt(el.style.order),
-    area: rect.width * rect.height,
-    gridColumnStart: el.style.gridColumnStart,
-    gridColumn: el.style.gridColumn,
-    gridColumnEnd: el.style.gridColumnEnd,
-    gridRow: el.style.gridRow,
-    gridRowStart: el.style.gridRowStart,
-    gridRowEnd: el.style.gridRowEnd,
-  };
+const setDraggableStyles = (el: HTMLElement | null, rect: GridCellRect) => {
+  if (!el) return;
+  const style = el.style;
+  style.boxSizing = "border-box";
+  style.position = "fixed";
+  style.width = rect.width + "px";
+  style.height = rect.height + "px";
+  style.top = rect.y + "px";
+  style.left = rect.x + "px";
+  style.pointerEvents = "none";
+  style.order = "";
+  style.zIndex = "5000";
 };
 
-const calcRects = (el: HTMLElement | null) => {
-  if (!el || !el.parentElement) return null;
-  const nodeList = Array.from(
-    el.parentElement.querySelectorAll("[data-dnd-draggable]")
-  );
-  return nodeList
-    .map((elem) => copyRect(elem as HTMLElement))
-    .sort((a, z) => a.order - z.order);
-};
-
-const getIntersectionArea = (first: Rect, second: Rect) => {
-  const intersects =
-    first.left < second.right &&
-    first.right > second.left &&
-    first.top < second.bottom &&
-    first.bottom > second.top;
-  if (!intersects) return 0;
-  const left = Math.max(first.left, second.left);
-  const right = Math.min(first.right, second.right);
-  const top = Math.max(first.top, second.top);
-  const bottom = Math.min(first.bottom, second.bottom);
-  const width = right - left;
-  const height = bottom - top;
-  return width * height;
-};
-
-const getIntersections = (
-  currentOrder: number,
-  currentRect: GridCellRect | null,
-  shiftX: number,
-  shiftY: number,
-  rects: RectsRecord
-) => {
-  if (!currentRect) return;
-  const first = {
-    ...currentRect,
-    x: currentRect.x + shiftX,
-    y: currentRect.y + shiftY,
-    left: currentRect.left + shiftX,
-    top: currentRect.top + shiftY,
-    right: currentRect.right + shiftX,
-    bottom: currentRect.bottom + shiftY,
-  };
-  const intersections: IntersectionArea[] = [];
-  for (let key = 0; key < rects.length; key++) {
-    if (currentOrder !== key) {
-      const second = rects[key];
-      const intersectionArea = getIntersectionArea(first, second);
-      if (intersectionArea) {
-        const minArea = Math.min(first.area, second.area);
-        const areaRatio = intersectionArea / minArea;
-        intersections.push({
-          order: key,
-          intersectionArea,
-          areaRatio,
-        });
-      }
-    }
-  }
-  if (intersections) {
-    intersections.sort(compareIntersections);
-    return intersections[0];
-  }
+const resetDraggableStyles = (el: HTMLElement | null, order: number) => {
+  if (!el) return;
+  const style = el.style;
+  style.boxSizing = "";
+  style.position = "";
+  style.width = "";
+  style.height = "";
+  style.top = "";
+  style.left = "";
+  style.transform = "";
+  style.pointerEvents = "";
+  style.order = `${order}`;
+  style.zIndex = "";
 };
 
 export const useDragController = () => {
   const dispatch = useDispatch();
   const order = useRef<number>(0);
   const rects = useRef<RectsRecord | null>(null);
-  const ref = useRef<HTMLElement | null>(null);
+  const draggableRef = useRef<HTMLElement | null>(null);
   const isIntersectedRef = useRef(false);
   const dragOriginRectRef = useRef<GridCellRect | null>(null);
   const pointerOrigin = useRef({ x: 0, y: 0 });
   const pointerPosition = useRef({ x: 0, y: 0 });
 
-  const setRef = useCallback((element: HTMLElement) => {
-    ref.current = element.closest("[data-dnd-draggable]") as HTMLElement;
-    order.current = parseInt(ref.current.style.order);
-  }, []);
-
-  const setStyles = useCallback(() => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = copyRect(el);
-    dragOriginRectRef.current = rect;
-    const style = el.style;
-    style.boxSizing = "border-box";
-    style.position = "fixed";
-    style.width = rect.width + "px";
-    style.height = rect.height + "px";
-    style.top = rect.y + "px";
-    style.left = rect.x + "px";
-    style.pointerEvents = "none";
-    style.order = "";
-    style.zIndex = "5000";
-  }, []);
-
-  const resetStyles = useCallback(() => {
-    const el = ref.current;
-    if (!el) return;
-    const style = el.style;
-    style.boxSizing = "";
-    style.position = "";
-    style.width = "";
-    style.height = "";
-    style.top = "";
-    style.left = "";
-    style.transform = "";
-    style.pointerEvents = "";
-    style.order = `${order.current}`;
-    style.zIndex = "";
+  const findAndSetDraggable = useCallback((element: HTMLElement) => {
+    draggableRef.current = element.closest(
+      "[data-dnd-draggable]"
+    ) as HTMLElement;
+    order.current = parseInt(draggableRef.current.style.order);
+    return draggableRef.current;
   }, []);
 
   const handleMove = useCallback(
     (clientX: number, clientY: number) => {
-      if (!ref.current) return;
-      const style = ref.current.style;
+      if (!draggableRef.current) return;
+      const style = draggableRef.current.style;
       pointerPosition.current.x = clientX;
       pointerPosition.current.y = clientY;
       const x = pointerPosition.current.x - pointerOrigin.current.x;
@@ -202,7 +103,7 @@ export const useDragController = () => {
           })
         );
         order.current = secondOrder;
-        rects.current = calcRects(ref.current);
+        rects.current = calcRects(draggableRef.current);
       }
       requestAnimationFrame(() => {
         const vi = getViewportIntersection(dragOriginRectRef.current, x, y);
@@ -253,10 +154,10 @@ export const useDragController = () => {
     pointerPosition.current.x = 0;
     pointerPosition.current.y = 0;
     dragOriginRectRef.current = null;
-    resetStyles();
+    resetDraggableStyles(draggableRef.current, order.current);
     rects.current = null;
     dispatch(dndActions.dragEnd());
-  }, [resetStyles, dispatch, removeEventListeners]);
+  }, [dispatch, removeEventListeners]);
 
   const addEventListeners = useCallback(() => {
     window.addEventListener("scroll", scrollListener, options);
@@ -269,9 +170,10 @@ export const useDragController = () => {
 
   const startDrag = useCallback(
     (element: HTMLElement, clientX: number, clientY: number) => {
-      setRef(element);
-      rects.current = calcRects(ref.current);
-      setStyles();
+      const el = findAndSetDraggable(element);
+      rects.current = calcRects(draggableRef.current);
+      dragOriginRectRef.current = copyRect(el);
+      setDraggableStyles(el, dragOriginRectRef.current);
       pointerOrigin.current.x = clientX;
       pointerOrigin.current.y = clientY;
       addEventListeners();
@@ -282,7 +184,7 @@ export const useDragController = () => {
         })
       );
     },
-    [dispatch, addEventListeners, setRef, setStyles]
+    [dispatch, addEventListeners, findAndSetDraggable]
   );
 
   const handleMouseDown = useCallback(
