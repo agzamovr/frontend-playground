@@ -65,26 +65,35 @@ export const CardSettings: FunctionComponent<SettingsProps> = ({
         return (
           <form onSubmit={handleSubmit} noValidate>
             <Box p={1}>
-              <Grid container spacing={1} direction="column">
-                <Grid item>
-                  <Typography variant="h5">{card.title}</Typography>
-                </Grid>
-                <DnDContext onDragEnd={setFieldsOrder}>
-                  <Droppable>
-                    {card.fields.map((field, index) => (
-                      <Draggable key={index} draggableId={field.name}>
-                        {(innerRef) => (
-                          <FieldSettings
-                            classes={classes}
-                            field={field}
-                            ref={innerRef}
-                          />
-                        )}
-                      </Draggable>
-                    ))}
-                  </Droppable>
-                </DnDContext>
-              </Grid>
+              <DnDContext onDragEnd={setFieldsOrder}>
+                <Droppable droppableId="0">
+                  {(innerRef, placeholder) => (
+                    <Grid
+                      container
+                      spacing={1}
+                      direction="column"
+                      ref={innerRef}
+                    >
+                      <Grid item>
+                        <Typography variant="h5">{card.title}</Typography>
+                      </Grid>
+
+                      {card.fields.map((field, index) => (
+                        <Draggable key={index} draggableId={field.name}>
+                          {(innerRef) => (
+                            <FieldSettings
+                              classes={classes}
+                              field={field}
+                              ref={innerRef}
+                            />
+                          )}
+                        </Draggable>
+                      ))}
+                      {placeholder}
+                    </Grid>
+                  )}
+                </Droppable>
+              </DnDContext>
             </Box>
           </form>
         );

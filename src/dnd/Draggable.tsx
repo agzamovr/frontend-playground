@@ -1,5 +1,4 @@
 import React, {
-  FunctionComponent,
   ReactElement,
   useMemo,
   useEffect,
@@ -16,7 +15,7 @@ interface DraggableProps {
     innerRef: (element?: Element | null) => void
   ) => ReactElement<HTMLElement>;
 }
-export const Draggable: FunctionComponent<DraggableProps> = (props) => {
+export const Draggable = (props: DraggableProps) => {
   const dispatch = useDispatch();
   const dragHandleRef = useRef<HTMLElement | null>(null);
   const { draggableId, children } = props;
