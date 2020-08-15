@@ -40,7 +40,7 @@ export const findKeyByValue = (
   value: string
 ): number => elementsOrder.findIndex((element) => element === value);
 
-const switchIndexes = (
+const swapElementsByIndex = (
   elementsOrder: ElementOrders,
   source: number,
   destination: number
@@ -77,7 +77,7 @@ export const { actions: dndActions, reducer: dndReducer } = createSlice({
     switchElementsOrder: (state, { payload }: PayloadAction<SwitchOrder>) => ({
       ...state,
       placeholderOrder: payload.destinationOrder,
-      elementsOrder: switchIndexes(
+      elementsOrder: swapElementsByIndex(
         state.elementsOrder,
         payload.sourceOrder,
         payload.destinationOrder
