@@ -6,6 +6,7 @@ import {
   Middleware,
 } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
+import "./dnd.css";
 
 interface DnDcontextProps {
   onDragEnd: (elementOrders: ElementOrders) => void;
