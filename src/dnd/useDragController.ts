@@ -21,14 +21,8 @@ const releaseEvents = [
   "orientationchange",
 ] as const;
 const options = { capture: false, passive: false } as const;
-const compareIntersections = (a: IntersectionArea, b: IntersectionArea) =>
-  a.areaRatio > b.areaRatio
-    ? -1
-    : a.areaRatio < b.areaRatio
-    ? 1
-    : a.order > b.order
-    ? -1
-    : 0;
+const compareIntersections = (a: IntersectionArea, z: IntersectionArea) =>
+  z.areaRatio - a.areaRatio;
 
 const shouldListenMouseEvent = (event: MouseEvent) =>
   !event.defaultPrevented &&
