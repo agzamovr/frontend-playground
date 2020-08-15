@@ -14,20 +14,19 @@ export const DropPlaceHolder: FunctionComponent = () => {
     ({ placeholderRect }: Draggables) => placeholderRect
   );
   const shown = placeholderOrder !== undefined;
-  return (
+  return shown ? (
     <StyledDropPlaceholder
       style={{
-        width: shown ? rect?.width + "px" : "",
-        height: shown ? rect?.height + "px" : "",
-        display: shown ? "block" : "none",
+        width: rect?.width + "px",
+        height: rect?.height + "px",
         order: placeholderOrder,
-        gridColumnStart: shown ? rect?.gridColumnStart : "",
-        gridColumn: shown ? rect?.gridColumn : "",
-        gridColumnEnd: shown ? rect?.gridColumnEnd : "",
-        gridRow: shown ? rect?.gridRow : "",
-        gridRowStart: shown ? rect?.gridRowStart : "",
-        gridRowEnd: shown ? rect?.gridRowEnd : "",
+        gridColumnStart: rect?.gridColumnStart,
+        gridColumn: rect?.gridColumn,
+        gridColumnEnd: rect?.gridColumnEnd,
+        gridRow: rect?.gridRow,
+        gridRowStart: rect?.gridRowStart,
+        gridRowEnd: rect?.gridRowEnd,
       }}
     />
-  );
+  ) : null;
 };
