@@ -77,7 +77,7 @@ export const useDragController = () => {
       const x = pointerPosition.current.x - pointerOrigin.current.x;
       const y = pointerPosition.current.y - pointerOrigin.current.y;
 
-      style.transform = `translate(${x}px,${y}px)`;
+      style.transform = `translate3d(${x}px,${y}px, 0px)`;
 
       if (!rects.current) return;
       const intersection = getIntersections(
