@@ -1,4 +1,4 @@
-import { GridCellRect, RectsRecord, Rect } from "dnd/redux/dndReducer";
+import { GridCellRect, RectsRecord, Rect } from "dnd/v1/redux/dndReducer";
 
 interface IntersectionArea {
   order: number;

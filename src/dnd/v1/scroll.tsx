@@ -1,4 +1,4 @@
-import { Rect } from "./redux/dndReducer";
+import { Rect } from "dnd/v1/redux/dndReducer";
 
 const getViewportRect = (): Rect => {
   const vw = document.documentElement.clientWidth || 0;

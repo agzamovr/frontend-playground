@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import draggables, { ElementOrders, dndActions } from "./redux/dndReducer";
+import draggables, { ElementOrders, dndActions } from "dnd/v1/redux/dndReducer";
 import {
   configureStore,
   getDefaultMiddleware,

@@ -1,8 +1,8 @@
 import { useRef, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { dndActions, GridCellRect, RectsRecord } from "./redux/dndReducer";
+import { dndActions, GridCellRect, RectsRecord } from "dnd/v1/redux/dndReducer";
 import { getViewportIntersection } from "./scroll";
-import { copyRect, getIntersections, calcRects } from "dnd/dndGeometry";
+import { copyRect, getIntersections, calcRects } from "dnd/v1/dndGeometry";
 
 const releaseEvents = [
   "mouseup",

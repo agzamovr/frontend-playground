@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { DnDContext } from "dnd/DnDContext";
+import { DnDContext } from "dnd/v1/DnDContext";
 import { Grid } from "@material-ui/core";
 
 interface BoardProps {

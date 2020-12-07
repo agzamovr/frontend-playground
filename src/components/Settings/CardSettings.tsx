@@ -9,9 +9,9 @@ import {
 } from "components/Settings/settingsUtils";
 import { Form } from "react-final-form";
 import { FormApi } from "final-form";
-import { DnDContext } from "dnd/DnDContext";
-import { Draggable } from "dnd/Draggable";
-import { Droppable } from "dnd/Droppable";
+import { DnDContext } from "dnd/v1/DnDContext";
+import { Draggable } from "dnd/v1/Draggable";
+import { Droppable } from "dnd/v1/Droppable";
 
 const useStyles = makeStyles((theme) => ({
   root: {

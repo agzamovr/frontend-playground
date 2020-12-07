@@ -6,7 +6,11 @@ import React, {
   useCallback,
 } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { findKeyByValue, Draggables, dndActions } from "./redux/dndReducer";
+import {
+  findKeyByValue,
+  Draggables,
+  dndActions,
+} from "dnd/v1/redux/dndReducer";
 import { Grid } from "@material-ui/core";
 
 interface DraggableProps {

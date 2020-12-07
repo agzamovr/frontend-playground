@@ -5,7 +5,7 @@ import {
   GridCellRect,
   RectsRecord,
   Rect,
-} from "./redux/dndReducer";
+} from "dnd/v1/redux/dndReducer";
 import { getViewportIntersection } from "./scroll";
 
 interface IntersectionArea {

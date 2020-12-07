@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
-import { Draggables } from "dnd/redux/dndReducer";
+import { Draggables } from "dnd/v1/redux/dndReducer";
 
 const StyledDropPlaceholder = styled.div`
   box-sizing: border-box;

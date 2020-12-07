@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useCallback, ReactElement } from "react";
-import { useDragController } from "dnd/useDragController";
-import { DropPlaceHolder } from "dnd/DropPlaceholder";
+import { useDragController } from "dnd/v1/useDragController";
+import { DropPlaceHolder } from "dnd/v1/DropPlaceholder";
 
 interface DroppableProps {
   droppableId: string;
