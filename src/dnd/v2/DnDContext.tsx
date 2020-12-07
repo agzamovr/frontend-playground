@@ -1,7 +1,7 @@
 import { useDnDController } from "dnd/v2/useDnDController";
 import React, { FunctionComponent, useMemo } from "react";
 
-type Callback = (id: string) => void;
+type DragStartCallback = (draggingId: string) => void;
 type DropCallback = (draggingId: string, droppingId: string) => void;
 type DragCallback = (
   draggingId: string,
@@ -9,15 +9,21 @@ type DragCallback = (
   isEntering: boolean
 ) => void;
 type Elements = string[];
-type Callbacks = {
-  [id: string]: Callback[];
+type DragStartCallbacks = {
+  [id: string]: DragStartCallback[];
+};
+type DropCallbacks = {
+  [id: string]: DropCallback[];
+};
+type DragCallbacks = {
+  [id: string]: DragCallback[];
 };
 interface DnDContextType {
   getElements: () => Elements;
   addElement: (id: string) => void;
   removeElement: (id: string) => void;
-  addDragStartObserver: (callback: Callback, ids: string[]) => void;
-  removeDragStartObserver: (callback: Callback, ids: string[]) => void;
+  addDragStartObserver: (callback: DragStartCallback, ids: string[]) => void;
+  removeDragStartObserver: (callback: DragStartCallback, ids: string[]) => void;
   addDropObserver: (callback: DropCallback, ids: string[]) => void;
   removeDropObserver: (callback: DropCallback, ids: string[]) => void;
   addDragObserver: (callback: DragCallback, ids: string[]) => void;
@@ -32,9 +38,9 @@ interface DnDContextType {
 }
 type Store = {
   elements: Elements;
-  dragStartObservers: Callbacks;
-  dropObservers: { [id: string]: DropCallback[] };
-  dragObservers: { [id: string]: DragCallback[] };
+  dragStartObservers: DragStartCallbacks;
+  dropObservers: DropCallbacks;
+  dragObservers: DragCallbacks;
 };
 const createDnDContextValue = (): DnDContextType => {
   const store: Store = {
