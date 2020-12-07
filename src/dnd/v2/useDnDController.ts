@@ -136,7 +136,7 @@ export const useDnDController = () => {
     const dataBlockId = dataBlockIdRef.current;
     dataBlockIdRef.current = null;
     rects.current = null;
-    if (dataBlockId) context?.dragEnd(dataBlockId);
+    if (dataBlockId) context?.drop(dataBlockId);
   }, [removeEventListeners, context]);
 
   const addEventListeners = useCallback(() => {
