@@ -2,6 +2,7 @@ import { useDnDController } from "dnd/v2/useDnDController";
 import React, { FunctionComponent, useMemo } from "react";
 
 type Callback = (id: string) => void;
+type DropCallback = (draggingId: string, droppingId: string) => void;
 type DragCallback = (
   draggingId: string,
   underlyingId: string,
@@ -16,10 +17,13 @@ interface DnDContextType {
   addElement: (id: string) => void;
   removeElement: (id: string) => void;
   addDragStartObserver: (callback: Callback, ids: string[]) => void;
-  addDragEndObserver: (callback: Callback, ids: string[]) => void;
+  removeDragStartObserver: (callback: Callback, ids: string[]) => void;
+  addDropObserver: (callback: DropCallback, ids: string[]) => void;
+  removeDropObserver: (callback: DropCallback, ids: string[]) => void;
   addDragObserver: (callback: DragCallback, ids: string[]) => void;
+  removeDragObserver: (callback: DragCallback, ids: string[]) => void;
   dragStart: (id: string) => void;
-  dragEnd: (id: string) => void;
+  drop: (id: string) => void;
   dragging: (
     draggingId: string,
     underlyingId: string,
@@ -29,28 +33,29 @@ interface DnDContextType {
 type Store = {
   elements: Elements;
   dragStartObservers: Callbacks;
-  dragEndObservers: Callbacks;
+  dropObservers: { [id: string]: DropCallback[] };
   dragObservers: { [id: string]: DragCallback[] };
 };
 const createDnDContextValue = (): DnDContextType => {
   const store: Store = {
     elements: [],
     dragStartObservers: {},
-    dragEndObservers: {},
+    dropObservers: {},
     dragObservers: {},
   };
   let intersection: { id: string; isIntersecting: boolean } = {
     id: "",
     isIntersecting: false,
   };
+  let droppingId: string | undefined;
   return {
     getElements: () => [...store.elements],
     removeElement: (id) => {
       store.elements = store.elements.filter((el) => el !== id);
       const { [id]: _s, ...newDragStartObservers } = store.dragStartObservers;
       store.dragStartObservers = newDragStartObservers;
-      const { [id]: _e, ...newDragEndObservers } = store.dragEndObservers;
-      store.dragEndObservers = newDragEndObservers;
+      const { [id]: _e, ...newDragEndObservers } = store.dropObservers;
+      store.dropObservers = newDragEndObservers;
       const { [id]: _o, ...newDragObservers } = store.dragObservers;
       store.dragObservers = newDragObservers;
     },
@@ -66,14 +71,25 @@ const createDnDContextValue = (): DnDContextType => {
             ])
           : (store.dragStartObservers[id] = [callback]);
       }),
-    addDragEndObserver: (callback, ids) =>
+    removeDragStartObserver: (callback, ids) =>
       ids.forEach((id) => {
-        store.dragEndObservers.hasOwnProperty(id)
-          ? (store.dragEndObservers[id] = [
-              ...store.dragEndObservers[id],
-              callback,
-            ])
-          : (store.dragEndObservers[id] = [callback]);
+        if (store.dragStartObservers.hasOwnProperty(id))
+          store.dragStartObservers[id] = store.dragStartObservers[id].filter(
+            (func) => func === callback
+          );
+      }),
+    addDropObserver: (callback, ids) =>
+      ids.forEach((id) => {
+        store.dropObservers.hasOwnProperty(id)
+          ? (store.dropObservers[id] = [...store.dropObservers[id], callback])
+          : (store.dropObservers[id] = [callback]);
+      }),
+    removeDropObserver: (callback, ids) =>
+      ids.forEach((id) => {
+        if (store.dropObservers.hasOwnProperty(id))
+          store.dropObservers[id] = store.dropObservers[id].filter(
+            (func) => func === callback
+          );
       }),
     addDragObserver: (callback, ids) =>
       ids.forEach((id) => {
@@ -81,10 +97,19 @@ const createDnDContextValue = (): DnDContextType => {
           ? (store.dragObservers[id] = [...store.dragObservers[id], callback])
           : (store.dragObservers[id] = [callback]);
       }),
+    removeDragObserver: (callback, ids) =>
+      ids.forEach((id) => {
+        if (store.dragObservers.hasOwnProperty(id))
+          store.dragObservers[id] = store.dragObservers[id].filter(
+            (func) => func === callback
+          );
+      }),
     dragStart: (id) =>
       store.dragStartObservers[id]?.forEach((callback) => callback(id)),
-    dragEnd: (id) =>
-      store.dragEndObservers[id]?.forEach((callback) => callback(id)),
+    drop: (draggingId: string) =>
+      store.dropObservers[draggingId]?.forEach(
+        (callback) => droppingId && callback(draggingId, droppingId)
+      ),
     dragging: (draggingId: string, underlyingId: string, threshold: number) => {
       if (
         intersection.id === underlyingId &&
@@ -98,6 +123,7 @@ const createDnDContextValue = (): DnDContextType => {
         intersection.isIntersecting
       ) {
         intersection = { id: "", isIntersecting: false };
+        droppingId = undefined;
         store.dragObservers[draggingId]?.forEach((callback) =>
           callback(draggingId, underlyingId, false)
         );
@@ -108,6 +134,7 @@ const createDnDContextValue = (): DnDContextType => {
         threshold > 0.5
       ) {
         intersection = { id: underlyingId, isIntersecting: true };
+        droppingId = underlyingId;
         store.dragObservers[draggingId]?.forEach((callback) =>
           callback(draggingId, underlyingId, true)
         );
