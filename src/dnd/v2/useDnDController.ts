@@ -152,7 +152,8 @@ export const useDnDController = () => {
     (element: HTMLElement, clientX: number, clientY: number) => {
       setDraggable(element, clientX, clientY);
       const elements = context?.getElements();
-      if (elements) rects.current = calcRects(elements);
+      if (dataBlockIdRef.current && elements)
+        rects.current = calcRects(dataBlockIdRef.current, elements);
       addEventListeners();
     },
     [addEventListeners, setDraggable, context]

@@ -36,13 +36,23 @@ export const copyRect = (el: Element): Rect => {
   };
 };
 
-export const calcRects = (ids: string[]): Rects => {
-  return ids.reduce((acc: Rects, id) => {
-    const el = document.querySelector(`[data-block-id='${id}']`);
-    if (!el) return acc;
-    acc[id] = copyRect(el);
-    return acc;
-  }, {});
+export const calcRects = (selectedId: string, ids: string[]): Rects => {
+  const childNodeList = document.querySelectorAll(
+    `[data-block-id="${selectedId}"] [data-block-id]`
+  );
+  const childIds = Array.from(childNodeList).map((el) =>
+    el.getAttribute("data-block-id")
+  );
+  return ids
+    .filter((id) => !childIds.includes(id))
+    .reduce((acc: Rects, id) => {
+      const el = document.querySelector(
+        `[data-block-id='${id}'] [data-droppable="true"]`
+      );
+      if (!el) return acc;
+      acc[id] = copyRect(el);
+      return acc;
+    }, {});
 };
 
 const getIntersectionArea = (first: Rect, second: Rect) => {
