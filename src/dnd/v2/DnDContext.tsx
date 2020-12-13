@@ -1,5 +1,5 @@
 import { useDnDController } from "dnd/v2/useDnDController";
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent } from "react";
 
 type DragStartCallback = (draggingId: string) => void;
 type DropCallback = (draggingId: string, droppingId: string) => void;
@@ -86,7 +86,9 @@ const createDnDContextValue = (): DnDContextType => {
       store.dragObservers = newDragObservers;
     },
     addElement: (id) => {
-      store.elements = [...store.elements, id];
+      store.elements = store.elements.includes(id)
+        ? store.elements
+        : [...store.elements, id];
     },
     addDragStartObserver: (callback, ids) =>
       ids.forEach((id) => {
@@ -101,7 +103,7 @@ const createDnDContextValue = (): DnDContextType => {
       ids.forEach((id) => {
         if (store.dragStartObservers.hasOwnProperty(id))
           store.dragStartObservers[id] = store.dragStartObservers[id].filter(
-            (func) => func === callback
+            (func) => func !== callback
           );
       }),
     addDropObserver: (callback, ids) =>
@@ -114,7 +116,7 @@ const createDnDContextValue = (): DnDContextType => {
       ids.forEach((id) => {
         if (store.dropObservers.hasOwnProperty(id))
           store.dropObservers[id] = store.dropObservers[id].filter(
-            (func) => func === callback
+            (func) => func !== callback
           );
       }),
     addDropOverObserver: (callback, ids) =>
@@ -130,7 +132,7 @@ const createDnDContextValue = (): DnDContextType => {
       ids.forEach((id) => {
         if (store.dropOverObservers.hasOwnProperty(id))
           store.dropOverObservers[id] = store.dropOverObservers[id].filter(
-            (func) => func === callback
+            (func) => func !== callback
           );
       }),
     addDragObserver: (callback, ids) =>
@@ -143,7 +145,7 @@ const createDnDContextValue = (): DnDContextType => {
       ids.forEach((id) => {
         if (store.dragObservers.hasOwnProperty(id))
           store.dragObservers[id] = store.dragObservers[id].filter(
-            (func) => func === callback
+            (func) => func !== callback
           );
       }),
     addDragOverObserver: (callback, ids) =>
@@ -159,7 +161,7 @@ const createDnDContextValue = (): DnDContextType => {
       ids.forEach((id) => {
         if (store.dragOverObservers.hasOwnProperty(id))
           store.dragOverObservers[id] = store.dragOverObservers[id].filter(
-            (func) => func === callback
+            (func) => func !== callback
           );
       }),
     dragStart: (id) =>
@@ -212,17 +214,16 @@ const createDnDContextValue = (): DnDContextType => {
     },
   };
 };
-
-export const DnDContext = React.createContext<DnDContextType | null>(null);
+const contextValue = createDnDContextValue();
+export const DnDContext = React.createContext<DnDContextType>(contextValue);
 
 const DnDContextInternal: FunctionComponent = (props) => {
   useDnDController();
   return <>{props.children}</>;
 };
 export const DnDContextProvider: FunctionComponent = (props) => {
-  const value = useMemo(() => createDnDContextValue(), []);
   return (
-    <DnDContext.Provider value={value}>
+    <DnDContext.Provider value={contextValue}>
       <DnDContextInternal>{props.children}</DnDContextInternal>
     </DnDContext.Provider>
   );
