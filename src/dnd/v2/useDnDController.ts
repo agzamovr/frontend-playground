@@ -46,25 +46,6 @@ export const useDnDController = () => {
   const pointerPosition = useRef({ x: 0, y: 0 });
   const context = useContext(DnDContext);
 
-  const setDraggable = useCallback(
-    (element: HTMLElement, clientX: number, clientY: number) => {
-      const el = element.closest("[data-block-id]") as HTMLElement;
-      dataBlockIdRef.current = el.getAttribute("data-block-id");
-      if (!dataBlockIdRef.current) return;
-      const rootOverlay = document.getElementById("global-overlay");
-      const clonedEl = el?.cloneNode(true) as HTMLElement;
-      clonedEl.removeAttribute("data-block-id");
-      dragOriginRectRef.current = copyRect(el);
-      shift.current.x = clientX - dragOriginRectRef.current.left;
-      shift.current.y = clientY - dragOriginRectRef.current.top;
-      setDraggableStyles(clonedEl, dragOriginRectRef.current);
-      rootOverlay?.appendChild(clonedEl);
-      draggableRef.current = clonedEl;
-      context?.dragStart(dataBlockIdRef.current);
-    },
-    [context]
-  );
-
   const handleMove = useCallback(
     (clientX: number, clientY: number) => {
       requestAnimationFrame(() => {
@@ -150,13 +131,33 @@ export const useDnDController = () => {
 
   const startDrag = useCallback(
     (element: HTMLElement, clientX: number, clientY: number) => {
-      setDraggable(element, clientX, clientY);
+      // find draggable element block
+      const draggableBlock = element.closest("[data-block-id]") as HTMLElement;
+      // get data-block-id
+      dataBlockIdRef.current = draggableBlock.getAttribute("data-block-id");
+      if (!dataBlockIdRef.current) return;
+      // clone dragging element which is actually will be moved
+      const clonedEl = draggableBlock?.cloneNode(true) as HTMLElement;
+      clonedEl.removeAttribute("data-block-id");
+      dragOriginRectRef.current = copyRect(draggableBlock);
+      // set pointer x position relative to the left of the element
+      shift.current.x = clientX - dragOriginRectRef.current.left;
+      // set pointer y position relative to the top of the element
+      shift.current.y = clientY - dragOriginRectRef.current.top;
+      setDraggableStyles(clonedEl, dragOriginRectRef.current);
+      // append cloned element to the special overlay
+      const rootOverlay = document.getElementById("global-overlay");
+      rootOverlay?.appendChild(clonedEl);
+      draggableRef.current = clonedEl;
       const elements = context?.getElements();
       if (dataBlockIdRef.current && elements)
+        // calculate all droppable elements' rectangles
         rects.current = calcRects(dataBlockIdRef.current, elements);
       addEventListeners();
+      // trigger drag start event
+      context?.dragStart(dataBlockIdRef.current);
     },
-    [addEventListeners, setDraggable, context]
+    [addEventListeners, context]
   );
 
   const handleMouseDown = useCallback(
