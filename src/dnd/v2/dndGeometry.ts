@@ -12,13 +12,17 @@ export interface Rect {
 
 export type Rects = { [x: string]: Rect };
 
-interface IntersectionArea {
+interface IntersectionInfo {
   blockId: string;
   intersectionArea: number;
   intersectionRatio: number;
+  fromLeft: boolean;
+  fromRight: boolean;
+  fromTop: boolean;
+  fromBottom: boolean;
 }
 
-const compareIntersections = (a: IntersectionArea, z: IntersectionArea) =>
+const compareIntersections = (a: IntersectionInfo, z: IntersectionInfo) =>
   z.intersectionRatio - a.intersectionRatio;
 
 export const copyRect = (el: Element): Rect => {
@@ -55,12 +59,54 @@ export const calcRects = (selectedId: string, ids: string[]): Rects => {
     }, {});
 };
 
+/**
+ * ------------===========>------------
+ * | drag rect | inersect | drop rect |
+ * ------------===========>------------
+ */
+const leftIntersect = (first: Rect, second: Rect) =>
+  first.left <= second.left && first.right >= second.left;
+
+/**
+ * ------------<===========------------
+ * | drop rect | inersect | drag rect |
+ * ------------<===========------------
+ */
+const rightIntersect = (first: Rect, second: Rect) =>
+  first.left <= second.right && first.right >= second.right;
+
+/**
+ * --------------
+ * | drag rect  |
+ * =====vvv======
+ * || inersect ||
+ * ==============
+ * |  drop rect |
+ * --------------
+ */
+const topIntersect = (first: Rect, second: Rect) =>
+  first.bottom >= second.top && first.top <= second.top;
+
+/**
+ * --------------
+ * | drop rect  |
+ * ==============
+ * || inersect ||
+ * =====^^^=======
+ * |  drop rect |
+ * ---------------
+ */
+const bottomIntersect = (first: Rect, second: Rect) =>
+  first.bottom >= second.bottom && first.top <= second.bottom;
+
+const isIntersected = (first: Rect, second: Rect) =>
+  first.left < second.right &&
+  first.right > second.left &&
+  first.top < second.bottom &&
+  first.bottom > second.top;
+
 const getIntersectionArea = (first: Rect, second: Rect) => {
-  const intersects =
-    first.left < second.right &&
-    first.right > second.left &&
-    first.top < second.bottom &&
-    first.bottom > second.top;
+  const intersects = isIntersected(first, second);
   if (!intersects) return 0;
   const left = Math.max(first.left, second.left);
   const right = Math.min(first.right, second.right);
@@ -69,6 +115,27 @@ const getIntersectionArea = (first: Rect, second: Rect) => {
   const width = right - left;
   const height = bottom - top;
   return width * height;
+};
+
+const getIntersectionInfo = (
+  blockId: string,
+  first: Rect,
+  second: Rect
+): IntersectionInfo | undefined => {
+  const intersectionArea = getIntersectionArea(first, second);
+  if (intersectionArea) {
+    const minArea = Math.min(first.area, second.area);
+    const areaRatio = intersectionArea / minArea;
+    return {
+      blockId,
+      intersectionArea,
+      intersectionRatio: areaRatio,
+      fromLeft: leftIntersect(first, second),
+      fromRight: rightIntersect(first, second),
+      fromTop: topIntersect(first, second),
+      fromBottom: bottomIntersect(first, second),
+    };
+  }
 };
 
 export const getIntersections = (
@@ -87,24 +154,12 @@ export const getIntersections = (
     right: x + currentRect.width,
     bottom: y + currentRect.height,
   };
-  const intersections: IntersectionArea[] = [];
-  for (const key in rects) {
-    if (blockId !== key) {
-      const second = rects[key];
-      const intersectionArea = getIntersectionArea(first, second);
-      if (intersectionArea) {
-        const minArea = Math.min(first.area, second.area);
-        const areaRatio = intersectionArea / minArea;
-        intersections.push({
-          blockId: key,
-          intersectionArea,
-          intersectionRatio: areaRatio,
-        });
-      }
-    }
-  }
+  const intersections: IntersectionInfo[] = Object.keys(rects)
+    .filter((key) => key !== blockId)
+    .map((key) => getIntersectionInfo(key, first, rects[key]))
+    .filter((i): i is IntersectionInfo => !!i)
+    .sort(compareIntersections);
   if (intersections) {
-    intersections.sort(compareIntersections);
     return intersections[0];
   }
 };
