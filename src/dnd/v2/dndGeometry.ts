@@ -12,7 +12,7 @@ export interface Rect {
 
 export type Rects = { [x: string]: Rect };
 
-interface IntersectionInfo {
+export interface IntersectionInfo {
   blockId: string;
   intersectionArea: number;
   intersectionRatio: number;
@@ -61,19 +61,19 @@ export const calcRects = (selectedId: string, ids: string[]): Rects => {
 
 /**
  * ------------===========>------------
- * | drag rect | inersect | drop rect |
+ * | drag rect ||inersect|| drop rect |
  * ------------===========>------------
  */
-const leftIntersect = (first: Rect, second: Rect) =>
-  first.left <= second.left && first.right >= second.left;
+const leftIntersect = (dragRect: Rect, dropRect: Rect) =>
+  dragRect.left <= dropRect.left && dragRect.right >= dropRect.left;
 
 /**
  * ------------<===========------------
- * | drop rect | inersect | drag rect |
+ * | drop rect ||inersect|| drag rect |
  * ------------<===========------------
  */
-const rightIntersect = (first: Rect, second: Rect) =>
-  first.left <= second.right && first.right >= second.right;
+const rightIntersect = (dragRect: Rect, dropRect: Rect) =>
+  dragRect.left <= dropRect.right && dragRect.right >= dropRect.right;
 
 /**
  * --------------
@@ -84,8 +84,8 @@ const rightIntersect = (first: Rect, second: Rect) =>
  * |  drop rect |
  * --------------
  */
-const topIntersect = (first: Rect, second: Rect) =>
-  first.bottom >= second.top && first.top <= second.top;
+const topIntersect = (dragRect: Rect, dropRect: Rect) =>
+  dragRect.bottom >= dropRect.top && dragRect.top <= dropRect.top;
 
 /**
  * --------------
@@ -96,22 +96,22 @@ const topIntersect = (first: Rect, second: Rect) =>
  * |  drop rect |
  * ---------------
  */
-const bottomIntersect = (first: Rect, second: Rect) =>
-  first.bottom >= second.bottom && first.top <= second.bottom;
+const bottomIntersect = (dragRect: Rect, dropRect: Rect) =>
+  dragRect.bottom >= dropRect.bottom && dragRect.top <= dropRect.bottom;
 
-const isIntersected = (first: Rect, second: Rect) =>
-  first.left < second.right &&
-  first.right > second.left &&
-  first.top < second.bottom &&
-  first.bottom > second.top;
+const isIntersected = (dragRect: Rect, dropRect: Rect) =>
+  dragRect.left < dropRect.right &&
+  dragRect.right > dropRect.left &&
+  dragRect.top < dropRect.bottom &&
+  dragRect.bottom > dropRect.top;
 
-const getIntersectionArea = (first: Rect, second: Rect) => {
-  const intersects = isIntersected(first, second);
+const getIntersectionArea = (dragRect: Rect, dropRect: Rect) => {
+  const intersects = isIntersected(dragRect, dropRect);
   if (!intersects) return 0;
-  const left = Math.max(first.left, second.left);
-  const right = Math.min(first.right, second.right);
-  const top = Math.max(first.top, second.top);
-  const bottom = Math.min(first.bottom, second.bottom);
+  const left = Math.max(dragRect.left, dropRect.left);
+  const right = Math.min(dragRect.right, dropRect.right);
+  const top = Math.max(dragRect.top, dropRect.top);
+  const bottom = Math.min(dragRect.bottom, dropRect.bottom);
   const width = right - left;
   const height = bottom - top;
   return width * height;
@@ -119,21 +119,21 @@ const getIntersectionArea = (first: Rect, second: Rect) => {
 
 const getIntersectionInfo = (
   blockId: string,
-  first: Rect,
-  second: Rect
+  dragRect: Rect,
+  dropRect: Rect
 ): IntersectionInfo | undefined => {
-  const intersectionArea = getIntersectionArea(first, second);
+  const intersectionArea = getIntersectionArea(dragRect, dropRect);
   if (intersectionArea) {
-    const minArea = Math.min(first.area, second.area);
+    const minArea = Math.min(dragRect.area, dropRect.area);
     const areaRatio = intersectionArea / minArea;
     return {
       blockId,
       intersectionArea,
       intersectionRatio: areaRatio,
-      fromLeft: leftIntersect(first, second),
-      fromRight: rightIntersect(first, second),
-      fromTop: topIntersect(first, second),
-      fromBottom: bottomIntersect(first, second),
+      fromLeft: leftIntersect(dragRect, dropRect),
+      fromRight: rightIntersect(dragRect, dropRect),
+      fromTop: topIntersect(dragRect, dropRect),
+      fromBottom: bottomIntersect(dragRect, dropRect),
     };
   }
 };
@@ -145,7 +145,7 @@ export const getIntersections = (
   rects: Rects
 ) => {
   const currentRect = rects[blockId];
-  const first = {
+  const dragRect = {
     ...currentRect,
     x: x,
     y: y,
@@ -156,7 +156,7 @@ export const getIntersections = (
   };
   const intersections: IntersectionInfo[] = Object.keys(rects)
     .filter((key) => key !== blockId)
-    .map((key) => getIntersectionInfo(key, first, rects[key]))
+    .map((key) => getIntersectionInfo(key, dragRect, rects[key]))
     .filter((i): i is IntersectionInfo => !!i)
     .sort(compareIntersections);
   if (intersections) {
