@@ -56,18 +56,17 @@ export const useDnDController = () => {
 
         style.transform = `translate3d(${x}px,${y}px, 0px)`;
         if (!dataBlockIdRef.current || !rects.current) return;
-        const intersection = getIntersections(
+        const intersectionInfo = getIntersections(
           dataBlockIdRef.current,
           x,
           y,
           rects.current
         );
-        const intersectionRatio = intersection?.intersectionRatio;
-        if (intersectionRatio && intersection?.blockId)
+        if (intersectionInfo)
           context?.dragging(
             dataBlockIdRef.current,
-            intersection.blockId,
-            intersectionRatio
+            intersectionInfo.blockId,
+            intersectionInfo
           );
       });
     },

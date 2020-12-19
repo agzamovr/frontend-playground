@@ -1,18 +1,29 @@
+import { IntersectionInfo } from "dnd/v2/dndGeometry";
 import { useDnDController } from "dnd/v2/useDnDController";
 import React, { FunctionComponent } from "react";
-
+export type IntersectionInfoParam = Omit<IntersectionInfo, "blockId">;
 type DragStartCallback = (draggingId: string) => void;
-type DropCallback = (draggingId: string, droppingId: string) => void;
-type DropOverCallback = (draggingId: string, droppingId: string) => void;
+type DropCallback = (
+  draggingId: string,
+  droppingId: string,
+  intersectionInfo: IntersectionInfoParam
+) => void;
+type DropOverCallback = (
+  draggingId: string,
+  droppingId: string,
+  intersectionInfo: IntersectionInfoParam
+) => void;
 type DragCallback = (
   draggingId: string,
   underlyingId: string,
-  isEntering: boolean
+  isEntering: boolean,
+  intersectionInfo?: IntersectionInfoParam
 ) => void;
 type DragOverCallback = (
   draggingId: string,
   underlyingId: string,
-  isEntering: boolean
+  isEntering: boolean,
+  intersectionInfo?: IntersectionInfoParam
 ) => void;
 type Elements = string[];
 type DragStartCallbacks = {
@@ -49,7 +60,7 @@ interface DnDContextType {
   dragging: (
     draggingId: string,
     underlyingId: string,
-    threshold: number
+    intersectionInfo: IntersectionInfo
   ) => void;
 }
 type Store = {
@@ -69,11 +80,10 @@ const createDnDContextValue = (): DnDContextType => {
     dragObservers: {},
     dragOverObservers: {},
   };
-  let intersection: { id: string; isIntersecting: boolean } = {
-    id: "",
-    isIntersecting: false,
-  };
+  let currentUnderlyingId = "";
+  let isIntersecting = false;
   let droppingId: string | undefined;
+  let currentIntersectionInfo: IntersectionInfoParam;
   return {
     getElements: () => [...store.elements],
     removeElement: (id) => {
@@ -169,25 +179,32 @@ const createDnDContextValue = (): DnDContextType => {
     drop: (draggingId: string) => {
       if (!droppingId) return;
       store.dropObservers[draggingId]?.forEach(
-        (callback) => droppingId && callback(draggingId, droppingId)
+        (callback) =>
+          droppingId &&
+          callback(draggingId, droppingId, currentIntersectionInfo)
       );
       store.dropOverObservers[droppingId]?.forEach(
-        (callback) => droppingId && callback(draggingId, droppingId)
+        (callback) =>
+          droppingId &&
+          callback(draggingId, droppingId, currentIntersectionInfo)
       );
     },
-    dragging: (draggingId: string, underlyingId: string, threshold: number) => {
+    dragging: (draggingId, underlyingId, intersectionInfo) => {
+      const threshold = intersectionInfo.intersectionRatio;
+      currentIntersectionInfo = intersectionInfo;
       if (
-        intersection.id === underlyingId &&
-        intersection.isIntersecting &&
+        currentUnderlyingId === underlyingId &&
+        isIntersecting &&
         threshold > 0.5
       )
         return;
       if (
-        (intersection.id !== underlyingId ||
-          (intersection.id === underlyingId && threshold < 0.5)) &&
-        intersection.isIntersecting
+        (currentUnderlyingId !== underlyingId ||
+          (currentUnderlyingId === underlyingId && threshold < 0.5)) &&
+        isIntersecting
       ) {
-        intersection = { id: "", isIntersecting: false };
+        currentUnderlyingId = "";
+        isIntersecting = false;
         store.dragObservers[draggingId]?.forEach((callback) =>
           callback(draggingId, underlyingId, false)
         );
@@ -198,17 +215,19 @@ const createDnDContextValue = (): DnDContextType => {
         droppingId = undefined;
       }
       if (
-        intersection.id !== underlyingId &&
-        !intersection.isIntersecting &&
+        currentUnderlyingId !== underlyingId &&
+        !isIntersecting &&
         threshold > 0.5
       ) {
-        intersection = { id: underlyingId, isIntersecting: true };
+        currentUnderlyingId = underlyingId;
+        isIntersecting = true;
+
         droppingId = underlyingId;
         store.dragObservers[draggingId]?.forEach((callback) =>
-          callback(draggingId, underlyingId, true)
+          callback(draggingId, underlyingId, true, intersectionInfo)
         );
         store.dragOverObservers[underlyingId]?.forEach((callback) =>
-          callback(draggingId, underlyingId, true)
+          callback(draggingId, underlyingId, true, intersectionInfo)
         );
       }
     },
