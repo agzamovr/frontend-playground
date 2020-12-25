@@ -20,9 +20,9 @@ export const useDraggable = (draggableId: string) => {
     (element) => {
       if (element) {
         element?.setAttribute("data-dnd-drag-handle", "");
-        context.addElement(draggableId);
+        context.addDraggable(draggableId);
       } else {
-        context.removeElement(draggableId);
+        context.removeDraggable(draggableId);
       }
     },
     [context, draggableId]

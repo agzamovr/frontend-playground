@@ -148,10 +148,10 @@ export const useDnDController = () => {
       const rootOverlay = document.getElementById("global-overlay");
       rootOverlay?.appendChild(clonedEl);
       draggableRef.current = clonedEl;
-      const elements = context?.getElements();
-      if (dataBlockIdRef.current && elements)
+      const draggables = context?.getDraggables();
+      if (dataBlockIdRef.current && draggables)
         // calculate all droppable elements' rectangles
-        rects.current = calcRects(dataBlockIdRef.current, elements);
+        rects.current = calcRects(dataBlockIdRef.current, draggables);
       addEventListeners();
       // trigger drag start event
       context?.dragStart(dataBlockIdRef.current);

@@ -25,7 +25,7 @@ type DragOverCallback = (
   isEntering: boolean,
   intersectionInfo?: IntersectionInfoParam
 ) => void;
-type Elements = string[];
+type Draggables = string[];
 type DragStartCallbacks = {
   [id: string]: DragStartCallback[];
 };
@@ -42,9 +42,9 @@ type DragOverCallbacks = {
   [id: string]: DragOverCallback[];
 };
 interface DnDContextType {
-  getElements: () => Elements;
-  addElement: (id: string) => void;
-  removeElement: (id: string) => void;
+  getDraggables: () => Draggables;
+  addDraggable: (id: string) => void;
+  removeDraggable: (id: string) => void;
   addDragStartObserver: (callback: DragStartCallback, ids: string[]) => void;
   removeDragStartObserver: (callback: DragStartCallback, ids: string[]) => void;
   addDropObserver: (callback: DropCallback, ids: string[]) => void;
@@ -64,7 +64,7 @@ interface DnDContextType {
   ) => void;
 }
 type Store = {
-  elements: Elements;
+  draggables: Draggables;
   dragStartObservers: DragStartCallbacks;
   dropObservers: DropCallbacks;
   dropOverObservers: DropOverCallbacks;
@@ -83,7 +83,7 @@ const compareIntersections = (
   a.fromBottom === b.fromBottom;
 const createDnDContextValue = (): DnDContextType => {
   const store: Store = {
-    elements: [],
+    draggables: [],
     dragStartObservers: {},
     dropObservers: {},
     dropOverObservers: {},
@@ -95,9 +95,9 @@ const createDnDContextValue = (): DnDContextType => {
   let droppingId: string | undefined;
   let currentIntersectionInfo: IntersectionInfoParam;
   return {
-    getElements: () => [...store.elements],
-    removeElement: (id) => {
-      store.elements = store.elements.filter((el) => el !== id);
+    getDraggables: () => [...store.draggables],
+    removeDraggable: (id) => {
+      store.draggables = store.draggables.filter((el) => el !== id);
       const { [id]: _s, ...newDragStartObservers } = store.dragStartObservers;
       store.dragStartObservers = newDragStartObservers;
       const { [id]: _e, ...newDragEndObservers } = store.dropObservers;
@@ -105,10 +105,10 @@ const createDnDContextValue = (): DnDContextType => {
       const { [id]: _o, ...newDragObservers } = store.dragObservers;
       store.dragObservers = newDragObservers;
     },
-    addElement: (id) => {
-      store.elements = store.elements.includes(id)
-        ? store.elements
-        : [...store.elements, id];
+    addDraggable: (id) => {
+      store.draggables = store.draggables.includes(id)
+        ? store.draggables
+        : [...store.draggables, id];
     },
     addDragStartObserver: (callback, ids) =>
       ids.forEach((id) => {
