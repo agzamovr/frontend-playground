@@ -71,6 +71,16 @@ type Store = {
   dragObservers: DragCallbacks;
   dragOverObservers: DragOverCallbacks;
 };
+const compareIntersections = (
+  a: IntersectionInfoParam,
+  b: IntersectionInfoParam
+) =>
+  a &&
+  b &&
+  a.fromLeft === b.fromLeft &&
+  a.fromTop === b.fromTop &&
+  a.fromRight === b.fromRight &&
+  a.fromBottom === b.fromBottom;
 const createDnDContextValue = (): DnDContextType => {
   const store: Store = {
     elements: [],
@@ -191,10 +201,15 @@ const createDnDContextValue = (): DnDContextType => {
     },
     dragging: (draggingId, underlyingId, intersectionInfo) => {
       const threshold = intersectionInfo.intersectionRatio;
+      const equalIntersections = compareIntersections(
+        currentIntersectionInfo,
+        intersectionInfo
+      );
       currentIntersectionInfo = intersectionInfo;
       if (
         currentUnderlyingId === underlyingId &&
         isIntersecting &&
+        equalIntersections &&
         threshold > 0.5
       )
         return;
@@ -214,11 +229,7 @@ const createDnDContextValue = (): DnDContextType => {
           );
         droppingId = undefined;
       }
-      if (
-        currentUnderlyingId !== underlyingId &&
-        !isIntersecting &&
-        threshold > 0.5
-      ) {
+      if (threshold > 0.5) {
         currentUnderlyingId = underlyingId;
         isIntersecting = true;
 
