@@ -130,10 +130,12 @@ export const useDnDController = () => {
 
   const startDrag = useCallback(
     (element: HTMLElement, clientX: number, clientY: number) => {
-      // find draggable element block
-      const draggableBlock = element.closest("[data-block-id]") as HTMLElement;
       // get data-block-id
-      dataBlockIdRef.current = draggableBlock.getAttribute("data-block-id");
+      dataBlockIdRef.current = element.getAttribute("data-dnd-drag-handle");
+      // find draggable element block
+      const draggableBlock = element.closest(
+        `[data-block-id="${dataBlockIdRef.current}"]`
+      ) as HTMLElement;
       if (!dataBlockIdRef.current) return;
       // clone dragging element which is actually will be moved
       const clonedEl = draggableBlock?.cloneNode(true) as HTMLElement;

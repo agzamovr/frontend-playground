@@ -1,5 +1,4 @@
-import React, { ReactElement, useMemo, useCallback, useContext } from "react";
-import { DnDContext } from "dnd/v2/DnDContext";
+import React, { ReactElement, useMemo, useCallback } from "react";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import Grey from "@material-ui/core/colors/grey";
 
@@ -14,18 +13,11 @@ type DraggableProps = DragHandleProps & {
 };
 
 export const useDraggable = (draggableId: string) => {
-  const context = useContext(DnDContext);
-
   const setDragHandleRef = useCallback(
     (element) => {
-      if (element) {
-        element?.setAttribute("data-dnd-drag-handle", "");
-        context.addDraggable(draggableId);
-      } else {
-        context.removeDraggable(draggableId);
-      }
+      if (element) element?.setAttribute("data-dnd-drag-handle", draggableId);
     },
-    [context, draggableId]
+    [draggableId]
   );
 
   return setDragHandleRef;
@@ -37,8 +29,8 @@ export const DragHandle = (props: DragHandleProps) => {
 };
 
 export const Draggable = (props: DraggableProps) => {
-  const { draggableId, children } = props;
-  const setDragHandleRef = useDraggable(draggableId);
+  const { children } = props;
+  const setDragHandleRef = useDraggable(props.draggableId);
   const memoChildren = useMemo(() => children(setDragHandleRef), [
     children,
     setDragHandleRef,
