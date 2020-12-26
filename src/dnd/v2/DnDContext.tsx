@@ -251,10 +251,8 @@ const DnDContextInternal: FunctionComponent = (props) => {
   useDnDController();
   return <>{props.children}</>;
 };
-export const DnDContextProvider: FunctionComponent = (props) => {
-  return (
-    <DnDContext.Provider value={contextValue}>
-      <DnDContextInternal>{props.children}</DnDContextInternal>
-    </DnDContext.Provider>
-  );
-};
+export const DnDContextProvider: FunctionComponent = (props) => (
+  <DnDContext.Provider value={contextValue}>
+    <DnDContextInternal>{props.children}</DnDContextInternal>
+  </DnDContext.Provider>
+);
