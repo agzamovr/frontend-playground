@@ -2,30 +2,34 @@ import { IntersectionInfo } from "dnd/v2/dndGeometry";
 import { useDnDController } from "dnd/v2/useDnDController";
 import React, { FunctionComponent } from "react";
 export type IntersectionInfoParam = Omit<IntersectionInfo, "blockId">;
+export type DnDItem = {
+  id: string;
+  type: string;
+};
 type DragStartCallback = (draggingId: string) => void;
 type DropCallback = (
-  draggingId: string,
-  droppingId: string,
+  draggable: DnDItem,
+  droppingId: DnDItem,
   intersectionInfo: IntersectionInfoParam
 ) => void;
 type DropOverCallback = (
-  draggingId: string,
-  droppingId: string,
+  draggable: DnDItem,
+  droppingId: DnDItem,
   intersectionInfo: IntersectionInfoParam
 ) => void;
 type DragCallback = (
-  draggingId: string,
-  underlyingId: string,
+  draggable: DnDItem,
+  underlyingId: DnDItem,
   isEntering: boolean,
   intersectionInfo?: IntersectionInfoParam
 ) => void;
 type DragOverCallback = (
-  draggingId: string,
-  underlyingId: string,
+  draggable: DnDItem,
+  underlyingId: DnDItem,
   isEntering: boolean,
   intersectionInfo?: IntersectionInfoParam
 ) => void;
-type Draggables = string[];
+type Draggables = { [x: string]: DnDItem };
 type DragStartCallbacks = {
   [id: string]: DragStartCallback[];
 };
@@ -42,8 +46,8 @@ type DragOverCallbacks = {
   [id: string]: DragOverCallback[];
 };
 interface DnDContextType {
-  getDraggables: () => Draggables;
-  addDraggable: (id: string) => void;
+  getDraggablesIds: () => string[];
+  addDraggable: (id: DnDItem) => void;
   removeDraggable: (id: string) => void;
   addDragStartObserver: (callback: DragStartCallback, ids: string[]) => void;
   removeDragStartObserver: (callback: DragStartCallback, ids: string[]) => void;
@@ -83,7 +87,7 @@ const compareIntersections = (
   a.fromBottom === b.fromBottom;
 const createDnDContextValue = (): DnDContextType => {
   const store: Store = {
-    draggables: [],
+    draggables: {},
     dragStartObservers: {},
     dropObservers: {},
     dropOverObservers: {},
@@ -95,9 +99,10 @@ const createDnDContextValue = (): DnDContextType => {
   let droppingId: string | undefined;
   let currentIntersectionInfo: IntersectionInfoParam;
   return {
-    getDraggables: () => [...store.draggables],
+    getDraggablesIds: () => Object.keys(store.draggables),
     removeDraggable: (id) => {
-      store.draggables = store.draggables.filter((el) => el !== id);
+      const { [id]: _d, ...newDraggables } = store.draggables;
+      store.draggables = newDraggables;
       const { [id]: _s, ...newDragStartObservers } = store.dragStartObservers;
       store.dragStartObservers = newDragStartObservers;
       const { [id]: _e, ...newDragEndObservers } = store.dropObservers;
@@ -105,10 +110,8 @@ const createDnDContextValue = (): DnDContextType => {
       const { [id]: _o, ...newDragObservers } = store.dragObservers;
       store.dragObservers = newDragObservers;
     },
-    addDraggable: (id) => {
-      store.draggables = store.draggables.includes(id)
-        ? store.draggables
-        : [...store.draggables, id];
+    addDraggable: (draggable) => {
+      store.draggables[draggable.id] = draggable;
     },
     addDragStartObserver: (callback, ids) =>
       ids.forEach((id) => {
@@ -188,15 +191,15 @@ const createDnDContextValue = (): DnDContextType => {
       store.dragStartObservers[id]?.forEach((callback) => callback(id)),
     drop: (draggingId: string) => {
       if (!droppingId) return;
+      const draggable = store.draggables[draggingId];
+      const droppable = store.draggables[droppingId];
       store.dropObservers[draggingId]?.forEach(
         (callback) =>
-          droppingId &&
-          callback(draggingId, droppingId, currentIntersectionInfo)
+          droppingId && callback(draggable, droppable, currentIntersectionInfo)
       );
       store.dropOverObservers[droppingId]?.forEach(
         (callback) =>
-          droppingId &&
-          callback(draggingId, droppingId, currentIntersectionInfo)
+          droppingId && callback(draggable, droppable, currentIntersectionInfo)
       );
     },
     dragging: (draggingId, underlyingId, intersectionInfo) => {
@@ -206,6 +209,8 @@ const createDnDContextValue = (): DnDContextType => {
         intersectionInfo
       );
       currentIntersectionInfo = intersectionInfo;
+      const draggable = store.draggables[draggingId];
+      const underlyingItem = store.draggables[underlyingId];
       if (
         currentUnderlyingId === underlyingId &&
         isIntersecting &&
@@ -221,12 +226,14 @@ const createDnDContextValue = (): DnDContextType => {
         currentUnderlyingId = "";
         isIntersecting = false;
         store.dragObservers[draggingId]?.forEach((callback) =>
-          callback(draggingId, underlyingId, false)
+          callback(draggable, underlyingItem, false)
         );
-        if (droppingId)
+        if (droppingId) {
+          const droppable = store.draggables[droppingId];
           store.dragOverObservers[droppingId]?.forEach(
-            (callback) => droppingId && callback(draggingId, droppingId, false)
+            (callback) => droppingId && callback(draggable, droppable, false)
           );
+        }
         droppingId = undefined;
       }
       if (threshold > 0.5) {
@@ -235,10 +242,10 @@ const createDnDContextValue = (): DnDContextType => {
 
         droppingId = underlyingId;
         store.dragObservers[draggingId]?.forEach((callback) =>
-          callback(draggingId, underlyingId, true, intersectionInfo)
+          callback(draggable, underlyingItem, true, intersectionInfo)
         );
         store.dragOverObservers[underlyingId]?.forEach((callback) =>
-          callback(draggingId, underlyingId, true, intersectionInfo)
+          callback(draggable, underlyingItem, true, intersectionInfo)
         );
       }
     },

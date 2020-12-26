@@ -1,17 +1,10 @@
-import React, { ReactElement, useCallback } from "react";
+import React, { useCallback } from "react";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import Grey from "@material-ui/core/colors/grey";
 
 interface DragHandleProps {
   draggableId: string;
 }
-
-type DraggableProps = DragHandleProps & {
-  children: (
-    innerRef: (element?: Element | null) => void
-  ) => ReactElement<HTMLElement>;
-};
-
 export const useDraggable = (draggableId: string) => {
   const setDragHandleRef = useCallback(
     (element) => {
