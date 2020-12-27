@@ -38,6 +38,7 @@ export const moveNode = (
   const pathFrom: number[] = depthFirstSearch(from, listItem.items, []);
   const pathTo: number[] = depthFirstSearch(to, listItem.items, []);
   if (pathFrom.length === 0 || pathTo.length === 0) return listItem;
+
   const fromNodeList = getNodesAtLastLevelFromPath(listItem, pathFrom);
   let toNodeList = getNodesAtLastLevelFromPath(listItem, pathTo);
 

@@ -47,7 +47,8 @@ type DragOverCallbacks = {
 };
 export interface DnDContextType {
   getDraggablesIds: () => string[];
-  addDraggable: (id: DnDItem) => void;
+  addDraggable: (dndItem: DnDItem) => void;
+  addDraggables: (ids: string[], type: string) => void;
   removeDraggable: (id: string) => void;
   addDragStartObserver: (callback: DragStartCallback, ids: string[]) => void;
   removeDragStartObserver: (callback: DragStartCallback, ids: string[]) => void;
@@ -113,6 +114,13 @@ const createDnDContextValue = (): DnDContextType => {
     addDraggable: (draggable) => {
       store.draggables[draggable.id] = draggable;
     },
+    addDraggables: (ids: string[], type: string) =>
+      ids
+        .map((id) => ({
+          id,
+          type,
+        }))
+        .forEach((dndItem) => (store.draggables[dndItem.id] = dndItem)),
     addDragStartObserver: (callback, ids) =>
       ids.forEach((id) => {
         store.dragStartObservers.hasOwnProperty(id)

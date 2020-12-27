@@ -1,13 +1,8 @@
-import {
-  DnDContext,
-  DnDContextType,
-  DnDItem,
-  IntersectionInfoParam,
-} from "dnd/v2/DnDContext";
+import { DnDContext, DnDItem, IntersectionInfoParam } from "dnd/v2/DnDContext";
 import { ListItemProp, ListProps } from "dnd/v2/list/DnDList";
 import { moveNode } from "dnd/v2/list/treeModifier";
 import { useCallback, useContext, useEffect, useState } from "react";
-
+const dndItemType = "list-item";
 export const useDnDItemPlaceholder = (id: string) => {
   const dndContext = useContext(DnDContext);
   const [showDividerTop, setShowDividerTop] = useState(false);
@@ -21,8 +16,8 @@ export const useDnDItemPlaceholder = (id: string) => {
       intersectionInfo?: IntersectionInfoParam
     ) => {
       if (
-        draggingItem.type !== "list-item" ||
-        underlyingItem.type !== "list-item"
+        draggingItem.type !== dndItemType ||
+        underlyingItem.type !== dndItemType
       )
         return;
       const fromTop = !!intersectionInfo?.fromTop;
@@ -51,19 +46,12 @@ export const useDnDItemPlaceholder = (id: string) => {
   return { showDividerTop, showDividerBottom, showDividerChild };
 };
 
-const registerDraggables = (
-  dndContext: DnDContextType,
-  items: ListItemProp[]
-) => {
+const getAllNodeIds = (items: ListItemProp[]) => {
   const stack: ListItemProp[] = [...items];
   const ids: string[] = [];
   while (stack.length > 0) {
     const item = stack.pop();
-    if (!item?.blockId) break;
-    dndContext?.addDraggable({
-      id: item.blockId,
-      type: "list-item",
-    });
+    if (!item?.blockId) continue;
     ids.push(item.blockId);
     if (item.subList?.items.length) stack.push(...item.subList.items);
   }
@@ -72,7 +60,7 @@ const registerDraggables = (
 
 export const useRegisterDraggables = (listProps: ListProps) => {
   const dndContext = useContext(DnDContext);
-  const [flag, setFlag] = useState(false);
+  const [dumbTrigger, setDumbTrigger] = useState(false);
   const { items } = listProps;
   const onDrop = useCallback(
     (
@@ -90,12 +78,13 @@ export const useRegisterDraggables = (listProps: ListProps) => {
         before,
         asChild
       );
-      if (moved) setFlag(!flag);
+      if (moved) setDumbTrigger(!dumbTrigger);
     },
-    [flag, listProps]
+    [dumbTrigger, listProps]
   );
   useEffect(() => {
-    const ids = registerDraggables(dndContext, items);
+    const ids = getAllNodeIds(items);
+    dndContext.addDraggables(ids, dndItemType);
     dndContext.addDropObserver(onDrop, ids);
     return () => {
       ids.forEach((id) => dndContext?.removeDraggable(id));
