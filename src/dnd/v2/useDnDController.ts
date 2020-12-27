@@ -88,7 +88,6 @@ export const useDnDController = () => {
 
   const touchMoveListener = useCallback(
     (event: TouchEvent) => {
-      event.preventDefault();
       const touch = event.touches[0];
       handleMove(touch.clientX, touch.clientY);
     },
@@ -164,9 +163,11 @@ export const useDnDController = () => {
   const handleMouseDown = useCallback(
     (event: MouseEvent) => {
       if (!shouldListenMouseEvent(event)) return;
-      const element = event.target as HTMLElement;
-      const isDragHandle = element.hasAttribute("data-dnd-drag-handle");
-      if (!isDragHandle) return;
+      let element = event.target as HTMLElement;
+      element = element.closest("[data-dnd-drag-handle]") as HTMLElement;
+      if (!element) {
+        return;
+      }
       event.preventDefault();
       event.stopPropagation();
       startDrag(element, event.clientX, event.clientY);
@@ -176,9 +177,11 @@ export const useDnDController = () => {
 
   const handleTouchStart = useCallback(
     (event: TouchEvent) => {
-      const element = event.target as HTMLElement;
-      const isDragHandle = element.hasAttribute("data-dnd-drag-handle");
-      if (!isDragHandle) return;
+      let element = event.target as HTMLElement;
+      element = element.closest("[data-dnd-drag-handle]") as HTMLElement;
+      if (!element) {
+        return;
+      }
       const touch = event.touches[0];
       startDrag(element, touch.clientX, touch.clientY);
     },
