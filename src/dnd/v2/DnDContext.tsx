@@ -45,7 +45,7 @@ type DragCallbacks = {
 type DragOverCallbacks = {
   [id: string]: DragOverCallback[];
 };
-interface DnDContextType {
+export interface DnDContextType {
   getDraggablesIds: () => string[];
   addDraggable: (id: DnDItem) => void;
   removeDraggable: (id: string) => void;
