@@ -1,5 +1,4 @@
 import React, { Fragment, FunctionComponent } from "react";
-import { DataBlockIdProps, useDataBlockId } from "../DataBlockID";
 import { DragHandle } from "dnd/v2/Draggable";
 import { Box } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
@@ -17,6 +16,7 @@ import {
   useDnDItemPlaceholder,
   useRegisterDraggables,
 } from "dnd/v2/list/dndListHooks";
+import { DataBlockIdProps, useDataBlockId } from "components/DataBlockID";
 
 type ItemPropsKeys = "disabled" | "dense" | "selected";
 type ItemProps = Pick<MuiListItemProps, ItemPropsKeys>;
