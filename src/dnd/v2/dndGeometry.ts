@@ -50,9 +50,9 @@ export const calcRects = (selectedId: string, ids: string[]): Rects => {
   return ids
     .filter((id) => !childIds.includes(id))
     .reduce((acc: Rects, id) => {
-      const el = document.querySelector(
-        `[data-block-id='${id}'] [data-droppable="true"]`
-      );
+      let el = document.querySelector(`[data-block-id='${id}']`);
+      if (el && !el.hasAttribute("data-droppable"))
+        el = el.querySelector('[data-droppable="true"]');
       if (!el) return acc;
       acc[id] = copyRect(el);
       return acc;
@@ -60,40 +60,40 @@ export const calcRects = (selectedId: string, ids: string[]): Rects => {
 };
 
 /**
- * ------------===========>------------
- * | drag rect ||inersect|| drop rect |
- * ------------===========>------------
+ * ------------============>------------
+ * | drag rect ||intersect|| drop rect |
+ * ------------============>------------
  */
 const leftIntersect = (dragRect: Rect, dropRect: Rect) =>
   dragRect.left <= dropRect.left && dragRect.right >= dropRect.left;
 
 /**
- * ------------<===========------------
- * | drop rect ||inersect|| drag rect |
- * ------------<===========------------
+ * ------------<============------------
+ * | drop rect ||intersect|| drag rect |
+ * ------------<============------------
  */
 const rightIntersect = (dragRect: Rect, dropRect: Rect) =>
   dragRect.left <= dropRect.right && dragRect.right >= dropRect.right;
 
 /**
- * --------------
- * | drag rect  |
- * =====vvv======
- * || inersect ||
- * ==============
- * |  drop rect |
- * --------------
+ * ---------------
+ * | drag rect   |
+ * =====vvv=======
+ * || intersect ||
+ * ===============
+ * |  drop rect  |
+ * ---------------
  */
 const topIntersect = (dragRect: Rect, dropRect: Rect) =>
   dragRect.bottom >= dropRect.top && dragRect.top <= dropRect.top;
 
 /**
- * --------------
- * | drop rect  |
- * ==============
- * || inersect ||
+ * ---------------
+ * | drop rect   |
+ * ===============
+ * || intersect ||
  * =====^^^=======
- * |  drop rect |
+ * |  drop rect  |
  * ---------------
  */
 const bottomIntersect = (dragRect: Rect, dropRect: Rect) =>
