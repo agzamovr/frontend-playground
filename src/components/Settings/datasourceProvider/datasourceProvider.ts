@@ -1,12 +1,6 @@
 import { FieldConfig, ComposedFieldConfig } from "components/FieldComponent";
 
 export type DatasourceProviderType = "geocoding";
-
-type DatasourceProvider = {
-  label: string;
-  value: string;
-};
-
 export interface DatasourceProviderField {
   provider: DatasourceProviderType;
   value: string;
