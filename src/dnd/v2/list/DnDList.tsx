@@ -17,6 +17,7 @@ import {
   useRegisterDraggables,
 } from "dnd/v2/list/dndListHooks";
 import { DataBlockIdProps, useDataBlockId } from "components/DataBlockID";
+import { DropPlaceholder } from "dnd/v2/DnDPlaceholder";
 
 type ItemPropsKeys = "disabled" | "dense" | "selected";
 type ItemProps = Pick<MuiListItemProps, ItemPropsKeys>;
@@ -28,29 +29,6 @@ export type ListItemProp = DataBlockIdProps & {
 export interface ListProps {
   items: ListItemProp[];
 }
-type DropPlaceholderProps = {
-  show: boolean;
-  isTop?: boolean;
-  isChild?: boolean;
-};
-
-const DropPlaceholder = ({ show, isTop, isChild }: DropPlaceholderProps) => {
-  const styles = isTop ? { top: 0 } : { bottom: "-4px" };
-  return show ? (
-    <Box
-      flexGrow={1}
-      style={{
-        pointerEvents: "none",
-        background: "rgba(46, 170, 220, 0.5)",
-        height: "4px",
-        position: "absolute",
-        left: isChild ? "4px" : 0,
-        right: isChild ? "10px" : 0,
-        ...styles,
-      }}
-    ></Box>
-  ) : null;
-};
 const DnDListItem = ({ blockId, control, subList, props }: ListItemProp) => {
   const { id, setRef } = useDataBlockId(blockId);
   const {
@@ -68,7 +46,6 @@ const DnDListItem = ({ blockId, control, subList, props }: ListItemProp) => {
         position: "relative",
       }}
     >
-      <DropPlaceholder show={showDividerTop} isTop={true} />
       <Grid
         container
         alignItems="center"
@@ -84,7 +61,10 @@ const DnDListItem = ({ blockId, control, subList, props }: ListItemProp) => {
         </Box>
         <DropPlaceholder show={showDividerChild} isChild={true} />
       </Grid>
-      <DropPlaceholder show={showDividerBottom} />
+      <DropPlaceholder
+        show={showDividerTop || showDividerBottom}
+        isTop={showDividerTop}
+      />
       {subList && subList.items && <DnDListComponent {...subList} />}
     </MuiListItem>
   );
