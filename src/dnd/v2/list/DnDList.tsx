@@ -13,11 +13,11 @@ import {
   TextFieldConfig,
 } from "components/FieldComponent";
 import {
-  useDnDItemPlaceholder,
+  DnDListItemType,
   useRegisterDraggables,
 } from "dnd/v2/list/dndListHooks";
 import { DataBlockIdProps, useDataBlockId } from "components/DataBlockID";
-import { DropPlaceholder } from "dnd/v2/DnDPlaceholder";
+import { DropPlaceholder, useDnDItemPlaceholder } from "dnd/v2/DnDPlaceholder";
 
 type ItemPropsKeys = "disabled" | "dense" | "selected";
 type ItemProps = Pick<MuiListItemProps, ItemPropsKeys>;
@@ -32,10 +32,10 @@ export interface ListProps {
 const DnDListItem = ({ blockId, control, subList, props }: ListItemProp) => {
   const { id, setRef } = useDataBlockId(blockId);
   const {
-    showDividerTop,
-    showDividerBottom,
-    showDividerChild,
-  } = useDnDItemPlaceholder(id);
+    showTopPlaceholder,
+    showBottomPlaceholder,
+    showNestedPlaceholder,
+  } = useDnDItemPlaceholder(id, DnDListItemType, true);
   return (
     <MuiListItem
       {...props}
@@ -59,11 +59,11 @@ const DnDListItem = ({ blockId, control, subList, props }: ListItemProp) => {
         <Box>
           <DragHandle draggableId={id} />
         </Box>
-        <DropPlaceholder show={showDividerChild} isChild={true} />
+        <DropPlaceholder show={showNestedPlaceholder} isNested={true} />
       </Grid>
       <DropPlaceholder
-        show={showDividerTop || showDividerBottom}
-        isTop={showDividerTop}
+        show={showTopPlaceholder || showBottomPlaceholder}
+        isTop={showTopPlaceholder}
       />
       {subList && subList.items && <DnDListComponent {...subList} />}
     </MuiListItem>
