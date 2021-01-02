@@ -1,30 +1,52 @@
-import { Box } from "@material-ui/core";
 import { DnDContext, DnDItem, IntersectionInfoParam } from "dnd/v2/DnDContext";
 import { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 
-type StyledDropPlaceholderProps = {
-  $isTop?: boolean;
-  $isNested?: boolean;
-};
-
-type DnDPlaceholderProps = {
-  show: boolean;
+export type StyledDropPlaceholderProps = {
   isTop?: boolean;
   isNested?: boolean;
 };
 
-export const StyledDropPlaceholder = styled(Box)<StyledDropPlaceholderProps>`
+export type DnDPlaceholderProps = {
+  id: string;
+  dndItemType: string;
+};
+
+export const StyledDropPlaceholder = styled.div.withConfig<StyledDropPlaceholderProps>(
+  {
+    shouldForwardProp: (prop, defaultValidatorFn) =>
+      !["isTop", "isNested"].includes(prop) && defaultValidatorFn(prop),
+  }
+)`
   flex-grow: 1;
   pointer-events: none;
   background: rgba(46, 170, 220, 0.5);
   height: 4px;
   position: absolute;
-  left: ${({ $isNested }) => ($isNested ? "4px" : 0)};
-  right: ${({ $isNested }) => ($isNested ? "10px" : 0)};
-  top: ${({ $isTop }) => ($isTop ? 0 : "auto")};
-  bottom: ${({ $isTop }) => ($isTop ? "auto" : "-4px")};
+  left: ${({ isNested }) => (isNested ? "4px" : 0)};
+  right: ${({ isNested }) => (isNested ? "10px" : 0)};
+  top: ${({ isTop }) => (isTop ? 0 : "auto")};
+  bottom: ${({ isTop }) => (isTop ? "auto" : "-4px")};
 `;
+const placeholderPosition = (
+  dndItemType: string,
+  draggingItem: DnDItem,
+  underlyingItem: DnDItem,
+  isEntering: boolean,
+  intersectionInfo?: IntersectionInfoParam,
+  enableNested: boolean = false
+) => {
+  if (draggingItem.type !== dndItemType || underlyingItem.type !== dndItemType)
+    return;
+  const fromTop = !!intersectionInfo?.fromTop;
+  const fromBottom = !fromTop && !!intersectionInfo?.fromBottom;
+  const nested = enableNested && !!intersectionInfo?.fromLeft && fromBottom;
+  return {
+    showTopPlaceholder: isEntering && fromTop,
+    showBottomPlaceholder: isEntering && !nested && fromBottom,
+    showNestedPlaceholder: isEntering && nested,
+  };
+};
 
 export const useDnDItemPlaceholder = (
   id: string,
@@ -42,17 +64,18 @@ export const useDnDItemPlaceholder = (
       isEntering: boolean,
       intersectionInfo?: IntersectionInfoParam
     ) => {
-      if (
-        draggingItem.type !== dndItemType ||
-        underlyingItem.type !== dndItemType
-      )
-        return;
-      const fromTop = !!intersectionInfo?.fromTop;
-      const fromBottom = !fromTop && !!intersectionInfo?.fromBottom;
-      const nested = enableNested && !!intersectionInfo?.fromLeft && fromBottom;
-      setShowTopPlaceholder(isEntering && fromTop);
-      setShowBottomPlaceholder(isEntering && !nested && fromBottom);
-      setShowNestedPlaceholder(isEntering && nested);
+      const position = placeholderPosition(
+        dndItemType,
+        draggingItem,
+        underlyingItem,
+        isEntering,
+        intersectionInfo,
+        enableNested
+      );
+      if (!position) return;
+      setShowTopPlaceholder(position.showTopPlaceholder);
+      setShowBottomPlaceholder(position.showBottomPlaceholder);
+      setShowNestedPlaceholder(position.showNestedPlaceholder);
     },
     [dndItemType, enableNested]
   );
@@ -77,12 +100,22 @@ export const useDnDItemPlaceholder = (
   };
 };
 
-export const DropPlaceholder = ({
-  show,
-  isTop,
-  isNested,
-}: DnDPlaceholderProps) => {
+export const DropPlaceholder = ({ id, dndItemType }: DnDPlaceholderProps) => {
+  const { showTopPlaceholder, showBottomPlaceholder } = useDnDItemPlaceholder(
+    id,
+    dndItemType
+  );
+  const show = showTopPlaceholder || showBottomPlaceholder;
+  const setRef = useCallback((element?: Element | null) => {
+    const parentElement = element?.parentElement;
+    if (!parentElement) return;
+    parentElement.style.position = "relative";
+  }, []);
   return show ? (
-    <StyledDropPlaceholder $isTop={isTop} $isNested={isNested} />
+    <StyledDropPlaceholder
+      isTop={showTopPlaceholder}
+      isNested={false}
+      ref={setRef}
+    />
   ) : null;
 };

@@ -17,7 +17,10 @@ import {
   useRegisterDraggables,
 } from "dnd/v2/list/dndListHooks";
 import { DataBlockIdProps, useDataBlockId } from "components/DataBlockID";
-import { DropPlaceholder, useDnDItemPlaceholder } from "dnd/v2/DnDPlaceholder";
+import {
+  StyledDropPlaceholder,
+  useDnDItemPlaceholder,
+} from "dnd/v2/DnDPlaceholder";
 
 type ItemPropsKeys = "disabled" | "dense" | "selected";
 type ItemProps = Pick<MuiListItemProps, ItemPropsKeys>;
@@ -29,6 +32,15 @@ export type ListItemProp = DataBlockIdProps & {
 export interface ListProps {
   items: ListItemProp[];
 }
+
+type DropPlaceholderProps = {
+  show: boolean;
+  isTop?: boolean;
+  isNested?: boolean;
+};
+const DropPlaceholder = ({ show, isTop, isNested }: DropPlaceholderProps) =>
+  show ? <StyledDropPlaceholder isTop={isTop} isNested={isNested} /> : null;
+
 const DnDListItem = ({ blockId, control, subList, props }: ListItemProp) => {
   const { id, setRef } = useDataBlockId(blockId);
   const {
