@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Box, Typography } from "@material-ui/core";
 import { CardConfig } from "cards/demo/DemoCards";
@@ -9,9 +9,7 @@ import {
 } from "components/Settings/settingsUtils";
 import { Form } from "react-final-form";
 import { FormApi } from "final-form";
-import { DnDContext } from "dnd/v1/DnDContext";
-import { Draggable } from "dnd/v1/Draggable";
-import { Droppable } from "dnd/v1/Droppable";
+import { useRegisterDraggables } from "components/Settings/dndCardSettingsHooks";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,18 +44,16 @@ export const CardSettings: FunctionComponent<SettingsProps> = ({
   setFormApi,
 }) => {
   const classes = useStyles();
-  const fieldsOrder = useRef(card.fields.map((field) => field.name));
-  const setFieldsOrder = useCallback(
-    (newOrder: string[]) => (fieldsOrder.current = newOrder),
-    []
-  );
+  const fields = useRegisterDraggables(card);
   return (
     <Form<SettingsFormValues>
       initialValues={fieldsSettingsInitialValues(card.fields)}
       subscription={{ submitting: true }}
       onSubmit={(values) => {
-        console.log(values);
-        onSubmit(values, fieldsOrder.current);
+        onSubmit(
+          values,
+          fields.map(({ field }) => field.name)
+        );
       }}
     >
       {({ form, handleSubmit }) => {
@@ -65,35 +61,20 @@ export const CardSettings: FunctionComponent<SettingsProps> = ({
         return (
           <form onSubmit={handleSubmit} noValidate>
             <Box p={1}>
-              <DnDContext onDragEnd={setFieldsOrder}>
-                <Droppable droppableId="0">
-                  {(innerRef, placeholder) => (
-                    <Grid
-                      container
-                      spacing={1}
-                      direction="column"
-                      ref={innerRef}
-                    >
-                      <Grid item>
-                        <Typography variant="h5">{card.title}</Typography>
-                      </Grid>
+              <Grid container spacing={1} direction="column">
+                <Grid item>
+                  <Typography variant="h5">{card.title}</Typography>
+                </Grid>
 
-                      {card.fields.map((field, index) => (
-                        <Draggable key={index} draggableId={field.name}>
-                          {(innerRef) => (
-                            <FieldSettings
-                              classes={classes}
-                              field={field}
-                              ref={innerRef}
-                            />
-                          )}
-                        </Draggable>
-                      ))}
-                      {placeholder}
-                    </Grid>
-                  )}
-                </Droppable>
-              </DnDContext>
+                {fields.map(({ blockId, field }) => (
+                  <FieldSettings
+                    classes={classes}
+                    blockId={blockId}
+                    field={field}
+                    key={blockId}
+                  />
+                ))}
+              </Grid>
             </Box>
           </form>
         );
