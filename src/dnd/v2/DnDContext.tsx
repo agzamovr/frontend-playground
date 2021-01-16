@@ -95,7 +95,6 @@ const createDnDContextValue = (): DnDContextType => {
     dragObservers: {},
     dragOverObservers: {},
   };
-  let currentUnderlyingId = "";
   let isIntersecting = false;
   let droppingId: string | undefined;
   let currentIntersectionInfo: IntersectionInfoParam;
@@ -220,18 +219,17 @@ const createDnDContextValue = (): DnDContextType => {
       const draggable = store.draggables[draggingId];
       const underlyingItem = store.draggables[underlyingId];
       if (
-        currentUnderlyingId === underlyingId &&
+        droppingId === underlyingId &&
         isIntersecting &&
         equalIntersections &&
         threshold > 0.5
       )
         return;
       if (
-        (currentUnderlyingId !== underlyingId ||
-          (currentUnderlyingId === underlyingId && threshold < 0.5)) &&
+        (droppingId !== underlyingId ||
+          (droppingId === underlyingId && threshold < 0.5)) &&
         isIntersecting
       ) {
-        currentUnderlyingId = "";
         isIntersecting = false;
         store.dragObservers[draggingId]?.forEach((callback) =>
           callback(draggable, underlyingItem, false)
@@ -245,9 +243,7 @@ const createDnDContextValue = (): DnDContextType => {
         droppingId = undefined;
       }
       if (threshold > 0.5) {
-        currentUnderlyingId = underlyingId;
         isIntersecting = true;
-
         droppingId = underlyingId;
         store.dragObservers[draggingId]?.forEach((callback) =>
           callback(draggable, underlyingItem, true, intersectionInfo)
