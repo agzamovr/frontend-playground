@@ -1,5 +1,5 @@
 import { DnDContext, DnDItem, IntersectionInfoParam } from "dnd/v2/DnDContext";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 export type StyledDropPlaceholderProps = {
@@ -47,6 +47,17 @@ const placeholderPosition = (
     showNestedPlaceholder: isEntering && nested,
   };
 };
+// https://www.debuggr.io/react-update-unmounted-component/
+const useIsMountedRef = () => {
+  const isMountedRef = useRef(false);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+  return isMountedRef;
+};
 
 export const useDnDItemPlaceholder = (
   id: string,
@@ -54,6 +65,7 @@ export const useDnDItemPlaceholder = (
   enableNested: boolean = false
 ) => {
   const dndContext = useContext(DnDContext);
+  const isMountedRef = useIsMountedRef();
   const [showTopPlaceholder, setShowTopPlaceholder] = useState(false);
   const [showBottomPlaceholder, setShowBottomPlaceholder] = useState(false);
   const [showNestedPlaceholder, setShowNestedPlaceholder] = useState(false);
@@ -64,6 +76,7 @@ export const useDnDItemPlaceholder = (
       isEntering: boolean,
       intersectionInfo?: IntersectionInfoParam
     ) => {
+      if (!isMountedRef.current) return;
       const position = placeholderPosition(
         dndItemType,
         draggingItem,
@@ -77,13 +90,14 @@ export const useDnDItemPlaceholder = (
       setShowBottomPlaceholder(position.showBottomPlaceholder);
       setShowNestedPlaceholder(position.showNestedPlaceholder);
     },
-    [dndItemType, enableNested]
+    [dndItemType, enableNested, isMountedRef]
   );
   const onDropOver = useCallback(() => {
+    if (!isMountedRef.current) return;
     setShowTopPlaceholder(false);
     setShowBottomPlaceholder(false);
     setShowNestedPlaceholder(false);
-  }, []);
+  }, [isMountedRef]);
   useEffect(() => {
     dndContext?.addDragOverObserver(onDragOver, [id]);
     dndContext?.addDropOverObserver(onDropOver, [id]);
