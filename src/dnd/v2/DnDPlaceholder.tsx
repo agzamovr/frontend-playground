@@ -42,7 +42,7 @@ const placeholderPosition = (
   const fromBottom = !fromTop && !!intersectionInfo?.fromBottom;
   const nested = enableNested && !!intersectionInfo?.fromLeft && fromBottom;
   return {
-    showTopPlaceholder: isEntering && fromTop,
+    showTopPlaceholder: isEntering && !nested && fromTop,
     showBottomPlaceholder: isEntering && !nested && fromBottom,
     showNestedPlaceholder: isEntering && nested,
   };

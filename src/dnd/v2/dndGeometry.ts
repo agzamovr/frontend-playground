@@ -22,9 +22,6 @@ export interface IntersectionInfo {
   fromBottom: boolean;
 }
 
-const compareIntersections = (a: IntersectionInfo, z: IntersectionInfo) =>
-  z.intersectionRatio - a.intersectionRatio;
-
 export const copyRect = (el: Element): Rect => {
   const rect = el.getBoundingClientRect();
   return {
@@ -93,7 +90,7 @@ const topIntersect = (dragRect: Rect, dropRect: Rect) =>
  * ===============
  * || intersect ||
  * =====^^^=======
- * |  drop rect  |
+ * |  drag rect  |
  * ---------------
  */
 const bottomIntersect = (dragRect: Rect, dropRect: Rect) =>
@@ -123,7 +120,7 @@ const getIntersectionInfo = (
   dropRect: Rect
 ): IntersectionInfo | undefined => {
   const intersectionArea = getIntersectionArea(dragRect, dropRect);
-  if (intersectionArea) {
+  if (intersectionArea > 0) {
     const minArea = Math.min(dragRect.area, dropRect.area);
     const areaRatio = intersectionArea / minArea;
     return {
@@ -143,8 +140,9 @@ export const getIntersections = (
   x: number,
   y: number,
   rects: Rects
-) => {
+): IntersectionInfo[] => {
   const currentRect = rects[blockId];
+  if (!currentRect) return [];
   const dragRect = {
     ...currentRect,
     x: x,
@@ -154,12 +152,8 @@ export const getIntersections = (
     right: x + currentRect.width,
     bottom: y + currentRect.height,
   };
-  const intersections: IntersectionInfo[] = Object.keys(rects)
+  return Object.keys(rects)
     .filter((key) => key !== blockId)
     .map((key) => getIntersectionInfo(key, dragRect, rects[key]))
-    .filter((i): i is IntersectionInfo => !!i)
-    .sort(compareIntersections);
-  if (intersections) {
-    return intersections[0];
-  }
+    .filter((i): i is IntersectionInfo => !!i);
 };

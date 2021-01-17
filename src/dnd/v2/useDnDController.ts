@@ -56,18 +56,13 @@ export const useDnDController = () => {
 
         style.transform = `translate3d(${x}px,${y}px, 0px)`;
         if (!dataBlockIdRef.current || !rects.current) return;
-        const intersectionInfo = getIntersections(
+        const intersections = getIntersections(
           dataBlockIdRef.current,
           x,
           y,
           rects.current
         );
-        if (intersectionInfo)
-          context?.dragging(
-            dataBlockIdRef.current,
-            intersectionInfo.blockId,
-            intersectionInfo
-          );
+        context?.dragging(dataBlockIdRef.current, intersections);
       });
     },
     [context]
@@ -150,9 +145,10 @@ export const useDnDController = () => {
       rootOverlay?.appendChild(clonedEl);
       draggableRef.current = clonedEl;
       const draggables = context?.getDraggablesIds();
-      if (dataBlockIdRef.current && draggables)
+      if (dataBlockIdRef.current && draggables) {
         // calculate all droppable elements' rectangles
         rects.current = calcRects(dataBlockIdRef.current, draggables);
+      }
       addEventListeners();
       // trigger drag start event
       context?.dragStart(dataBlockIdRef.current);

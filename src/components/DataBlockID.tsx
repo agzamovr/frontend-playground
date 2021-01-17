@@ -11,7 +11,7 @@ type DataBlockProps = DataBlockIdProps & {
   ) => ReactElement<HTMLElement>;
 };
 export const useDataBlockId = (elementId?: string) => {
-  const id = useMemo(() => (elementId ? elementId : uuidv4()), [elementId]);
+  const id = useMemo(() => elementId ?? uuidv4(), [elementId]);
   const setRef = useCallback(
     (element?: Element | null) => {
       element?.setAttribute("data-block-id", id);
