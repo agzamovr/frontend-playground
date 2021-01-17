@@ -34,10 +34,10 @@ export const moveNode = (
   to: string,
   insertBefore: boolean,
   asChild: boolean
-) => {
+): boolean => {
   const pathFrom: number[] = depthFirstSearch(from, listItem.items, []);
   const pathTo: number[] = depthFirstSearch(to, listItem.items, []);
-  if (pathFrom.length === 0 || pathTo.length === 0) return listItem;
+  if (pathFrom.length === 0 || pathTo.length === 0) return false;
 
   const fromNodeList = getNodesAtLastLevelFromPath(listItem, pathFrom);
   let toNodeList = getNodesAtLastLevelFromPath(listItem, pathTo);
