@@ -1,8 +1,8 @@
-import { ListItemProp, ListProps } from "dnd/v2/list/DnDList";
+import { ListItemProps, ListProps } from "components/List/List";
 
 const depthFirstSearch = (
   guid: string,
-  arr: ListItemProp[],
+  arr: ListItemProps[],
   path: number[]
 ) => {
   for (let i = 0; i < arr.length; i++) {
@@ -46,7 +46,7 @@ export const moveNode = (
   let indexTo = pathTo[pathTo.length - 1];
   if (asChild) {
     const toItem = toNodeList[indexTo];
-    if (!toItem.subList) toItem["subList"] = { items: [] };
+    if (!toItem.subList) toItem["subList"] = { dndEnabled: true, items: [] };
     toNodeList = toItem.subList.items;
     indexTo = 0;
   }

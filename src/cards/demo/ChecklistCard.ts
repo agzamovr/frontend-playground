@@ -1,12 +1,15 @@
 import { FieldConfig } from "components/FieldComponent";
 import { CardConfig } from "cards/demo/DemoCards";
+import { v4 as uuidv4 } from "uuid";
 
 const fields: FieldConfig[] = [
   {
     component: "list",
     name: "checklist",
+    dndEnabled: false,
     items: [
       {
+        blockId: uuidv4(),
         control: {
           component: "checkbox",
           name: "deliverToCustomer",
@@ -17,6 +20,7 @@ const fields: FieldConfig[] = [
         },
       },
       {
+        blockId: uuidv4(),
         control: {
           component: "checkbox",
           name: "install",
@@ -26,8 +30,10 @@ const fields: FieldConfig[] = [
           },
         },
         subList: {
+          dndEnabled: false,
           items: [
             {
+              blockId: uuidv4(),
               control: {
                 component: "checkbox",
                 name: "mount",
@@ -38,6 +44,7 @@ const fields: FieldConfig[] = [
               },
             },
             {
+              blockId: uuidv4(),
               control: {
                 component: "checkbox",
                 name: "setUp",

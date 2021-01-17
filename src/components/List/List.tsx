@@ -1,6 +1,6 @@
-import React, { Fragment, FunctionComponent } from "react";
+import React, { Fragment, FunctionComponent, useContext } from "react";
 import { DragHandle } from "dnd/v2/Draggable";
-import { Box } from "@material-ui/core";
+import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import {
   List as MuiList,
@@ -14,8 +14,9 @@ import {
 } from "components/FieldComponent";
 import {
   DnDListItemType,
+  ListDnDContext,
   useRegisterDraggables,
-} from "dnd/v2/list/dndListHooks";
+} from "components/List/dndListHooks";
 import { DataBlockIdProps, useDataBlockId } from "components/DataBlockID";
 import {
   StyledDropPlaceholder,
@@ -24,13 +25,14 @@ import {
 
 type ItemPropsKeys = "disabled" | "dense" | "selected";
 type ItemProps = Pick<MuiListItemProps, ItemPropsKeys>;
-export type ListItemProp = DataBlockIdProps & {
+export type ListItemProps = Required<DataBlockIdProps> & {
   props?: ItemProps;
   control: CheckboxConfig | TextFieldConfig;
   subList?: ListProps;
 };
 export interface ListProps {
-  items: ListItemProp[];
+  dndEnabled: boolean;
+  items: ListItemProps[];
 }
 
 type DropPlaceholderProps = {
@@ -41,8 +43,9 @@ type DropPlaceholderProps = {
 const DropPlaceholder = ({ show, isTop, isNested }: DropPlaceholderProps) =>
   show ? <StyledDropPlaceholder isTop={isTop} isNested={isNested} /> : null;
 
-const DnDListItem = ({ blockId, control, subList, props }: ListItemProp) => {
+const ListItem = ({ blockId, control, subList, props }: ListItemProps) => {
   const { id, setRef } = useDataBlockId(blockId);
+  const listDndContext = useContext(ListDnDContext);
   const {
     showTopPlaceholder,
     showBottomPlaceholder,
@@ -51,7 +54,7 @@ const DnDListItem = ({ blockId, control, subList, props }: ListItemProp) => {
   return (
     <MuiListItem
       {...props}
-      ref={setRef}
+      ref={(element) => listDndContext && setRef(element)}
       style={{
         display: "block",
         paddingRight: 0,
@@ -68,32 +71,41 @@ const DnDListItem = ({ blockId, control, subList, props }: ListItemProp) => {
         <Box flexGrow={1}>
           <Field {...control} />
         </Box>
-        <Box>
-          <DragHandle draggableId={id} />
-        </Box>
-        <DropPlaceholder show={showNestedPlaceholder} isNested={true} />
+        {listDndContext && (
+          <Box>
+            <DragHandle draggableId={id} />
+          </Box>
+        )}
+        <DropPlaceholder
+          show={listDndContext && showNestedPlaceholder}
+          isNested={true}
+        />
       </Grid>
       <DropPlaceholder
-        show={showTopPlaceholder || showBottomPlaceholder}
+        show={listDndContext && (showTopPlaceholder || showBottomPlaceholder)}
         isTop={showTopPlaceholder}
       />
-      {subList && subList.items && <DnDListComponent {...subList} />}
+      {subList && <ListComponent {...subList} />}
     </MuiListItem>
   );
 };
 
-const DnDListComponent: FunctionComponent<ListProps> = (props) =>
+const ListComponent: FunctionComponent<ListProps> = (props) =>
   props.items.length > 0 ? (
-    <MuiList>
+    <MuiList disablePadding={true}>
       {props.items.map((item, index) => (
         <Fragment key={index}>
-          <DnDListItem {...item} />
+          <ListItem {...item} />
         </Fragment>
       ))}
     </MuiList>
   ) : null;
 
-export const DnDList: FunctionComponent<ListProps> = (props) => {
+export const List: FunctionComponent<ListProps> = (props) => {
   useRegisterDraggables(props);
-  return <DnDListComponent {...props} />;
+  return (
+    <ListDnDContext.Provider value={props.dndEnabled}>
+      <ListComponent {...props} />
+    </ListDnDContext.Provider>
+  );
 };

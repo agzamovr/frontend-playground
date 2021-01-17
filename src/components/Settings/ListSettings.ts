@@ -1,4 +1,5 @@
 import { ListConfig, FieldConfig } from "components/FieldComponent";
+import { cloneDeep } from "lodash";
 
 export const listSettings = (listConfig: ListConfig): FieldConfig[] => [
   {
@@ -11,19 +12,5 @@ export const listSettings = (listConfig: ListConfig): FieldConfig[] => [
       { label: "Unordered", value: "unordered" },
     ],
   },
-  {
-    ...listConfig,
-    items: [
-      ...listConfig.items,
-      {
-        control: {
-          component: "textfield",
-          name: "addNew",
-          props: {
-            placeholder: "+ New item",
-          },
-        },
-      },
-    ],
-  },
+  { ...cloneDeep(listConfig), dndEnabled: true },
 ];

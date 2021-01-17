@@ -12,8 +12,8 @@ import { RadioGroup, RadioGroupProps } from "components/RadioGroup/RadioGroup";
 import { UnitOfMeasureValues } from "components/Settings/uom/unitOfMeasures";
 import { CardinalityValues } from "components/Settings/cardinality/cardinality";
 import { DatasourceProviderValues } from "components/Settings/datasourceProvider/datasourceProvider";
-import { List, ListProps } from "components/List";
 import { CheckboxProps, Checkbox } from "components/Checkbox/Checkbox";
+import { List, ListProps } from "components/List/List";
 
 interface FormName {
   name: string;
