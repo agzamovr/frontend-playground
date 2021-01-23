@@ -30,7 +30,6 @@ const fields: FieldConfig[] = [
           },
         },
         subList: {
-          dndEnabled: false,
           items: [
             {
               blockId: uuidv4(),

@@ -28,12 +28,15 @@ type ItemProps = Pick<MuiListItemProps, ItemPropsKeys>;
 export type ListItemProps = Required<DataBlockIdProps> & {
   props?: ItemProps;
   control: CheckboxConfig | TextFieldConfig;
-  subList?: ListProps;
+  subList?: ListItems;
 };
-export interface ListProps {
-  dndEnabled: boolean;
+interface ListItems {
   items: ListItemProps[];
 }
+
+export type ListProps = ListItems & {
+  dndEnabled: boolean;
+};
 
 type DropPlaceholderProps = {
   show: boolean;
@@ -90,7 +93,7 @@ const ListItem = ({ blockId, control, subList, props }: ListItemProps) => {
   );
 };
 
-const ListComponent: FunctionComponent<ListProps> = (props) =>
+const ListComponent: FunctionComponent<ListItems> = (props) =>
   props.items.length > 0 ? (
     <MuiList disablePadding={true}>
       {props.items.map((item, index) => (
