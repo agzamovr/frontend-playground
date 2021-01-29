@@ -20,7 +20,7 @@ const getAllNodeIds = (items: ListItemProps[]) => {
 export const useRegisterDraggables = (listProps: ListProps) => {
   const dndContext = useContext(DnDContext);
   const [dumbTrigger, setDumbTrigger] = useState(false);
-  const { editable, items } = listProps;
+  const { items } = listProps;
   const onDrop = useCallback(
     (
       draggable: DnDItem,
@@ -42,7 +42,6 @@ export const useRegisterDraggables = (listProps: ListProps) => {
     [dumbTrigger, listProps]
   );
   useEffect(() => {
-    if (!editable) return;
     const ids = getAllNodeIds(items);
     dndContext.addDraggables(ids, DnDListItemType);
     dndContext.addDropObserver(onDrop, ids);
@@ -50,5 +49,5 @@ export const useRegisterDraggables = (listProps: ListProps) => {
       ids.forEach((id) => dndContext?.removeDraggable(id));
       dndContext.removeDropObserver(onDrop, ids);
     };
-  }, [dndContext, onDrop, items, editable]);
+  }, [dndContext, onDrop, items]);
 };
