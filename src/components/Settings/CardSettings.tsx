@@ -8,6 +8,7 @@ import {
   SettingsFormValues,
 } from "components/Settings/settingsUtils";
 import { Form } from "react-final-form";
+import arrayMutators from "final-form-arrays";
 import { FormApi } from "final-form";
 import { useRegisterDraggables } from "components/Settings/dndCardSettingsHooks";
 
@@ -49,6 +50,9 @@ export const CardSettings: FunctionComponent<SettingsProps> = ({
     <Form<SettingsFormValues>
       initialValues={fieldsSettingsInitialValues(card.fields)}
       subscription={{ submitting: true }}
+      mutators={{
+        ...arrayMutators,
+      }}
       onSubmit={(values) => {
         onSubmit(
           values,

@@ -46,7 +46,8 @@ export const moveNode = (
   let indexTo = pathTo[pathTo.length - 1];
   if (asChild) {
     const toItem = toNodeList[indexTo];
-    if (!toItem.subList) toItem["subList"] = { items: [] };
+    if (!toItem.subList)
+      toItem["subList"] = { listType: listItem.listType, items: [] };
     toNodeList = toItem.subList.items;
     indexTo = 0;
   }

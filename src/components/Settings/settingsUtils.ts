@@ -15,7 +15,10 @@ import {
   dateTimeSettings,
   dateTimeSettingsValues,
 } from "components/Settings/DateTimeFieldSettings";
-import { listSettings } from "components/Settings/ListSettings";
+import {
+  listSettings,
+  listSettingsValues,
+} from "components/Settings/ListSettings";
 
 export interface TextFieldFormValues {
   label: string;
@@ -33,12 +36,23 @@ export interface DateTimeFieldFormValues {
   disableFuture: boolean;
   required: boolean;
 }
+export interface ListItemFormValues {
+  [k: string]: {
+    label: string;
+    items?: ListItemFormValues[];
+  };
+}
+export interface ListFormValues {
+  listType: "checklist" | "ordered" | "unordered";
+  items: ListItemFormValues[];
+}
 interface SelectProviderValues {
   provider: string;
 }
 export type SettingsForm =
   | TextFieldFormValues
   | DateTimeFieldFormValues
+  | ListFormValues
   | UnitOfMeasureValues
   | SelectProviderValues
   | CardinalityValues;
@@ -55,6 +69,8 @@ const fieldSettingsInitialValue = (
     ? textFieldSettingsValues(field)
     : field.component === "datetime"
     ? dateTimeSettingsValues(field)
+    : field.component === "list"
+    ? listSettingsValues(field)
     : null;
 
 export const fieldsSettingsInitialValues = (

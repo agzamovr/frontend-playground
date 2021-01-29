@@ -6,52 +6,30 @@ const fields: FieldConfig[] = [
   {
     component: "list",
     name: "checklist",
-    dndEnabled: false,
+    editable: false,
+    listType: "checklist",
     items: [
       {
         blockId: uuidv4(),
-        control: {
-          component: "checkbox",
-          name: "deliverToCustomer",
-          formControlProps: { label: "Deliver to Customer" },
-          props: {
-            color: "primary",
-          },
-        },
+        label: "Deliver to Customer",
+        name: "deliverToCustomer",
       },
       {
         blockId: uuidv4(),
-        control: {
-          component: "checkbox",
-          name: "install",
-          formControlProps: { label: "Install" },
-          props: {
-            color: "primary",
-          },
-        },
+        label: "Install",
+        name: "install",
         subList: {
+          listType: "checklist",
           items: [
             {
               blockId: uuidv4(),
-              control: {
-                component: "checkbox",
-                name: "mount",
-                formControlProps: { label: "Mount" },
-                props: {
-                  color: "primary",
-                },
-              },
+              label: "Mount",
+              name: "mount",
             },
             {
               blockId: uuidv4(),
-              control: {
-                component: "checkbox",
-                name: "setUp",
-                formControlProps: { label: "Set up" },
-                props: {
-                  color: "primary",
-                },
-              },
+              label: "Set up",
+              name: "setUp",
             },
           ],
         },

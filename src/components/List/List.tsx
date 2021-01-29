@@ -6,15 +6,11 @@ import {
   List as MuiList,
   ListItemProps as MuiListItemProps,
   ListItem as MuiListItem,
+  Typography as MuiTypography,
+  Checkbox as MuiCheckbox,
 } from "@material-ui/core";
 import {
-  CheckboxConfig,
-  Field,
-  TextFieldConfig,
-} from "components/FieldComponent";
-import {
   DnDListItemType,
-  ListDnDContext,
   useRegisterDraggables,
 } from "components/List/dndListHooks";
 import { DataBlockIdProps, useDataBlockId } from "components/DataBlockID";
@@ -22,20 +18,23 @@ import {
   StyledDropPlaceholder,
   useDnDItemPlaceholder,
 } from "dnd/v2/DnDPlaceholder";
+import { FormField } from "components/Form/FormField";
 
-type ItemPropsKeys = "disabled" | "dense" | "selected";
-type ItemProps = Pick<MuiListItemProps, ItemPropsKeys>;
+type ListTypes = "checklist" | "ordered" | "unordered";
 export type ListItemProps = Required<DataBlockIdProps> & {
-  props?: ItemProps;
-  control: CheckboxConfig | TextFieldConfig;
+  name: string;
+  label: string;
   subList?: ListItems;
 };
-interface ListItems {
+export interface ListItems {
+  listType: ListTypes;
   items: ListItemProps[];
 }
 
+type ListItemComponentProps = ListItems & ListItemProps;
+
 export type ListProps = ListItems & {
-  dndEnabled: boolean;
+  editable: boolean;
 };
 
 type DropPlaceholderProps = {
@@ -46,9 +45,15 @@ type DropPlaceholderProps = {
 const DropPlaceholder = ({ show, isTop, isNested }: DropPlaceholderProps) =>
   show ? <StyledDropPlaceholder isTop={isTop} isNested={isNested} /> : null;
 
-const ListItem = ({ blockId, control, subList, props }: ListItemProps) => {
+const ListItem = ({
+  blockId,
+  label,
+  name,
+  listType,
+  subList,
+}: ListItemComponentProps) => {
   const { id, setRef } = useDataBlockId(blockId);
-  const listDndContext = useContext(ListDnDContext);
+  const editable = useContext(ListContext);
   const {
     showTopPlaceholder,
     showBottomPlaceholder,
@@ -56,8 +61,7 @@ const ListItem = ({ blockId, control, subList, props }: ListItemProps) => {
   } = useDnDItemPlaceholder(id, DnDListItemType, true);
   return (
     <MuiListItem
-      {...props}
-      ref={(element) => listDndContext && setRef(element)}
+      ref={(element) => editable && setRef(element)}
       style={{
         display: "block",
         paddingRight: 0,
@@ -72,20 +76,29 @@ const ListItem = ({ blockId, control, subList, props }: ListItemProps) => {
         style={{ position: "relative" }}
       >
         <Box flexGrow={1}>
-          <Field {...control} />
+          {listType === "checklist" && <MuiCheckbox />}
+          {editable ? (
+            <FormField
+              component="textfield"
+              name={name}
+              props={{ value: label }}
+            />
+          ) : (
+            <MuiTypography component="span">{label}</MuiTypography>
+          )}
         </Box>
-        {listDndContext && (
+        {editable && (
           <Box>
             <DragHandle draggableId={id} />
           </Box>
         )}
         <DropPlaceholder
-          show={listDndContext && showNestedPlaceholder}
+          show={editable && showNestedPlaceholder}
           isNested={true}
         />
       </Grid>
       <DropPlaceholder
-        show={listDndContext && (showTopPlaceholder || showBottomPlaceholder)}
+        show={editable && (showTopPlaceholder || showBottomPlaceholder)}
         isTop={showTopPlaceholder}
       />
       {subList && <ListComponent {...subList} />}
@@ -98,17 +111,18 @@ const ListComponent: FunctionComponent<ListItems> = (props) =>
     <MuiList disablePadding={true}>
       {props.items.map((item, index) => (
         <Fragment key={index}>
-          <ListItem {...item} />
+          <ListItem {...props} {...item} />
         </Fragment>
       ))}
     </MuiList>
   ) : null;
 
+const ListContext = React.createContext<boolean>(false);
 export const List: FunctionComponent<ListProps> = (props) => {
   useRegisterDraggables(props);
   return (
-    <ListDnDContext.Provider value={props.dndEnabled}>
+    <ListContext.Provider value={props.editable}>
       <ListComponent {...props} />
-    </ListDnDContext.Provider>
+    </ListContext.Provider>
   );
 };

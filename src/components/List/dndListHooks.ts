@@ -1,12 +1,9 @@
-import React from "react";
 import { DnDContext, DnDItem, IntersectionInfoParam } from "dnd/v2/DnDContext";
 import { ListItemProps, ListProps } from "components/List/List";
 import { moveNode } from "components/List/treeModifier";
 import { useCallback, useContext, useEffect, useState } from "react";
 
 export const DnDListItemType = "list-item";
-
-export const ListDnDContext = React.createContext<boolean>(false);
 
 const getAllNodeIds = (items: ListItemProps[]) => {
   const stack: ListItemProps[] = [...items];
@@ -23,7 +20,7 @@ const getAllNodeIds = (items: ListItemProps[]) => {
 export const useRegisterDraggables = (listProps: ListProps) => {
   const dndContext = useContext(DnDContext);
   const [dumbTrigger, setDumbTrigger] = useState(false);
-  const { dndEnabled, items } = listProps;
+  const { editable, items } = listProps;
   const onDrop = useCallback(
     (
       draggable: DnDItem,
@@ -45,7 +42,7 @@ export const useRegisterDraggables = (listProps: ListProps) => {
     [dumbTrigger, listProps]
   );
   useEffect(() => {
-    if (!dndEnabled) return;
+    if (!editable) return;
     const ids = getAllNodeIds(items);
     dndContext.addDraggables(ids, DnDListItemType);
     dndContext.addDropObserver(onDrop, ids);
@@ -53,5 +50,5 @@ export const useRegisterDraggables = (listProps: ListProps) => {
       ids.forEach((id) => dndContext?.removeDraggable(id));
       dndContext.removeDropObserver(onDrop, ids);
     };
-  }, [dndContext, onDrop, items, dndEnabled]);
+  }, [dndContext, onDrop, items, editable]);
 };
