@@ -9,8 +9,8 @@ import {
 } from "components/Settings/settingsUtils";
 import { Form } from "react-final-form";
 import arrayMutators from "final-form-arrays";
-import { FormApi } from "final-form";
 import { useRegisterDraggables } from "components/Settings/dndCardSettingsHooks";
+import { FormApi, MutableState, Mutator } from "final-form";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,6 +32,36 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+const dndMutator: Mutator<SettingsFormValues> = (
+  [fieldNames, api]: [Record<string, string>, FormApi],
+  state,
+  { getIn, setIn }
+) => {
+  type FormFields = MutableState<SettingsFormValues>["fields"];
+  type FieldSubscribers = MutableState<SettingsFormValues>["fieldSubscribers"];
+  const oldFields: FormFields = {};
+  const oldSubscribers: FieldSubscribers = {};
+  for (const key in fieldNames) {
+    oldFields[key] = state.fields[key];
+    oldSubscribers[key] = state.fieldSubscribers[key];
+  }
+  Object.entries(fieldNames).forEach(([oldName, newName]) => {
+    state.fields[newName] = {
+      ...oldFields[oldName],
+      name: newName,
+      blur: () => api.blur(newName),
+      change: (value) => api.change(newName, value),
+      focus: () => api.focus(newName),
+      lastFieldState: undefined,
+    };
+    state.fieldSubscribers[newName] = oldSubscribers[oldName];
+    const value = getIn(state.formState.values, oldName);
+    state.formState.values =
+      setIn(state.formState.values, oldName, undefined) || {};
+    state.formState.values = setIn(state.formState.values, newName, value);
+  });
+  delete state.lastFormState;
+};
 
 interface SettingsProps {
   card: CardConfig;
@@ -51,6 +81,7 @@ export const CardSettings: FunctionComponent<SettingsProps> = ({
       initialValues={fieldsSettingsInitialValues(card.fields)}
       subscription={{ submitting: true }}
       mutators={{
+        dndMutator,
         ...arrayMutators,
       }}
       onSubmit={(values) => {

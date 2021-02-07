@@ -1,4 +1,4 @@
-import { ListItemProps, ListProps } from "components/List/List";
+import { ListItemProps, ListItems, ListProps } from "components/List/List";
 
 const depthFirstSearch = (
   guid: string,
@@ -18,7 +18,7 @@ const depthFirstSearch = (
   }
   return path;
 };
-const getNodesAtLastLevelFromPath = (listItem: ListProps, path: number[]) => {
+const getNodesAtLastLevelFromPath = (listItem: ListItems, path: number[]) => {
   let result = listItem.items;
   for (let i = 0; i < path.length - 1; i++) {
     const subList = result[path[i]].subList;
@@ -28,6 +28,16 @@ const getNodesAtLastLevelFromPath = (listItem: ListProps, path: number[]) => {
   return result;
 };
 
+export const findParentItem = (blockId: string, listProps: ListProps) => {
+  const path = depthFirstSearch(blockId, listProps.items, []);
+  // remove last item index
+  path.pop();
+  const parentLevel = getNodesAtLastLevelFromPath(listProps, path);
+  // parent item index
+  const parentIndex = path.pop();
+  return parentIndex !== undefined ? parentLevel[parentIndex] : listProps;
+};
+
 export const moveNode = (
   listItem: ListProps,
   from: string,
@@ -35,8 +45,8 @@ export const moveNode = (
   insertBefore: boolean,
   asChild: boolean
 ): boolean => {
-  const pathFrom: number[] = depthFirstSearch(from, listItem.items, []);
-  const pathTo: number[] = depthFirstSearch(to, listItem.items, []);
+  const pathFrom = depthFirstSearch(from, listItem.items, []);
+  const pathTo = depthFirstSearch(to, listItem.items, []);
   if (pathFrom.length === 0 || pathTo.length === 0) return false;
 
   const fromNodeList = getNodesAtLastLevelFromPath(listItem, pathFrom);
