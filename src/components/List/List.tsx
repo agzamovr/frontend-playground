@@ -23,9 +23,10 @@ export interface ListItems {
 
 export type ListItemComponentProps = ListItems & ListItemProps;
 
-export type ListProps = ListItems & {
-  editable: boolean;
-};
+export type ListProps = ListItems &
+  Omit<ListItemProps, "subList"> & {
+    editable: boolean;
+  };
 
 const ListItem = ({ label, listType, subList }: ListItemComponentProps) => (
   <MuiListItem

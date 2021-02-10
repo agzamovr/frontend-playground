@@ -86,6 +86,8 @@ export const fieldSettingsLabel = (field: FieldConfig) =>
     ? field.label
     : field.component === "textfield" || field.component === "datetime"
     ? field.props.label || field.props.placeholder
+    : field.component === "list"
+    ? field.label
     : null;
 
 export const fieldSettings = ({

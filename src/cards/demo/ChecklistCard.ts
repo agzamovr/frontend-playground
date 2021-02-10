@@ -8,6 +8,8 @@ const fields: FieldConfig[] = [
     name: "checklist",
     editable: false,
     listType: "checklist",
+    blockId: uuidv4(),
+    label: "Checklist",
     items: [
       {
         blockId: uuidv4(),
